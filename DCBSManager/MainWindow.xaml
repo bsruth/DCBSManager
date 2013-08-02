@@ -1,0 +1,29 @@
+﻿<Window x:Class="DCBSManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dcbsmgr="clr-namespace:DCBSManager"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <TabControl SelectionChanged="TabControl_SelectionChanged">
+            <TabItem Header="All Items">
+                <ListView x:Name="DCBSList" SelectionChanged="DCBSList_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch">
+                    
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding ElementName=DCBSList, Path=Width}"/>
+                            </Grid>
+                        </DataTemplate>
+
+                    </ListView.ItemTemplate>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Web Browser">
+                <WebBrowser x:Name="webBrowser"/>
+            </TabItem>
+        </TabControl>
+        
+        
+
+    </Grid>
+</Window>
