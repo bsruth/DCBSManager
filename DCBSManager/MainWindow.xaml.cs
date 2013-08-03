@@ -43,7 +43,7 @@ namespace DCBSManager
             InitializeComponent();
             this.webBrowser.Navigated += webBrowser_Navigated;
 
-
+            /*
             string line;
             // Read the file and display it line by line.
             System.IO.StreamReader file =
@@ -55,12 +55,19 @@ namespace DCBSManager
             }
 
             file.Close();
-            
-            
-            
-            
-            var dcbsList = LoadXLS();
-            this.DCBSList.ItemsSource = LoadXLS();
+            */
+
+
+            this.Cursor = Cursors.Wait;
+            //var dcbsList = LoadXLS();
+            var results = Task.Run(() => { return LoadXLS(); })
+                .ContinueWith(taskResult => {
+                    App.Current.Dispatcher.BeginInvoke( (Action)(() =>
+                    {
+                        this.DCBSList.ItemsSource = taskResult.Result;
+                        this.Cursor = Cursors.Arrow;
+                    }));
+                });
             
             
             //pids = GetPIDS(codes.ToArray());
@@ -73,7 +80,7 @@ namespace DCBSManager
 
         List<DCBSItem> LoadXLS()
         {
-            string path = "C:\\users\\brian_000\\desktop\\DCBS\\Sept2013_comics.xls";
+            string path = "C:\\users\\brian_000\\desktop\\DCBS\\August2013.xls";
             List<DCBSItem> mDCBSItems = new List<DCBSItem>();
             string currentCategory = "Previews";
             bool headerProcessed = false;
