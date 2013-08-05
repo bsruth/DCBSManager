@@ -56,6 +56,7 @@ namespace DCBSManager
 
             file.Close();
             */
+            codes = LoadCodes("codes.txt");
 
 
             this.Cursor = Cursors.Wait;
@@ -76,6 +77,22 @@ namespace DCBSManager
 
            // AddToCart();
             
+        }
+
+        List<string> LoadCodes( string codeFile)
+        {
+            List<string> myCodes = new List<string>();
+            string line;
+            // Read the file and display it line by line.
+            System.IO.StreamReader file =
+                new System.IO.StreamReader(codeFile);
+            while ((line = file.ReadLine()) != null)
+            {
+                myCodes.Add(line);
+
+            }
+
+            return myCodes;
         }
 
         List<DCBSItem> LoadXLS()
@@ -111,7 +128,8 @@ namespace DCBSManager
                                 var matchResult = Regex.Match(codeString, codePattern);
                                 if (matchResult.Success)
                                 {
-                                    if (currentCategory == "Image Comics")
+                                    //if (currentCategory == "Image Comics")
+                                    if(codes.Contains(codeString))
                                     {
                                         newItem.CODE = codeString;
                                         newItem.Title = row.GetCell(TITLE).ToString();
