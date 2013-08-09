@@ -18,12 +18,12 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <Image Grid.RowSpan="2" Grid.Column="0" Source="{Binding ImgURL}" VerticalAlignment="Top"  Margin="0,0,10,0"/>
-        <Label Grid.Row="0" Grid.Column="1" x:Name="code" Content="{Binding CODE}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Image Grid.RowSpan="2" Grid.Column="0" Source="{Binding Thumbnail}" VerticalAlignment="Top"  Margin="0,0,10,0"/>
+        <Label Grid.Row="0" Grid.Column="1" x:Name="code" Content="{Binding DCBSOrderCode}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <Label Grid.Row="0" Grid.Column="2" x:Name="title" Content="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
-        <Label Grid.Row="0" Grid.Column="3" x:Name="retail" Content="{Binding cost}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Label Grid.Row="0" Grid.Column="4" x:Name="discount" Content="{Binding discount}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Label Grid.Row="0" Grid.Column="5" x:Name="dcbs" Content="{Binding dcbsprice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Label Grid.Row="0" Grid.Column="3" x:Name="retail" Content="{Binding RetailPrice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Label Grid.Row="0" Grid.Column="4" x:Name="discount" Content="{Binding DCBSDiscount}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Label Grid.Row="0" Grid.Column="5" x:Name="dcbs" Content="{Binding DCBSPrice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5" x:Name="description" Text="{Binding Description}" VerticalAlignment="Top" TextWrapping="Wrap"/>
 
     </Grid>
