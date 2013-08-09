@@ -6,12 +6,14 @@
     <Grid>
         <TabControl SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="All Items">
-                <ListView x:Name="DCBSList" SelectionChanged="DCBSList_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch">
+                <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single">
                     
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
-                                <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding ElementName=DCBSList, Path=Width}"/>
+                               
+                                     <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding ElementName=DCBSList, Path=Width}" MouseUp="DCBSItemView_MouseUp"/>
+                               
                             </Grid>
                         </DataTemplate>
 

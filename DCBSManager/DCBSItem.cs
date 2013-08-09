@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace DCBSManager
 {
-    enum PurchaseCategories
+    public enum PurchaseCategories
     {
         None = 0,
         Maybe = 1,
@@ -17,12 +19,21 @@ namespace DCBSManager
         Retail = 3
     };
 
-    class DCBSItem
+    class DCBSItem : INotifyPropertyChanged
     {
+
+        #region Members
+        PurchaseCategories _purchaseCategory = PurchaseCategories.None;
+        #endregion
+
+        #region Events
+
+        public event PurchaseCategoryChangedRoutedEventHandler PurchaseCategoryChanged; //fired when the purchase category has been changed
+
+        #endregion
 
         public DCBSItem()
         {
-            PurchaseCategory = PurchaseCategories.None;
         }
 
         public string DCBSOrderCode
@@ -74,8 +85,22 @@ namespace DCBSManager
 
         public PurchaseCategories PurchaseCategory
         {
-            get;
-            set;
+            get
+            {
+                return _purchaseCategory;
+            }
+            set
+            {
+                if (value != _purchaseCategory)
+                {
+                    _purchaseCategory = value;
+                    OnPropertyChanged("PurchaseCategory");
+                    if (PurchaseCategoryChanged != null)
+                    {
+                        PurchaseCategoryChanged(this, new PurchaseCategoryChangedRoutedEventArgs() { NewPurchaseCategory = value });
+                    }
+                }
+            }
         }
 
         public string DisplayValue
@@ -161,5 +186,41 @@ namespace DCBSManager
             return DisplayValue;
         }
 
+
+        #region INotifyPropertyChanged Implementation
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        //*************************************
+        protected void OnPropertyChanged(string name)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
+
+
+        #endregion
     }
+
+    #region Custom RoutedEventArgs for Custom Events
+
+    //used to inform subscribed objects that
+    //the the current purchase category has been changed
+    public class PurchaseCategoryChangedRoutedEventArgs : RoutedEventArgs
+    {
+        public PurchaseCategories NewPurchaseCategory
+        {
+            get;
+            set;
+        }
+
+
+    }
+
+    public delegate void PurchaseCategoryChangedRoutedEventHandler(object sender, PurchaseCategoryChangedRoutedEventArgs e);
+
+    #endregion
 }

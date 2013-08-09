@@ -170,6 +170,7 @@ namespace DCBSManager
                             item.ThumbnailRawBytes = ret.GetFieldValue<byte[]>(8);
                             item.Thumbnail = BitmapImageFromBytes(item.ThumbnailRawBytes);
                             item.PurchaseCategory = (PurchaseCategories)ret.GetFieldValue<Int64>(9);
+                            item.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
                             itemsList.Add(item);
                         }
                         catch (Exception ex)
@@ -183,6 +184,42 @@ namespace DCBSManager
             }
 
             return itemsList;
+        }
+
+        private async void ItemPurchaseCategoryChanged(object sender, PurchaseCategoryChangedRoutedEventArgs e)
+        {
+            var result = await UpdateItemPurchaseCategory(sender as DCBSItem);
+        }
+
+        private async Task<bool> UpdateItemPurchaseCategory(DCBSItem itemToUpdate)
+        {
+            if(itemToUpdate == null)
+            {
+                return false;
+            }
+
+            using (var conn = new SQLiteConnection(@"Data Source=August2013.sqlite;Version=3;"))
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "UPDATE all_items set purchase_category = " + (Int64)(itemToUpdate.PurchaseCategory) + " where pid = " + itemToUpdate.PID + ";";
+                    try
+                    {
+                        var result = await cmd.ExecuteNonQueryAsync();
+                        if(result < 1) {
+                            return false;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }               
+                }
+
+            }
+
+            return true;
         }
 
         public static BitmapImage BitmapImageFromBytes(byte[] bytes)
@@ -294,6 +331,7 @@ namespace DCBSManager
                                         newItem.Category = currentCategory;
                                         newItem.LoadInfo();
                                         newItem.Thumbnail = BitmapImageFromBytes(newItem.ThumbnailRawBytes);
+                                        newItem.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
                                         AddItemToDatabase(newItem);
                                         mDCBSItems.Add(newItem);
                                     }
