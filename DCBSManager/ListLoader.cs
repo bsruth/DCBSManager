@@ -124,7 +124,7 @@ namespace DCBSManager
                     cmd.Parameters.AddWithValue("@PID", item.PID);
                     cmd.Parameters.AddWithValue("@DESCRIPTION", item.Description);
                     cmd.Parameters.AddWithValue("@THUMBNAIL", item.ThumbnailRawBytes);
-                    cmd.Parameters.AddWithValue("P@URCHASECATEGORY", item.PurchaseCategory);
+                    cmd.Parameters.AddWithValue("@PURCHASECATEGORY", (Int64)item.PurchaseCategory);
                     
                     try
                     {
