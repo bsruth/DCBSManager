@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
 namespace DCBSManager
@@ -19,6 +20,9 @@ namespace DCBSManager
         List<DCBSItem> mSelectedItems = new System.Collections.Generic.List<DCBSItem>();
         public List<DCBSItem> mLoadedItems;
         SQLiteConnection mDatabaseConnection = null;
+        Queue<DCBSItem> mItemsLeftToAddToCart = new Queue<DCBSItem>();
+        WebBrowser mWebBrowser = new WebBrowser();
+        
         const string all_items_table_name = "all_items";
         const string col_code = "code";
         const string col_title = "title";
@@ -49,18 +53,74 @@ namespace DCBSManager
 
             
 
-            if (File.Exists(databaseName + ".sqlite"))
+          
+            
+        }
+
+
+        public async Task<List<DCBSItem>> LoadList()
+        {
+            if (File.Exists(mDatabaseName + ".sqlite"))
             {
-                mLoadedItems = LoadFromDatabase(databaseName);
+                mLoadedItems = await LoadFromDatabase(mDatabaseName);
                 int i = 0;
             }
             else
             {
-                SetupDatabase(databaseName);
+                SetupDatabase(mDatabaseName);
                 codes = LoadCodes("codes.txt");
-                mLoadedItems = LoadXLS();
+                mLoadedItems = await LoadXLS();
             }
+
+            return mLoadedItems;
+        }
+
+        public List<DCBSItem> GetSelectedItems()
+        {
+
+            var selectedList = this.mLoadedItems
+                .Where(item => item.PurchaseCategory != PurchaseCategories.None);
+
+            return selectedList.ToList();
+        }
+
+        public List<DCBSItem> GetDCBSCartItems()
+        {
+            var cartItems = this.mLoadedItems
+                .Where(item => item.PurchaseCategory == PurchaseCategories.Definite);
+
+            return cartItems.ToList();
+        }
+
+        public void AddToCart(WebBrowser webBrowser)
+        {
+            var cartItems = GetDCBSCartItems();
+            mItemsLeftToAddToCart = new Queue<DCBSItem>(cartItems);
             
+            mWebBrowser = webBrowser;
+            mWebBrowser.Navigated += webBrowser_Navigated;
+            if(mItemsLeftToAddToCart.Count > 0) {
+                AddToWebBrowser(mWebBrowser, mItemsLeftToAddToCart.Dequeue());
+            }
+           
+        }
+
+        private void AddToWebBrowser(WebBrowser webBrowser, DCBSItem item)
+        {
+            string addToCartURI = "http://www.dcbservice.com/_cart.aspx?id=" + item.PID;
+            webBrowser.Navigate(addToCartURI);
+        }
+
+        void webBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            if (mItemsLeftToAddToCart.Count > 0)
+            {
+                AddToWebBrowser(mWebBrowser, mItemsLeftToAddToCart.Dequeue());
+            }
+            else
+            {
+                mWebBrowser.Navigated -= webBrowser_Navigated;
+            }
         }
 
         void ClearDB(string databaseFileName)
@@ -143,7 +203,7 @@ namespace DCBSManager
             return true;
         }
 
-        public List<DCBSItem> LoadFromDatabase(string databaseName)
+        public async Task<List<DCBSItem>> LoadFromDatabase(string databaseName)
         {
             List<DCBSItem> itemsList = new List<DCBSItem>();
 
@@ -167,8 +227,23 @@ namespace DCBSManager
                             item.DCBSPrice = ret.GetFieldValue<double>(5);
                             item.PID = ret.GetFieldValue<Int64>(6);
                             item.Description = ret.GetFieldValue<string>(7);
-                            item.ThumbnailRawBytes = ret.GetFieldValue<byte[]>(8);
-                            item.Thumbnail = BitmapImageFromBytes(item.ThumbnailRawBytes);
+                            try
+                            {
+                                item.ThumbnailRawBytes = ret.GetFieldValue<byte[]>(8);
+                                item.Thumbnail = await BitmapImageFromBytes(item.ThumbnailRawBytes);
+                            } catch(Exception)
+                            {
+                                item.ThumbnailRawBytes = null;
+                            }
+                            if (item.ThumbnailRawBytes == null)
+                            {
+                                await App.Current.Dispatcher.BeginInvoke((Action)(() =>
+                                {
+                                    item.Thumbnail = new BitmapImage();
+                                    item.Thumbnail.UriSource = new Uri("pack://application:,,,/DCBSManager;component/Images/no_image.jpg");
+                                }));
+                            }
+                            
                             item.PurchaseCategory = (PurchaseCategories)ret.GetFieldValue<Int64>(9);
                             item.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
                             itemsList.Add(item);
@@ -222,34 +297,44 @@ namespace DCBSManager
             return true;
         }
 
-        public static BitmapImage BitmapImageFromBytes(byte[] bytes)
+        public static async Task<BitmapImage> BitmapImageFromBytes(byte[] bytes)
         {
             BitmapImage image = null;
             MemoryStream stream = null;
-            try
-            {
-                stream = new MemoryStream(bytes);
-                stream.Seek(0, SeekOrigin.Begin);
-                System.Drawing.Image img = System.Drawing.Image.FromStream(stream);
-                image = new BitmapImage();
-                image.BeginInit();
-                MemoryStream ms = new MemoryStream();
-                img.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-                ms.Seek(0, SeekOrigin.Begin);
-                image.StreamSource = ms;
-                image.StreamSource.Seek(0, SeekOrigin.Begin);
-                image.EndInit();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                stream.Close();
-                stream.Dispose();
-            }
+
+
+           await App.Current.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    try
+                    {
+                        stream = new MemoryStream(bytes);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(stream);
+                        image = new BitmapImage();
+                        image.BeginInit();
+                        MemoryStream ms = new MemoryStream();
+                        img.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        image.StreamSource = ms;
+                        image.StreamSource.Seek(0, SeekOrigin.Begin);
+                        image.EndInit();
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    finally
+                    {
+                        stream.Close();
+                        stream.Dispose();
+                    }
+                }));
+
+
+            
+
             return image;
+
         }
 
         public void ListItemsInDatabase()
@@ -287,9 +372,9 @@ namespace DCBSManager
             return myCodes;
         }
 
-        public List<DCBSItem> LoadXLS()
+        public async Task<List<DCBSItem>> LoadXLS()
         {
-            string path = "C:\\users\\brian_000\\desktop\\DCBS\\August2013.xls";
+            string path = "August2013.xls";
             List<DCBSItem> mDCBSItems = new List<DCBSItem>();
             string currentCategory = "Previews";
             bool headerProcessed = false;
@@ -320,9 +405,8 @@ namespace DCBSManager
                                 var matchResult = Regex.Match(codeString, codePattern);
                                 if (matchResult.Success)
                                 {
-                                    //if (currentCategory == "Image Comics")
-                                    if (codes.Contains(codeString))
-                                    {
+                                    //if (currentCategory == "Previews")
+                                    //{
                                         newItem.DCBSOrderCode = codeString;
                                         newItem.Title = row.GetCell(TITLE).ToString();
                                         newItem.RetailPrice = double.Parse(row.GetCell(COST).ToString(), NumberStyles.Currency);
@@ -330,11 +414,22 @@ namespace DCBSManager
                                         newItem.DCBSPrice = double.Parse(row.GetCell(DCBS).ToString(), NumberStyles.Currency);
                                         newItem.Category = currentCategory;
                                         newItem.LoadInfo();
-                                        newItem.Thumbnail = BitmapImageFromBytes(newItem.ThumbnailRawBytes);
+                                        if (newItem.ThumbnailRawBytes != null)
+                                        {
+                                            newItem.Thumbnail = await BitmapImageFromBytes(newItem.ThumbnailRawBytes);
+                                        }
+                                        else
+                                        {
+                                            await App.Current.Dispatcher.BeginInvoke((Action)(() =>
+                                            {
+                                                newItem.Thumbnail = new BitmapImage();
+                                                newItem.Thumbnail.UriSource = new Uri("pack://application:,,,/DCBSManager;component/Images/no_image.jpg");
+                                            }));
+                                        }
                                         newItem.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
                                         AddItemToDatabase(newItem);
                                         mDCBSItems.Add(newItem);
-                                    }
+                                    //}
                                 }
                                 else
                                 {

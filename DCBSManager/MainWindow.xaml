@@ -7,20 +7,27 @@
         <TabControl SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="All Items">
                 <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single">
-                    
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
-                               
-                                     <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding ElementName=DCBSList, Path=Width}" MouseUp="DCBSItemView_MouseUp"/>
-                               
+                                <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding ElementName=DCBSList, Path=Width}" MouseUp="DCBSItemView_MouseUp"/>
                             </Grid>
                         </DataTemplate>
-
                     </ListView.ItemTemplate>
                 </ListView>
             </TabItem>
-            <TabItem Header="Web Browser">
+            <TabItem Header="Selected Items">
+                <ListView x:Name="SelectedList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding ElementName=SelectedList, Path=Width}" MouseUp="DCBSItemView_MouseUp"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Cart">
                 <WebBrowser x:Name="webBrowser"/>
             </TabItem>
         </TabControl>

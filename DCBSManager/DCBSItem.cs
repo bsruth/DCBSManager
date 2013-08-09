@@ -126,59 +126,73 @@ namespace DCBSManager
 
         public void LoadInfo()
         {
-            ImgURL = "http://media.dcbservice.com/small/" + DCBSOrderCode + ".jpg";
-
-            ThumbnailRawBytes = (new WebClient()).DownloadData(ImgURL);
-
-           string uri = "http://www.dcbservice.com/search.aspx?search=" + DCBSOrderCode;
-            System.Net.WebRequest req = System.Net.WebRequest.Create(uri);
-            req.Proxy = null;
-            System.Net.WebResponse resp = req.GetResponse();
-            System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
-
-            var pageText = sr.ReadToEnd().Trim();
-
-            string dynamicContentPattern = @"<!--START DYNAMIC STUFF -->([\s\S]+)<!-- END DYNAMIC STUFF -->";
-
-            MatchCollection dynamicContentMatches;
-
-            Regex dynamicContentRegex = new Regex(dynamicContentPattern);
-            // Get matches of pattern in text
-            dynamicContentMatches = dynamicContentRegex.Matches(pageText);
-
-            string dynamicPageText = "";
-            if (dynamicContentMatches.Count >= 1 && dynamicContentMatches[0].Groups.Count >= 2)
+            try
             {
-                dynamicPageText = dynamicContentMatches[0].Groups[1].ToString();
-            }
+                ImgURL = "http://media.dcbservice.com/small/" + DCBSOrderCode + ".jpg";
 
-            //trim out tabs and newlines
-            dynamicPageText = Regex.Replace(dynamicPageText, @"\t|\n|\r", "");
+                try
+                {
+                    ThumbnailRawBytes = (new WebClient()).DownloadData(ImgURL);
+                }
+                catch (Exception)
+                {
+                    //image failed, just use the no_image url
+                    ImgURL = "";
+                    ThumbnailRawBytes = null;
+                }
 
-           string pattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
-            MatchCollection matches;
+                string uri = "http://www.dcbservice.com/search.aspx?search=" + DCBSOrderCode;
+                System.Net.WebRequest req = System.Net.WebRequest.Create(uri);
+                req.Proxy = null;
+                System.Net.WebResponse resp = req.GetResponse();
+                System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
 
-            Regex defaultRegex = new Regex(pattern);
-            // Get matches of pattern in text
-            matches = defaultRegex.Matches(dynamicPageText);
+                var pageText = sr.ReadToEnd().Trim();
 
-            if (matches.Count >= 2 && matches[1].Groups.Count >= 2)
+                string dynamicContentPattern = @"<!--START DYNAMIC STUFF -->([\s\S]+)<!-- END DYNAMIC STUFF -->";
+
+                MatchCollection dynamicContentMatches;
+
+                Regex dynamicContentRegex = new Regex(dynamicContentPattern);
+                // Get matches of pattern in text
+                dynamicContentMatches = dynamicContentRegex.Matches(pageText);
+
+                string dynamicPageText = "";
+                if (dynamicContentMatches.Count >= 1 && dynamicContentMatches[0].Groups.Count >= 2)
+                {
+                    dynamicPageText = dynamicContentMatches[0].Groups[1].ToString();
+                }
+
+                //trim out tabs and newlines
+                dynamicPageText = Regex.Replace(dynamicPageText, @"\t|\n|\r", "");
+
+                string pattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
+                MatchCollection matches;
+
+                Regex defaultRegex = new Regex(pattern);
+                // Get matches of pattern in text
+                matches = defaultRegex.Matches(dynamicPageText);
+
+                if (matches.Count >= 2 && matches[1].Groups.Count >= 2)
+                {
+                    PID = Int64.Parse(matches[1].Groups[1].ToString());
+                }
+
+                string descriptionPattern = @"</strong>[\s\S]*</a>[\s\S]*<br>[\s\S]*<br>([\s\S]+?)<table";
+                MatchCollection descMatches;
+
+                Regex descRegex = new Regex(descriptionPattern);
+                // Get matches of pattern in text
+                descMatches = descRegex.Matches(dynamicPageText);
+
+                if (descMatches.Count >= 1 && descMatches[0].Groups.Count >= 2)
+                {
+                    Description = descMatches[0].Groups[1].ToString();
+                }
+            }catch(Exception ex)
             {
-                PID = Int64.Parse(matches[1].Groups[1].ToString());
+                var blah = ex.ToString();
             }
-
-            string descriptionPattern = @"</strong>[\s\S]*</a>[\s\S]*<br>[\s\S]*<br>([\s\S]+?)<table";
-            MatchCollection descMatches;
-
-            Regex descRegex = new Regex(descriptionPattern);
-            // Get matches of pattern in text
-            descMatches = descRegex.Matches(dynamicPageText);
-
-            if (descMatches.Count >= 1 && descMatches[0].Groups.Count >= 2)
-            {
-                Description = descMatches[0].Groups[1].ToString();
-            }
-
         }
 
         public override String ToString()

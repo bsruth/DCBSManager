@@ -27,14 +27,13 @@ namespace DCBSManager
     /// </summary>
     public partial class MainWindow : Window
     {
-       
+
+        ListLoader mLL = null;
 
         public MainWindow()
         {
             InitializeComponent();
-            this.webBrowser.Navigated += webBrowser_Navigated;
-
-            ListLoader mLL = new ListLoader("August2013");
+            mLL = new ListLoader("August2013");
             //ClearDB("August2013");
 
             //SetupDatabase("August2013");
@@ -54,10 +53,11 @@ namespace DCBSManager
 
 
             this.DCBSList.ItemsSource = mLL.mLoadedItems;
-            /*
-            this.Cursor = Cursors.Wait;
             
-            var results = Task.Run(() => { return LoadXLS(); })
+            this.Cursor = Cursors.Wait;
+
+
+            var results = Task.Run(async () => { return  await mLL.LoadList(); })
                 .ContinueWith(taskResult => {
                     App.Current.Dispatcher.BeginInvoke( (Action)(() =>
                     {
@@ -65,7 +65,7 @@ namespace DCBSManager
                         this.Cursor = Cursors.Arrow;
                     }));
                 });
-            */
+            
             
             //pids = GetPIDS(codes.ToArray());
 
@@ -75,10 +75,7 @@ namespace DCBSManager
             
         }
 
-        void webBrowser_Navigated(object sender, NavigationEventArgs e)
-        {
-            AddToCart();
-        }
+       
 
         public void AddToCart()
         {
@@ -99,22 +96,21 @@ namespace DCBSManager
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-           /* if (e.AddedItems[0] as TabItem != null)
+            if (e.AddedItems.Count > 0)
             {
-                TabItem selectedTab = (TabItem)e.AddedItems[0];
-                if (string.Compare(selectedTab.Header.ToString(),"Web Browser", true) == 0)
+                if (e.AddedItems[0] as TabItem != null)
                 {
-                    codes.Clear();
-                    foreach (var item in mSelectedItems)
+                    TabItem selectedTab = (TabItem)e.AddedItems[0];
+                    if (string.Compare(selectedTab.Header.ToString(), "Cart", true) == 0)
                     {
-                        codes.Add(item.CODE);
+                        mLL.AddToCart(webBrowser);
                     }
-
-                    pids = GetPIDS(codes.ToArray());
-
-                    AddToCart();
+                    else if (string.Compare(selectedTab.Header.ToString(), "Selected Items", true) == 0)
+                    {
+                        SelectedList.ItemsSource = mLL.GetSelectedItems();
+                    }
                 }
-            }*/
+            }
         }
 
         /// <summary>
