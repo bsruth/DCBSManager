@@ -297,6 +297,21 @@ namespace DCBSManager
             return true;
         }
 
+        public async Task<List<DCBSItem>> FilterList(string filterText)
+        {
+            
+            var filterTask = Task<List<DCBSItem>>.Factory.StartNew(() =>  { 
+                
+                return mLoadedItems.Where(item => {
+                    return (item.Title.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
+                 }).ToList();
+            });
+
+            List<DCBSItem> filteredList = await filterTask;
+
+            return filteredList;
+        }
+
         public static async Task<BitmapImage> BitmapImageFromBytes(byte[] bytes)
         {
             BitmapImage image = null;

@@ -132,5 +132,15 @@ namespace DCBSManager
             e.Handled = true;
 
         }
+
+        private async void titleSearch_Search(object sender, RoutedEventArgs e)
+        {
+            var searchTextBox = sender as SearchTextBox;
+            if (searchTextBox != null)
+            {
+                var searchText = searchTextBox.Text;
+                this.DCBSList.ItemsSource = await mLL.FilterList(searchText);
+            }
+        }
     }
 }

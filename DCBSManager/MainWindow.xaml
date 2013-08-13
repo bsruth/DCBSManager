@@ -6,15 +6,22 @@
     <Grid>
         <TabControl SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="All Items">
-                <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding ElementName=DCBSList, Path=Width}" MouseUp="DCBSItemView_MouseUp"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="0" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="20" />
+                    <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding Width, ElementName=DCBSList}" MouseUp="DCBSItemView_MouseUp"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
             </TabItem>
             <TabItem Header="Selected Items">
                 <ListView x:Name="SelectedList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single">
