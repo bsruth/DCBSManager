@@ -14,21 +14,21 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Image Grid.RowSpan="2" Grid.Column="0" Source="{Binding Thumbnail}" VerticalAlignment="Top"  Margin="0,0,10,0"/>
-        <Label Grid.Row="0" Grid.Column="1" x:Name="code" Content="{Binding DCBSOrderCode}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Label Grid.Row="0" Grid.Column="2" x:Name="title" Content="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
-        <Label Grid.Row="0" Grid.Column="3" x:Name="retail" Content="{Binding RetailPrice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Label Grid.Row="0" Grid.Column="4" x:Name="discount" Content="{Binding DCBSDiscount}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Label Grid.Row="0" Grid.Column="5" x:Name="dcbs" Content="{Binding DCBSPrice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5" x:Name="description" Text="{Binding Description}" VerticalAlignment="Top" TextWrapping="Wrap"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DCBSOrderCode}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap"/>
+        <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding RetailPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,5"/>
+        <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding DCBSDiscount}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,5"/>
+        <TextBlock Grid.Row="0" Grid.Column="5" Text="{Binding DCBSPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,5"/>
+        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5" Text="{Binding Description}" VerticalAlignment="Top" TextWrapping="Wrap"/>
 
     </Grid>
 </UserControl>
