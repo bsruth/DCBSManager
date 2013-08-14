@@ -12,7 +12,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="0" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="20" />
-                    <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1">
+                    <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -24,7 +24,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Selected Items">
-                <ListView x:Name="SelectedList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single">
+                <ListView x:Name="SelectedList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
