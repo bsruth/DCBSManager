@@ -235,13 +235,10 @@ namespace DCBSManager
                             {
                                 item.ThumbnailRawBytes = null;
                             }
+                            //can't await in an exception handler
                             if (item.ThumbnailRawBytes == null)
                             {
-                                await App.Current.Dispatcher.BeginInvoke((Action)(() =>
-                                {
-                                    item.Thumbnail = new BitmapImage();
-                                    item.Thumbnail.UriSource = new Uri("pack://application:,,,/DCBSManager;component/Images/no_image.jpg");
-                                }));
+                                item.Thumbnail = await LoadDefaultBitmapImage();
                             }
                             
                             item.PurchaseCategory = (PurchaseCategories)ret.GetFieldValue<Int64>(9);
@@ -352,6 +349,21 @@ namespace DCBSManager
 
         }
 
+        public static async Task<BitmapImage> LoadDefaultBitmapImage()
+        {
+            BitmapImage defaultImage = null;
+            await App.Current.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                defaultImage  = new BitmapImage();
+                defaultImage .BeginInit();
+                defaultImage .UriSource = new Uri("pack://application:,,,/DCBSManager;component/Images/no_image.jpg", UriKind.Absolute);
+                defaultImage .EndInit();
+
+            }));
+
+            return defaultImage;
+        }
+
         public void ListItemsInDatabase()
         {
             using (var conn = new SQLiteConnection(@"Data Source=August2013.sqlite;Version=3;"))
@@ -435,11 +447,8 @@ namespace DCBSManager
                                         }
                                         else
                                         {
-                                            await App.Current.Dispatcher.BeginInvoke((Action)(() =>
-                                            {
-                                                newItem.Thumbnail = new BitmapImage();
-                                                newItem.Thumbnail.UriSource = new Uri("pack://application:,,,/DCBSManager;component/Images/no_image.jpg");
-                                            }));
+
+                                            newItem.Thumbnail = await LoadDefaultBitmapImage();                            
                                         }
                                         newItem.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
                                         AddItemToDatabase(newItem);
