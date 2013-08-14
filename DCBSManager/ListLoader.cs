@@ -294,13 +294,20 @@ namespace DCBSManager
             return true;
         }
 
+        /// <summary>
+        /// Filters by either title or category.
+        /// </summary>
+        /// <param name="filterText"></param>
+        /// <returns></returns>
         public async Task<List<DCBSItem>> FilterList(string filterText)
         {
             
             var filterTask = Task<List<DCBSItem>>.Factory.StartNew(() =>  { 
                 
                 return mLoadedItems.Where(item => {
-                    return (item.Title.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
+
+                    return (item.Title.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                           (item.Category.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
                  }).ToList();
             });
 
