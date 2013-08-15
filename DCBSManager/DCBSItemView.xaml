@@ -30,7 +30,8 @@
             <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding RetailPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5,0"/>
             <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding DCBSDiscount}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5, 0"/>
             <TextBlock Grid.Row="0" Grid.Column="5" Text="{Binding DCBSPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5,0"/>
-            <TextBlock Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="5" Text="{Binding Description}" VerticalAlignment="Top" TextWrapping="Wrap"/>
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Category}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,5,0"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" Text="{Binding Description}" VerticalAlignment="Top" TextWrapping="Wrap"/>
 
         </Grid>
     </Border>
