@@ -10,27 +10,28 @@
     </UserControl.Resources>
 
     <Border BorderBrush="Black" BorderThickness="1,1,1,1" Background="#FFAAAAAA">
-    <Grid Background="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoriesToColorConverter}}">
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <Image Grid.RowSpan="2" Grid.Column="0" Source="{Binding Thumbnail}" VerticalAlignment="Top"  Margin="0,0,10,0"/>
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DCBSOrderCode}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap"/>
-        <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding RetailPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,5"/>
-        <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding DCBSDiscount}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,5"/>
-        <TextBlock Grid.Row="0" Grid.Column="5" Text="{Binding DCBSPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,5"/>
-        <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5" Text="{Binding Description}" VerticalAlignment="Top" TextWrapping="Wrap"/>
+        <Grid Background="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoriesToColorConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Image Grid.RowSpan="2" Grid.Column="0" Source="{Binding Thumbnail}" VerticalAlignment="Top"  Margin="0,0,10,0"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding DCBSOrderCode}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,10,0"/>
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap"/>
+            <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding RetailPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5,0"/>
+            <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding DCBSDiscount}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5, 0"/>
+            <TextBlock Grid.Row="0" Grid.Column="5" Text="{Binding DCBSPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5,0"/>
+            <TextBlock Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="5" Text="{Binding Description}" VerticalAlignment="Top" TextWrapping="Wrap"/>
 
-    </Grid>
+        </Grid>
     </Border>
 </UserControl>
