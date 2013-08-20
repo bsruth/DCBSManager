@@ -201,6 +201,19 @@ namespace DCBSManager
         }
 
 
+        public String ToTabSeparatedValues()
+        {
+            return String.Format("\t{0}\t{1}\t{2}\t{3}\t{4:C}\t{5}\t{6:C}",
+                DCBSOrderCode,
+                PurchaseCategory == PurchaseCategories.Definite ? "1" : "0",
+                PurchaseCategory == PurchaseCategories.Retail ? "1" : "",
+                Title,
+                RetailPrice,
+                DCBSDiscount,
+                DCBSPrice
+                );
+        }
+
         #region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
