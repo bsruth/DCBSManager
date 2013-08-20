@@ -478,7 +478,19 @@ namespace DCBSManager
             return mDCBSItems;
         }
 
-       
+        public async Task<bool> DumpTabSeparatedValues(string fileName, IList<DCBSItem> itemsToDump)
+        {
+            using (var dumpFileStream = new StreamWriter(fileName))
+            {
+
+                foreach (var item in itemsToDump)
+                {
+                    var tsvString = item.ToTabSeparatedValues();
+                    await dumpFileStream.WriteLineAsync(tsvString);
+                }
+            }
+            return true;
+        }
 
         public string[] GetPIDS(string[] codesToGet)
         {

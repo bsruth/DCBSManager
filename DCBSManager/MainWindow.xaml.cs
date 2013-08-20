@@ -142,5 +142,10 @@ namespace DCBSManager
                 this.DCBSList.ItemsSource = await mLL.FilterList(searchText);
             }
         }
+
+        private async void dumpSelectedItemsToExcel_Click(object sender, RoutedEventArgs e)
+        {
+            await mLL.DumpTabSeparatedValues("dumpFile.txt", mLL.GetSelectedItems());
+        }
     }
 }

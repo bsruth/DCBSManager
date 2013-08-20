@@ -29,7 +29,13 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Selected Items">
-                <ListView x:Name="SelectedList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Content="Dump To Excel" Click="dumpSelectedItemsToExcel_Click"/>
+                    <ListView Grid.Row="1" x:Name="SelectedList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -38,6 +44,7 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
+                </Grid>
             </TabItem>
             <TabItem Header="Cart">
                 <WebBrowser x:Name="webBrowser"/>
