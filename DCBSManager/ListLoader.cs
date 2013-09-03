@@ -49,12 +49,7 @@ namespace DCBSManager
 
         public ListLoader(string databaseName)
         {
-            mDatabaseName = databaseName;
-
-            
-
-          
-            
+            mDatabaseName = databaseName;           
         }
 
 
@@ -165,7 +160,7 @@ namespace DCBSManager
 
         public bool AddItemToDatabase(DCBSItem item)
         {
-            using (var conn = new SQLiteConnection(@"Data Source=August2013.sqlite;Version=3;"))
+            using (var conn = new SQLiteConnection(@"Data Source=" + mDatabaseName + ".sqlite;Version=3;"))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
@@ -207,7 +202,7 @@ namespace DCBSManager
         {
             List<DCBSItem> itemsList = new List<DCBSItem>();
 
-            using (var conn = new SQLiteConnection(@"Data Source=August2013.sqlite;Version=3;"))
+            using (var conn = new SQLiteConnection(@"Data Source=" + mDatabaseName + ".sqlite;Version=3;"))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
@@ -270,7 +265,7 @@ namespace DCBSManager
                 return false;
             }
 
-            using (var conn = new SQLiteConnection(@"Data Source=August2013.sqlite;Version=3;"))
+            using (var conn = new SQLiteConnection(@"Data Source=" + mDatabaseName + ".sqlite;Version=3;"))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
@@ -373,7 +368,7 @@ namespace DCBSManager
 
         public void ListItemsInDatabase()
         {
-            using (var conn = new SQLiteConnection(@"Data Source=August2013.sqlite;Version=3;"))
+            using (var conn = new SQLiteConnection(@"Data Source=" + mDatabaseName + ".sqlite;Version=3;"))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
@@ -408,7 +403,7 @@ namespace DCBSManager
 
         public async Task<List<DCBSItem>> LoadXLS()
         {
-            string path = "August2013.xls";
+            string path = "" + mDatabaseName + ".xls";
             List<DCBSItem> mDCBSItems = new List<DCBSItem>();
             string currentCategory = "Previews";
             bool headerProcessed = false;
