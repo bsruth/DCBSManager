@@ -47,27 +47,36 @@ namespace DCBSManager
         string[] pids = null;
         int pidIndex = 0;
 
-        public ListLoader(string databaseName)
+        public ListLoader()
         {
-            mDatabaseName = databaseName;           
         }
 
 
-        public async Task<List<DCBSItem>> LoadList()
+        public async Task<List<DCBSItem>> LoadList(string listName)
         {
-            if (File.Exists(mDatabaseName + ".sqlite"))
+            string databaseFileName = listName + ".sqlite";
+            if (File.Exists(databaseFileName))
             {
-                mLoadedItems = await LoadFromDatabase(mDatabaseName);
-                int i = 0;
+                mLoadedItems = await LoadFromDatabase(listName);
             }
             else
             {
-                SetupDatabase(mDatabaseName);
-                codes = LoadCodes("codes.txt");
+                SetupDatabase(listName);
+                //codes = LoadCodes("codes.txt");
                 mLoadedItems = await LoadXLS();
             }
 
+            mDatabaseName = listName;
             return mLoadedItems;
+        }
+
+        public List<String> GetAvailableDatabases()
+        {
+            var workingDir = new DirectoryInfo(@".");
+            var files = from file in workingDir.EnumerateFiles(@"*.sqlite")
+                        select Path.GetFileNameWithoutExtension(file.Name);
+
+            return files.ToList();
         }
 
         public List<DCBSItem> GetSelectedItems()
@@ -202,7 +211,7 @@ namespace DCBSManager
         {
             List<DCBSItem> itemsList = new List<DCBSItem>();
 
-            using (var conn = new SQLiteConnection(@"Data Source=" + mDatabaseName + ".sqlite;Version=3;"))
+            using (var conn = new SQLiteConnection(@"Data Source=" + databaseName + ".sqlite;Version=3;"))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())

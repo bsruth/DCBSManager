@@ -33,46 +33,30 @@ namespace DCBSManager
         public MainWindow()
         {
             InitializeComponent();
-            mLL = new ListLoader("August2013");
-            //ClearDB("August2013");
-
-            //SetupDatabase("August2013");
-            /*
-            string line;
-            // Read the file and display it line by line.
-            System.IO.StreamReader file =
-                new System.IO.StreamReader(@"codes.txt");
-            while ((line = file.ReadLine()) != null)
-            {
-                codes.Add(line);
-                
-            }
-
-            file.Close();
-            */
-
-
-            this.DCBSList.ItemsSource = mLL.mLoadedItems;
+            mLL = new ListLoader();
             
             this.Cursor = Cursors.Wait;
 
 
-            var results = Task.Run(async () => { return  await mLL.LoadList(); })
-                .ContinueWith(taskResult => {
-                    App.Current.Dispatcher.BeginInvoke( (Action)(() =>
+            
+                var results = Task.Run(async () => {
+                    var fileList = mLL.GetAvailableDatabases();
+                    return await mLL.LoadList(fileList[0]);
+                }).ContinueWith(taskResult =>
+                {
+                    App.Current.Dispatcher.BeginInvoke((Action)(() =>
                     {
-                        this.DCBSList.ItemsSource = taskResult.Result;
-                        this.Cursor = Cursors.Arrow;
+                        try
+                        {
+                            this.DCBSList.ItemsSource = taskResult.Result;
+                            this.Cursor = Cursors.Arrow;
+                        }
+                        catch (Exception ex)
+                        {
+                            var str = ex.ToString();
+                        }
                     }));
-                });
-            
-            
-            //pids = GetPIDS(codes.ToArray());
-
-            
-
-           // AddToCart();
-            
+                });            
         }
 
        
