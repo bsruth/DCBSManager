@@ -35,28 +35,13 @@ namespace DCBSManager
             InitializeComponent();
             mLL = new ListLoader();
             
-            this.Cursor = Cursors.Wait;
 
 
-            
-                var results = Task.Run(async () => {
-                    var fileList = mLL.GetAvailableDatabases();
-                    return await mLL.LoadList(fileList[0]);
-                }).ContinueWith(taskResult =>
-                {
-                    App.Current.Dispatcher.BeginInvoke((Action)(() =>
-                    {
-                        try
-                        {
-                            this.DCBSList.ItemsSource = taskResult.Result;
-                            this.Cursor = Cursors.Arrow;
-                        }
-                        catch (Exception ex)
-                        {
-                            var str = ex.ToString();
-                        }
-                    }));
-                });            
+            //load available databases
+            var fileList = mLL.GetAvailableDatabases();
+
+            this.ListSelection.ItemsSource = mLL.GetAvailableDatabases();
+            this.ListSelection.SelectedIndex = 0;
         }
 
        
@@ -130,6 +115,39 @@ namespace DCBSManager
         private async void dumpSelectedItemsToExcel_Click(object sender, RoutedEventArgs e)
         {
             await mLL.DumpTabSeparatedValues("dumpFile.txt", mLL.GetSelectedItems());
+        }
+
+        private void ListSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count == 0)
+            {
+                return;
+            }
+
+            this.Cursor = Cursors.Wait;
+
+            
+
+            var results = Task.Run(async () =>
+            {
+
+                return await mLL.LoadList(e.AddedItems[0].ToString());
+            }).ContinueWith(taskResult =>
+            {
+                App.Current.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    try
+                    {
+                        this.DCBSList.ItemsSource = taskResult.Result;
+                        this.Cursor = Cursors.Arrow;
+                    }
+                    catch (Exception ex)
+                    {
+                        var str = ex.ToString();
+                    }
+                }));
+            });            
+
         }
     }
 }

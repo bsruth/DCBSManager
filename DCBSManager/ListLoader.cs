@@ -44,9 +44,6 @@ namespace DCBSManager
         const int DISC = 5;
         const int DCBS = 6;
 
-        string[] pids = null;
-        int pidIndex = 0;
-
         public ListLoader()
         {
         }
