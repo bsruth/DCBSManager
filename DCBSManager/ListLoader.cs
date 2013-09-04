@@ -6,6 +6,7 @@ using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,6 +15,23 @@ using System.Windows.Media.Imaging;
 
 namespace DCBSManager
 {
+    class DCBSList
+    {
+        public enum ListItemKeys
+        {
+            Database,
+            NewList
+        }
+
+        public ListItemKeys ListItemKey;
+        public String ListItemString;
+
+        public override String ToString()
+        {
+            return ListItemString;
+        }
+    }
+
     class ListLoader
     {
         List<string> codes = new List<string>();
@@ -36,7 +54,7 @@ namespace DCBSManager
         const string col_purchase_category = "purchase_category";
 
 
-        string mDatabaseName;
+        public string mDatabaseName;
 
         const int CODE = 1;
         const int TITLE = 3;
@@ -49,31 +67,106 @@ namespace DCBSManager
         }
 
 
-        public async Task<List<DCBSItem>> LoadList(string listName)
+        public async Task<List<DCBSItem>> LoadList(DCBSList listName)
         {
-            string databaseFileName = listName + ".sqlite";
-            if (File.Exists(databaseFileName))
+            if (listName.ListItemKey == DCBSList.ListItemKeys.NewList)
             {
-                mLoadedItems = await LoadFromDatabase(listName);
+                var updatedList = CheckForUpdatedList();
+                SetupDatabase(updatedList);
+                //codes = LoadCodes("codes.txt");
+                mDatabaseName = updatedList;
+                mLoadedItems = await LoadXLS();
+                
             }
             else
             {
-                SetupDatabase(listName);
-                //codes = LoadCodes("codes.txt");
-                mLoadedItems = await LoadXLS();
+                string databaseFileName = listName.ListItemString + ".sqlite";
+                if (File.Exists(databaseFileName))
+                {
+                    mLoadedItems = await LoadFromDatabase(listName.ListItemString);
+                    mDatabaseName = listName.ListItemString;
+                }
             }
-
-            mDatabaseName = listName;
+           
             return mLoadedItems;
         }
 
-        public List<String> GetAvailableDatabases()
+
+        private String CheckForUpdatedList()
+        {
+            String updatedList = "";
+           
+
+            try
+            {
+                string updatedListURL = "http://www.dcbservice.com/downloads.aspx";
+
+                System.Net.WebRequest req = System.Net.WebRequest.Create(updatedListURL);
+                req.Proxy = null;
+                System.Net.WebResponse resp = req.GetResponse();
+                System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
+
+                var pageText = sr.ReadToEnd().Trim();
+                //<a href="http://media.dcbservice.com/downloads/August2013.xls">
+                string dynamicContentPattern = @"(\w+\.xls)";
+
+                MatchCollection dynamicContentMatches;
+
+                Regex dynamicContentRegex = new Regex(dynamicContentPattern);
+                // Get matches of pattern in text
+                dynamicContentMatches = dynamicContentRegex.Matches(pageText);
+
+                foreach(Match xlsfile in dynamicContentMatches)
+                {
+                   
+                    string fileName = xlsfile.Groups[1].ToString();
+                    var availableDatabases = GetAvailableDatabases();
+                    
+                        bool found = false;
+                       foreach (var db in availableDatabases) {
+                            if (db.ListItemString.Equals(Path.GetFileNameWithoutExtension(fileName)) == true)
+                            {
+                                found = true;
+                                break;
+                            }
+                             
+                        }
+
+                       if (found == false)
+                       {
+                           //download excel file
+                           string fileURL = "http://media.dcbservice.com/downloads/" + fileName;
+                           var downloadClient = new WebClient();
+                           downloadClient.DownloadFile(fileURL, ".\\" + fileName);
+                           updatedList = Path.GetFileNameWithoutExtension(fileName);
+                           return updatedList;
+                       }
+
+
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                var blah = ex.ToString();
+            }
+
+            return updatedList;
+
+        }
+        public List<DCBSList> GetAvailableDatabases()
         {
             var workingDir = new DirectoryInfo(@".");
             var files = from file in workingDir.EnumerateFiles(@"*.sqlite")
-                        select Path.GetFileNameWithoutExtension(file.Name);
+                        select new DCBSList
+                        {
+                            ListItemString = Path.GetFileNameWithoutExtension(file.Name),
+                            ListItemKey = DCBSList.ListItemKeys.Database
+                        };
 
-            return files.ToList();
+            var filesList = files.ToList();
+            filesList.Add(new DCBSList { ListItemString = "Check for Updates...", ListItemKey = DCBSList.ListItemKeys.NewList });
+            return filesList;
         }
 
         public List<DCBSItem> GetSelectedItems()

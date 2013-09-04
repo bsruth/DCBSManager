@@ -131,14 +131,22 @@ namespace DCBSManager
             var results = Task.Run(async () =>
             {
 
-                return await mLL.LoadList(e.AddedItems[0].ToString());
+                return await mLL.LoadList(e.AddedItems[0] as DCBSList);
             }).ContinueWith(taskResult =>
             {
                 App.Current.Dispatcher.BeginInvoke((Action)(() =>
                 {
                     try
                     {
-                        this.DCBSList.ItemsSource = taskResult.Result;
+                        this.DCBSList.ItemsSource = taskResult.Result;  
+
+                        var b = e.AddedItems[0] as DCBSList;
+
+                        if (b != null && b.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
+                        {
+                            this.ListSelection.ItemsSource = mLL.GetAvailableDatabases();
+                            this.ListSelection.Text = mLL.mDatabaseName;
+                        }
                         this.Cursor = Cursors.Arrow;
                     }
                     catch (Exception ex)
