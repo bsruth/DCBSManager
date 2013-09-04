@@ -72,10 +72,13 @@ namespace DCBSManager
             if (listName.ListItemKey == DCBSList.ListItemKeys.NewList)
             {
                 var updatedList = CheckForUpdatedList();
-                SetupDatabase(updatedList);
-                //codes = LoadCodes("codes.txt");
-                mDatabaseName = updatedList;
-                mLoadedItems = await LoadXLS();
+                if (updatedList != "")
+                {
+                    SetupDatabase(updatedList);
+                    //codes = LoadCodes("codes.txt");
+                    mDatabaseName = updatedList;
+                    mLoadedItems = await LoadXLS();
+                }
                 
             }
             else
