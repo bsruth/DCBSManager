@@ -2,6 +2,8 @@
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
@@ -32,7 +34,7 @@ namespace DCBSManager
         }
     }
 
-    class ListLoader
+    class ListLoader : INotifyPropertyChanged
     {
         List<string> codes = new List<string>();
         List<DCBSItem> mSelectedItems = new System.Collections.Generic.List<DCBSItem>();
@@ -40,7 +42,12 @@ namespace DCBSManager
         SQLiteConnection mDatabaseConnection = null;
         Queue<DCBSItem> mItemsLeftToAddToCart = new Queue<DCBSItem>();
         WebBrowser mWebBrowser = new WebBrowser();
-        
+
+        int _selectedItemsCount = 0;
+        int _dcbsItemsCount = 0;
+        int _retailItemsCount = 0;
+        int _maybeItemsCount = 0;
+
         const string all_items_table_name = "all_items";
         const string col_code = "code";
         const string col_title = "title";
@@ -61,6 +68,79 @@ namespace DCBSManager
         const int COST = 4;
         const int DISC = 5;
         const int DCBS = 6;
+
+
+        #region Properties
+
+        ObservableCollection<DCBSItem> SelectedItems
+        {
+            get;
+            set;
+        }
+
+        public int SelectedItemsCount
+        {
+            get
+            {
+                return _selectedItemsCount;
+            }
+            private set
+            {
+                if (_selectedItemsCount != value)
+                {
+                    _selectedItemsCount = value;
+                    OnPropertyChanged("SelectedItemsCount");
+                }
+            }
+        }
+
+        public int DCBSItemsCount
+        {
+            get
+            {
+                return _dcbsItemsCount;
+            }
+            private set
+            {
+                if (_dcbsItemsCount != value)
+                {
+                    _dcbsItemsCount = value;
+                    OnPropertyChanged("DCBSItemsCount");
+                }
+            }
+        }
+        public int MaybeItemsCount
+        {
+            get
+            {
+                return _maybeItemsCount;
+            }
+            private set
+            {
+                if (_maybeItemsCount != value)
+                {
+                    _maybeItemsCount = value;
+                    OnPropertyChanged("MaybeItemsCount");
+                }
+            }
+        }
+        public int RetailItemsCount
+        {
+            get
+            {
+                return _retailItemsCount;
+            }
+            private set
+            {
+                if (_retailItemsCount != value)
+                {
+                    _retailItemsCount = value;
+                    OnPropertyChanged("RetailItemsCount");
+                }
+            }
+        }
+        #endregion
+
 
         public ListLoader()
         {
@@ -388,6 +468,10 @@ namespace DCBSManager
 
             }
 
+            SelectedItemsCount = GetSelectedItems().Count;
+            DCBSItemsCount = this.mLoadedItems.Where(item => item.PurchaseCategory == PurchaseCategories.Definite).Count();
+            MaybeItemsCount = this.mLoadedItems.Where(item => item.PurchaseCategory == PurchaseCategories.Maybe).Count();
+            RetailItemsCount = this.mLoadedItems.Where(item => item.PurchaseCategory == PurchaseCategories.Retail).Count();
             return true;
         }
 
@@ -627,5 +711,22 @@ namespace DCBSManager
             return pids;
 
         }
+
+        #region INotifyPropertyChanged Implementation
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        //*************************************
+        protected void OnPropertyChanged(string name)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
+
+
+        #endregion
     }
 }

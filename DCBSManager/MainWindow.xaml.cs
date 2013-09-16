@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Collections.Generic;
 using System.IO;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
@@ -34,9 +33,9 @@ namespace DCBSManager
         {
             InitializeComponent();
             mLL = new ListLoader();
-            
 
 
+            this.DataContext = mLL;
             //load available databases
             var fileList = mLL.GetAvailableDatabases();
 
