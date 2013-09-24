@@ -36,12 +36,21 @@ namespace DCBSManager
 
     class ListLoader : INotifyPropertyChanged
     {
+
         List<string> codes = new List<string>();
         List<DCBSItem> mSelectedItems = new System.Collections.Generic.List<DCBSItem>();
         public List<DCBSItem> mLoadedItems;
         SQLiteConnection mDatabaseConnection = null;
         Queue<DCBSItem> mItemsLeftToAddToCart = new Queue<DCBSItem>();
         WebBrowser mWebBrowser = new WebBrowser();
+
+
+        ObservableCollection<DCBSItem> _definiteItems = new ObservableCollection<DCBSItem>();
+        ObservableCollection<DCBSItem> _maybeItems = new ObservableCollection<DCBSItem>();
+        ObservableCollection<DCBSItem> _retailItems = new ObservableCollection<DCBSItem>();
+        ObservableCollection<DCBSItem> _purchaseItems = new ObservableCollection<DCBSItem>();
+
+
 
         int _selectedItemsCount = 0;
         int _dcbsItemsCount = 0;
@@ -72,43 +81,74 @@ namespace DCBSManager
 
         #region Properties
 
-        ObservableCollection<DCBSItem> SelectedItems
-        {
-            get;
-            set;
-        }
-
-        public int SelectedItemsCount
+        public ObservableCollection<DCBSItem> DefiniteItems
         {
             get
             {
-                return _selectedItemsCount;
+                return _definiteItems;
             }
+
             private set
             {
-                if (_selectedItemsCount != value)
+                if (value != null)
                 {
-                    _selectedItemsCount = value;
-                    OnPropertyChanged("SelectedItemsCount");
+                    _definiteItems = value;
+                    OnPropertyChanged("DefiniteItems");
                 }
             }
         }
 
-        public int DCBSItemsCount
+        public ObservableCollection<DCBSItem> MaybeItems
         {
             get
             {
-                return _dcbsItemsCount;
+                return _maybeItems;
             }
+
             private set
             {
-                if (_dcbsItemsCount != value)
+                if (value != null)
                 {
-                    _dcbsItemsCount = value;
-                    OnPropertyChanged("DCBSItemsCount");
+                    _maybeItems = value;
+                    OnPropertyChanged("MaybeItems");
                 }
             }
         }
+
+        public ObservableCollection<DCBSItem> PurchaseItems
+        {
+            get
+            {
+                return _purchaseItems;
+            }
+
+            private set
+            {
+                if (value != null)
+                {
+                    _purchaseItems = value;
+                    OnPropertyChanged("PurchaseItems");
+                }
+            }
+        }
+
+        public ObservableCollection<DCBSItem> RetailItems
+        {
+            get
+            {
+                return _retailItems;
+            }
+
+            private set
+            {
+                if (value != null)
+                {
+                    _retailItems = value;
+                    OnPropertyChanged("RetailItems");
+                }
+            }
+        }
+
         public int MaybeItemsCount
         {
             get
@@ -170,10 +210,25 @@ namespace DCBSManager
                     mDatabaseName = listName.ListItemString;
                 }
             }
-           
+
+            UpdateCategoryLists(ref _definiteItems, new PurchaseCategories[] { PurchaseCategories.Definite });
+            UpdateCategoryLists(ref _maybeItems, new PurchaseCategories[] { PurchaseCategories.Maybe });
+            UpdateCategoryLists(ref _retailItems, new PurchaseCategories[] { PurchaseCategories.Retail });
+            UpdateCategoryLists(ref _purchaseItems, new PurchaseCategories[] { PurchaseCategories.Retail, PurchaseCategories.Definite });
             return mLoadedItems;
         }
 
+
+        private void UpdateCategoryLists(ref ObservableCollection<DCBSItem> collectionToUpdate, PurchaseCategories[] categoryToUpdate) {
+
+            collectionToUpdate.Clear();
+            var selectedItems = this.mLoadedItems.Where(item =>  categoryToUpdate.Contains(item.PurchaseCategory));
+            foreach (var item in selectedItems)
+            {
+                collectionToUpdate.Add(item);
+            }
+
+        }
 
         private String CheckForUpdatedList()
         {
@@ -468,10 +523,11 @@ namespace DCBSManager
 
             }
 
-            SelectedItemsCount = GetSelectedItems().Count;
-            DCBSItemsCount = this.mLoadedItems.Where(item => item.PurchaseCategory == PurchaseCategories.Definite).Count();
-            MaybeItemsCount = this.mLoadedItems.Where(item => item.PurchaseCategory == PurchaseCategories.Maybe).Count();
-            RetailItemsCount = this.mLoadedItems.Where(item => item.PurchaseCategory == PurchaseCategories.Retail).Count();
+
+            UpdateCategoryLists(ref _definiteItems, new PurchaseCategories[]{PurchaseCategories.Definite});
+            UpdateCategoryLists(ref _maybeItems, new PurchaseCategories[]{PurchaseCategories.Maybe});
+            UpdateCategoryLists(ref _retailItems, new PurchaseCategories[]{PurchaseCategories.Retail});
+            UpdateCategoryLists(ref _purchaseItems, new PurchaseCategories[] { PurchaseCategories.Retail, PurchaseCategories.Definite });
             return true;
         }
 
