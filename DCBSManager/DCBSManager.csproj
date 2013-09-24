@@ -59,8 +59,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CostCalculator.cs" />
     <Compile Include="PurchaseCategoriesToColorConverter.cs" />
+    <Compile Include="PurchaseCategoryToHeaderConverter.cs" />
     <Compile Include="SearchBox\SearchTextBox.cs" />
+    <Compile Include="TotalsDisplay.xaml.cs">
+      <DependentUpon>TotalsDisplay.xaml</DependentUpon>
+    </Compile>
     <Page Include="DCBSItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -83,6 +88,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TotalsDisplay.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

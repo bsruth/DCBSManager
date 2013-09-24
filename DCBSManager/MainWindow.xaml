@@ -68,7 +68,14 @@
             </TabItem>
         </TabControl>
         
-        
+        <Grid x:Name="totalsGrid" Grid.Column="1">
+            <StackPanel Orientation="Vertical" Width="100">
+                <dcbsmgr:TotalsDisplay x:Name="_dcbsTotal"   />
+                <dcbsmgr:TotalsDisplay x:Name="_maybeTotal"   />
+                <dcbsmgr:TotalsDisplay x:Name="_retailTotal"   />
+                <dcbsmgr:TotalsDisplay x:Name="_overallTotal"   />
+            </StackPanel>
+        </Grid>
 
     </Grid>
 </Window>

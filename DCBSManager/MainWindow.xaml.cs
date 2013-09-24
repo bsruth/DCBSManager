@@ -28,6 +28,10 @@ namespace DCBSManager
     {
 
         ListLoader mLL = null;
+        CostCalculator _dcbsCostCalc = null;
+        CostCalculator _maybeCostCalc = null;
+        CostCalculator _retailCostCalc = null;
+        CostCalculator _overallCostCalc = null;
 
         public MainWindow()
         {
@@ -36,6 +40,27 @@ namespace DCBSManager
 
 
             this.DataContext = mLL;
+
+            _dcbsCostCalc = new CostCalculator(mLL.DefiniteItems, PurchaseCategories.Definite);
+            _dcbsCostCalc.ShippingCost = 6.95;
+            _dcbsCostCalc.IndividualBagBoardCost = 0.12;
+
+            _maybeCostCalc = new CostCalculator(mLL.MaybeItems, PurchaseCategories.Maybe);
+            _maybeCostCalc.IndividualBagBoardCost = 0.12;
+
+            _retailCostCalc = new CostCalculator(mLL.RetailItems, PurchaseCategories.Retail);
+            _retailCostCalc.RetailTaxPercentage = 0.093;
+
+            _overallCostCalc = new CostCalculator(mLL.PurchaseItems, PurchaseCategories.None);
+            _overallCostCalc.RetailTaxPercentage = 0.093;
+            _overallCostCalc.ShippingCost = 6.95;
+            _overallCostCalc.IndividualBagBoardCost = 0.12;
+
+            this._dcbsTotal.DataContext = _dcbsCostCalc;
+            this._maybeTotal.DataContext = _maybeCostCalc;
+            this._retailTotal.DataContext = _retailCostCalc;
+            this._overallTotal.DataContext = _overallCostCalc;
+
             //load available databases
             var fileList = mLL.GetAvailableDatabases();
 
