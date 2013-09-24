@@ -18,13 +18,11 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="ListSelection" Grid.Column="0"  Grid.Row="0" SelectionChanged="ListSelection_SelectionChanged"/>
-                    <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="1" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="20" />
-                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ElementName=DCBSList, Path=ItemsSource.Count, StringFormat='Total: \{0}'}" HorizontalAlignment="Right" Margin="0,0,5,0"/>
-                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=SelectedItems.Count, StringFormat='Selected: \{0}'}" HorizontalAlignment="Right" Margin="0,0,5,0"/>
+                    <ComboBox x:Name="ListSelection" Grid.Column="0"  Grid.Row="0" SelectionChanged="ListSelection_SelectionChanged" Margin="5,5,5,5" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                    <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="1" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="23" Margin="5,5,5,5"  VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ElementName=DCBSList, Path=ItemsSource.Count, StringFormat='Total Items Available: \{0}'}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"/>
                     <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1" Grid.ColumnSpan="4" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page">
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -49,9 +47,6 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Content="Dump To Excel" Click="dumpSelectedItemsToExcel_Click"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=MaybeItems.Count, StringFormat='Maybe: \{0}'}" HorizontalAlignment="Right" Margin="0,0,5,0"/>
-                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Path=DefiniteItems.Count, StringFormat='DCBS: \{0}'}" HorizontalAlignment="Right" Margin="0,0,5,0"/>
-                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Path=RetailItems.Count, StringFormat='Retail: \{0}'}" HorizontalAlignment="Right" Margin="0,0,5,0"/>
                     <ListView Grid.Row="1" Grid.ColumnSpan="4" x:Name="SelectedList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page">
                     <ListView.ItemTemplate>
                         <DataTemplate>
@@ -69,7 +64,7 @@
         </TabControl>
         
         <Grid x:Name="totalsGrid" Grid.Column="1">
-            <StackPanel Orientation="Vertical" Width="100">
+            <StackPanel Orientation="Vertical" Width="100" Margin="0, 23, 0, 0">
                 <dcbsmgr:TotalsDisplay x:Name="_dcbsTotal"   />
                 <dcbsmgr:TotalsDisplay x:Name="_maybeTotal"   />
                 <dcbsmgr:TotalsDisplay x:Name="_retailTotal"   />

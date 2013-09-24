@@ -5,20 +5,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:DCBSManager"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="350">
     <UserControl.Resources>
         <local:PurchaseCategoriesToColorConverter x:Key="PurchaseCategoriesToColorConverter"/>
         <local:PurchaseCategoryToHeaderConverter x:Key="PurchaseCategoryToHeaderConverter"/>
     </UserControl.Resources>
-    <Grid Background="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoriesToColorConverter}}">
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+    <Border Background="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoriesToColorConverter}}">
+        <Grid Margin="5,5,5,5">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoryToHeaderConverter}}" HorizontalAlignment="Center"/>
-        <TextBlock Grid.Row="1" Text="{Binding Path=ItemCount,StringFormat='Items: {0}'}"/>
-        <TextBlock Grid.Row="2" Text="{Binding Path=TotalCost,StringFormat='Cost: {0:C}'}"/>        
-    </Grid>
+            <TextBlock Grid.Row="0" Text="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoryToHeaderConverter}}" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Text="{Binding Path=ItemCount,StringFormat='Items: {0}'}"/>
+            <TextBlock Grid.Row="2" Text="{Binding Path=TotalCost,StringFormat='Cost: {0:C}'}"/>
+        </Grid>
+    </Border>
 </UserControl>
