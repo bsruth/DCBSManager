@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,17 @@ namespace DCBSManager
         public DCBSItemView()
         {
             InitializeComponent();
+        }
+
+        private void ViewItemInBrowser(object sender, RoutedEventArgs e)
+        {
+            var dcbsItem = this.DataContext as DCBSItem;
+            if (dcbsItem != null)
+            {
+                string url = "http://www.dcbservice.com/category.aspx?pid=" + dcbsItem.PID.ToString();
+                Process.Start(new ProcessStartInfo(url));
+            }
+            e.Handled = true;
         }
     }
 }
