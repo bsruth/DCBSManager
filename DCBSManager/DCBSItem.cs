@@ -189,6 +189,71 @@ namespace DCBSManager
                 {
                     Description = descMatches[0].Groups[1].ToString();
                 }
+
+                /////
+                //CODE FOR PARSING OUT CREATORS
+                /*
+                //get writer, artist and cover artist
+                string creatorsPattern = @"\([WCA/]+\)[\s\w,]+";
+                MatchCollection creatorsMatches;
+
+                Regex creatorRegex = new Regex(creatorsPattern);
+                // Get matches of pattern in text
+                creatorsMatches = creatorRegex.Matches(dynamicPageText);
+
+                List<string> creators = new List<string>();
+                foreach (var creator in creatorsMatches)
+                {
+                    var creatorString = creator.ToString();
+                    if (creatorString.Contains('\r'))
+                    {
+                        creatorString = creatorString.Substring(0, creatorString.IndexOf('\r'));
+                    }
+                    creatorString = creatorString.Trim();
+                    if (creators.Contains(creatorString) == false)
+                    {
+                        creators.Add(creatorString);
+                        Console.WriteLine(creatorString);
+                    }
+                }
+
+                var lastIndex = dynamicPageText.IndexOf(creators.Last());
+                var lengthOfLast = creators.Last().Length;
+                dynamicPageText = dynamicPageText.Substring(lastIndex + lengthOfLast);
+
+
+                //trim out tabs and newlines
+                dynamicPageText = Regex.Replace(dynamicPageText, @"\t|\n|\r", "");
+
+                string pattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
+                MatchCollection matches;
+
+                Regex defaultRegex = new Regex(pattern);
+                // Get matches of pattern in text
+                matches = defaultRegex.Matches(dynamicPageText);
+
+                Int64 PID = 0;
+                if (matches.Count >= 2 && matches[1].Groups.Count >= 2)
+                {
+                    PID = Int64.Parse(matches[1].Groups[1].ToString());
+                }
+
+                string descriptionPattern = @"([\s\S]+?)<table";
+                MatchCollection descMatches;
+
+                Regex descRegex = new Regex(descriptionPattern);
+                // Get matches of pattern in text
+                descMatches = descRegex.Matches(dynamicPageText);
+
+                string Description = "";
+                if (descMatches.Count >= 1 && descMatches[0].Groups.Count >= 2)
+                {
+                    Description = descMatches[0].Groups[1].ToString();
+                }
+
+
+                */
+
             }catch(Exception ex)
             {
                 var blah = ex.ToString();
