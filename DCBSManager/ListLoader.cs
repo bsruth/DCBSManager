@@ -459,18 +459,16 @@ namespace DCBSManager
                             item.DCBSPrice = ret.GetFieldValue<double>(5);
                             item.PID = ret.GetFieldValue<Int64>(6);
                             item.Description = ret.GetFieldValue<string>(7);
-                            try
+                            if (ret.IsDBNull(8) == true)
+                            {
+                                item.ThumbnailRawBytes = null;
+                                item.Thumbnail = await LoadDefaultBitmapImage();
+                            }
+                            else
                             {
                                 item.ThumbnailRawBytes = ret.GetFieldValue<byte[]>(8);
                                 item.Thumbnail = await BitmapImageFromBytes(item.ThumbnailRawBytes);
-                            } catch(Exception)
-                            {
-                                item.ThumbnailRawBytes = null;
-                            }
-                            //can't await in an exception handler
-                            if (item.ThumbnailRawBytes == null)
-                            {
-                                item.Thumbnail = await LoadDefaultBitmapImage();
+
                             }
                             
                             item.PurchaseCategory = (PurchaseCategories)ret.GetFieldValue<Int64>(9);
