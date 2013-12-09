@@ -165,7 +165,7 @@ namespace DCBSManager
                 }
 
                 //get writer, artist and cover artist
-                string creatorsPattern = @"\([WCA/]+\)[\s\w,]+";
+                string creatorsPattern = @"\([WCA/]+\)[\s\w\.,&]+";
                 MatchCollection creatorsMatches;
 
                 Regex creatorRegex = new Regex(creatorsPattern);
