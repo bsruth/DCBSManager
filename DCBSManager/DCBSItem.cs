@@ -186,7 +186,6 @@ namespace DCBSManager
                     {
                         creators.Add(creatorString);
                         Description += (creatorString + " ");
-                        Console.WriteLine(creatorString);
                     }
 
                 }
