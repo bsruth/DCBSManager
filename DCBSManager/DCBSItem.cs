@@ -164,6 +164,17 @@ namespace DCBSManager
                     dynamicPageText = dynamicContentMatches[0].Groups[1].ToString();
                 }
 
+                string pidPattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
+                MatchCollection pidMatches;
+                Regex pidRegex = new Regex(pidPattern);
+                pidMatches = pidRegex.Matches(dynamicPageText);
+
+                PID = 0;
+                if (pidMatches.Count >= 2 && pidMatches[1].Groups.Count >= 2)
+                {
+                    PID = Int64.Parse(pidMatches[1].Groups[1].ToString());
+                }
+
                 //get writer, artist and cover artist
                 string creatorsPattern = @"\([WCA/]+\)[\s\w\.,&]+";
                 MatchCollection creatorsMatches;
@@ -190,31 +201,20 @@ namespace DCBSManager
 
                 }
 
-                int endOfCreatorsIndex = 0;
-                if (creators.Count > 0)
-                {
-                    endOfCreatorsIndex = dynamicPageText.IndexOf(creators.Last()) + creators.Last().Length;
-                    Description += _creatorToDescriptionSeparator; 
-                }
-                dynamicPageText = dynamicPageText.Substring(endOfCreatorsIndex);
-
-
                 //trim out tabs and newlines
                 dynamicPageText = Regex.Replace(dynamicPageText, @"\t|\n|\r", "");
 
-                string pidPattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
-                MatchCollection pidMatches;
-
-                Regex pidRegex = new Regex(pidPattern);
-                pidMatches = pidRegex.Matches(dynamicPageText);
-
-                PID = 0;
-                if (pidMatches.Count >= 2 && pidMatches[1].Groups.Count >= 2)
-                {
-                    PID = Int64.Parse(pidMatches[1].Groups[1].ToString());
-                }
-
                 string descriptionPattern = @"([\s\S]+?)<table";
+                if (creators.Count > 0)
+                {
+                     int endOfCreatorsIndex = dynamicPageText.IndexOf(creators.Last()) + creators.Last().Length;
+                    dynamicPageText = dynamicPageText.Substring(endOfCreatorsIndex);
+                    Description += _creatorToDescriptionSeparator;
+                } else
+                {
+                    descriptionPattern = @"/strong>.*>" + descriptionPattern;
+                }
+              
                 MatchCollection descMatches;
 
                 Regex descRegex = new Regex(descriptionPattern);
