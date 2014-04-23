@@ -1,7 +1,8 @@
-﻿<Window x:Class="DCBSManager.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dcbsmgr="clr-namespace:DCBSManager"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="DCBSManager.MainWindow"
         Title="DCBS Manager" Height="350" Width="525" x:Name="MWindow">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -22,7 +23,7 @@
                     </Grid.ColumnDefinitions>
                     <ComboBox x:Name="ListSelection" Grid.Column="0"  Grid.Row="0" SelectionChanged="ListSelection_SelectionChanged" Margin="5,5,5,5" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                     <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="1" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="23" Margin="5,5,5,5"  VerticalAlignment="Center"/>
-                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ElementName=DCBSList, Path=ItemsSource.Count, StringFormat='Total Items Available: \{0}'}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding ItemsSource.Count, ElementName=DCBSList, StringFormat=Total Items Available: \{0\}}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,5,5,5"/>
                     <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1" Grid.ColumnSpan="4" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page">
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -47,25 +48,27 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Content="Dump To Excel" Click="dumpSelectedItemsToExcel_Click"/>
-                    <Button Grid.Row="0" Grid.Column="1" Content="All" Click="allFilter_Click"/>
-                    <Button Grid.Row="0" Grid.Column="2" Content="Maybe" Click="maybeFilter_Click"/>
-                    <Button Grid.Row="0" Grid.Column="3" Content="DCBS/Retail" Click="definiteFilter_Click"/>
+                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="_selectedFilter" SelectionChanged="_selectedFilter_SelectionChanged" SelectedIndex="0" >
+                        <System:String>All</System:String>
+                        <System:String>DCBS/Retail</System:String>
+                        <System:String>Maybe</System:String>
+                    </ComboBox>
                     <ListView Grid.Row="1" Grid.ColumnSpan="4" x:Name="SelectedList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding ElementName=SelectedList, Path=Width}" MouseUp="DCBSItemView_MouseUp"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding Width, ElementName=SelectedList}" MouseUp="DCBSItemView_MouseUp"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </Grid>
             </TabItem>
             <TabItem Header="Cart">
                 <WebBrowser x:Name="webBrowser"/>
             </TabItem>
         </TabControl>
-        
+
         <Grid x:Name="totalsGrid" Grid.Column="1">
             <StackPanel Orientation="Vertical" Width="100" Margin="0, 23, 0, 0">
                 <dcbsmgr:TotalsDisplay x:Name="_dcbsTotal"   />

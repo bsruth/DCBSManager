@@ -101,6 +101,7 @@ namespace DCBSManager
                     else if (string.Compare(selectedTab.Header.ToString(), "Selected Items", true) == 0)
                     {
                         SelectedList.ItemsSource = mLL.GetSelectedItems();
+
                     }
                 }
             }
@@ -200,7 +201,26 @@ namespace DCBSManager
 
         private void allFilter_Click(object sender, RoutedEventArgs e)
         {
+            if (mLL != null) { 
             SelectedList.ItemsSource = mLL.GetSelectedItems();
+                }
+        }
+
+        private void _selectedFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedItem = e.AddedItems[0].ToString();
+            switch(selectedItem)
+            {
+                case "DCBS/Retail":
+                    definiteFilter_Click(null, null);
+                    break;
+                case "All":
+                    allFilter_Click(null, null);
+                    break;
+                case "Maybe":
+                    maybeFilter_Click(null, null);
+                    break;
+            }
         }
     }
 }
