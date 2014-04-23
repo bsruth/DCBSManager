@@ -181,5 +181,26 @@ namespace DCBSManager
             });            
 
         }
+
+        private void maybeFilter_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = mLL.GetSelectedItems();
+            var maybeItems = selectedItems
+                .Where(item => item.PurchaseCategory == PurchaseCategories.Maybe);
+            SelectedList.ItemsSource = maybeItems;
+        }
+
+        private void definiteFilter_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = mLL.GetSelectedItems();
+            var definiteItems = selectedItems
+                .Where(item => ( (item.PurchaseCategory == PurchaseCategories.Retail) || (item.PurchaseCategory == PurchaseCategories.Definite)));
+            SelectedList.ItemsSource = definiteItems;
+        }
+
+        private void allFilter_Click(object sender, RoutedEventArgs e)
+        {
+            SelectedList.ItemsSource = mLL.GetSelectedItems();
+        }
     }
 }
