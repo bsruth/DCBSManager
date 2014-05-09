@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>dcbs.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="NPOI">
       <HintPath>..\..\npoi 2.0.1 (beta1) _ reads xls files\npoi\dotnet4\NPOI.dll</HintPath>
@@ -131,6 +134,9 @@
   <ItemGroup>
     <Resource Include="SearchBox\Images\clear.png" />
     <Resource Include="SearchBox\Images\search.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="dcbs.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
