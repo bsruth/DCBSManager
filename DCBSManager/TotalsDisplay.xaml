@@ -9,6 +9,7 @@
     <UserControl.Resources>
         <local:PurchaseCategoriesToColorConverter x:Key="PurchaseCategoriesToColorConverter"/>
         <local:PurchaseCategoryToHeaderConverter x:Key="PurchaseCategoryToHeaderConverter"/>
+        <SolidColorBrush x:Key="OffWhite" Color="#CCFFFFFF"/>
     </UserControl.Resources>
     <Border Background="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoriesToColorConverter}}">
         <Grid Margin="5,5,5,5">
@@ -18,9 +19,9 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Text="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoryToHeaderConverter}}" HorizontalAlignment="Center"/>
-            <TextBlock Grid.Row="1" Text="{Binding Path=ItemCount,StringFormat='Items: {0}'}"/>
-            <TextBlock Grid.Row="2" Text="{Binding Path=TotalCost,StringFormat='Cost: {0:C}'}"/>
+            <TextBlock Foreground="{StaticResource OffWhite}" Grid.Row="0" Text="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoryToHeaderConverter}}" FontWeight="Bold" HorizontalAlignment="Center"/>
+            <TextBlock Foreground="{StaticResource OffWhite}" Grid.Row="1" Text="{Binding Path=ItemCount,StringFormat='Items: {0}'}"/>
+            <TextBlock Foreground="{StaticResource OffWhite}" Grid.Row="2" Text="{Binding Path=TotalCost,StringFormat='Cost: {0:C}'}"/>
         </Grid>
     </Border>
 </UserControl>
