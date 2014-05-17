@@ -57,7 +57,7 @@
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding Width, ElementName=SelectedList}" MouseUp="DCBSItemView_MouseUp"/>
+                                    <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding Width, ElementName=SelectedList}"/>
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>
