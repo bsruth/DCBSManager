@@ -107,26 +107,6 @@ namespace DCBSManager
             }
         }
 
-        /// <summary>
-        /// Rotates through the different purchase categories for an item whenever it is clicked
-        /// TODO: This should be a command.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DCBSItemView_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            var dcbsItemView = sender as DCBSItemView;
-            if(dcbsItemView != null) {
-                var listItem = dcbsItemView.DataContext as DCBSItem;
-                if(listItem != null) {
-                    listItem.PurchaseCategory = (PurchaseCategories)(((Int64)(listItem.PurchaseCategory) + 1) % 4);
-                }
-            }
-
-            e.Handled = true;
-
-        }
-
         private async void titleSearch_Search(object sender, RoutedEventArgs e)
         {
             var searchTextBox = sender as SearchTextBox;
