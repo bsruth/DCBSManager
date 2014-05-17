@@ -58,13 +58,13 @@ namespace DCBSManager
             switch (purchaseCategory)
             {
                 case PurchaseCategories.None:
-                    return new SolidColorBrush(Colors.Transparent);
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF888888"));
                 case PurchaseCategories.Maybe:
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#440000AA"));
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF000055"));
                 case PurchaseCategories.Definite:
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4400AA00"));
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF005500"));
                 case PurchaseCategories.Retail:
-                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#44AAAA00"));
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF555500"));
             }
 
             return new SolidColorBrush((Color)Colors.Black);
