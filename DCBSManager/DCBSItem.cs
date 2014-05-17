@@ -41,11 +41,27 @@ namespace DCBSManager
         {
             get;
             set;
+            //get
+            //{
+            //    return "APR12345";
+            //}
+            //set
+            //{
+
+            //}
         }
         public string Title
         {
             get;
             set;
+            //get
+            //{
+            //    return "Some Title";
+            //}
+            //set
+            //{
+
+            //}
         }
         public double RetailPrice
         {
@@ -56,11 +72,27 @@ namespace DCBSManager
         {
             get;
             set;
+            //get
+            //{
+            //    return "50";
+            //}
+            //set
+            //{
+
+            //}
         }
         public string Category
         {
             get;
             set;
+            //get
+            //{
+            //    return "Marvel";
+            //}
+            //set
+            //{
+
+            //}
         }
 
         public double DCBSPrice
@@ -76,6 +108,18 @@ namespace DCBSManager
         public string Description{
             get;
             set;
+//            get
+//            {
+//                return @"Each panel control implements distinct layout logic performed in Measure() and Arrange(). Measure determines the size of the panel and each of its children. Arrange() determines the rectangle where each control renders.
+//
+//The last child of the DockPanel fills the remaining space. You can disable this behavior by setting the LastChild property to false.
+//
+//The stack panel asks each child for its desired size and then stacks them. The stack panel calls Measure() on each child with an available size of infinity and then uses the child's desired size.";
+//            }
+//            set
+//            {
+
+//            }
         }
 
         public string ImgURL
@@ -88,6 +132,7 @@ namespace DCBSManager
         {
             get
             {
+                //return PurchaseCategories.Definite;
                 return _purchaseCategory;
             }
             set
@@ -123,6 +168,18 @@ namespace DCBSManager
         {
             get;
             set;
+            //get
+            //{
+            //    var defaultImage = new BitmapImage();
+            //    defaultImage.BeginInit();
+            //    defaultImage.UriSource = new Uri("pack://application:,,,/DCBSManager;component/Images/no_image.jpg", UriKind.Absolute);
+            //    defaultImage.EndInit();
+            //    return defaultImage;
+            //}
+            //set
+            //{
+
+            //}
         }
 
         public void LoadInfo()
