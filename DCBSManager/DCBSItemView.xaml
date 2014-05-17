@@ -4,39 +4,67 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DCBSManager"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=local:DCBSItem, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
         <local:PurchaseCategoriesToColorConverter x:Key="PurchaseCategoriesToColorConverter"/>
+        <local:PurchaseCategoryToHeaderConverter x:Key="PurchaseCategoryToHeaderConverter"/>
+        <SolidColorBrush x:Key="OffWhite" Color="#CCFFFFFF"/>
     </UserControl.Resources>
 
-    <Border BorderBrush="Black" BorderThickness="1,1,1,1" Background="#FFAAAAAA">
-        <Grid Background="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoriesToColorConverter}}">
+    <Border BorderBrush="Black" BorderThickness="1,1,1,1" Padding="5">
+        <Border Padding="10" Background="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoriesToColorConverter}}">
+        <Grid Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+                    <RowDefinition  Height="Auto"/>
+                <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Button Background="Transparent" Grid.RowSpan="2" Grid.Column="0" VerticalAlignment="Top"  Margin="0,0,10,0" Click="ViewItemInBrowser">
+            <Button Background="Transparent" Grid.RowSpan="3" Grid.Column="0" VerticalAlignment="Top" Click="ViewItemInBrowser">
                 <Button.Content>
                     <Image Source="{Binding Thumbnail}" />
                 </Button.Content>
             </Button>
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding DCBSOrderCode}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,10,0"/>
-            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap"/>
-            <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding RetailPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5,0"/>
-            <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding DCBSDiscount}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5, 0"/>
-            <TextBlock Grid.Row="0" Grid.Column="5" Text="{Binding DCBSPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5,0"/>
-            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Category}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,5,0"/>
-            <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="5" Text="{Binding Description}" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Top" TextWrapping="Wrap" Foreground="{StaticResource OffWhite}" FontSize="18" FontWeight="Bold" Padding="5,0,0,0"/>
+                <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Background="{StaticResource OffWhite}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
 
-        </Grid>
+                    <Grid Grid.Row="0" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="60"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="{Binding RetailPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5,0"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Bold" Text="{Binding DCBSDiscount}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5, 0"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" FontWeight="Bold" Text="{Binding DCBSPrice, StringFormat='{}{0:C}'}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,5,0"/>
+                    </Grid>
+                    
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Category}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,5,0"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding Description}" VerticalAlignment="Top" TextWrapping="Wrap" Height="Auto" HorizontalAlignment="Left" />
+                    <Button x:Name="_categoryChangeBtn" Background="Transparent" BorderBrush="Transparent" Margin="0,0,-2,0"  BorderThickness="0" Grid.RowSpan="5" Grid.Column="4" Height="50" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Click="_categoryChangeBtn_Click">
+                        <Button.Content>
+                            <Border Background="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoriesToColorConverter}}">
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding PurchaseCategory, Converter={StaticResource PurchaseCategoryToHeaderConverter}}" Foreground="{StaticResource OffWhite}" FontSize="16" FontWeight="Bold" Padding="5,0,0,0" TextAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Button.Content>
+                    </Button>
+
+                </Grid>
+                <TextBlock Grid.Row="3" Grid.Column="1" Foreground="{StaticResource OffWhite}" Text="{Binding DCBSOrderCode}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,0,0,0"/>
+            </Grid>
+    </Border>
     </Border>
 </UserControl>

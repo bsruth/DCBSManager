@@ -36,5 +36,16 @@ namespace DCBSManager
             }
             e.Handled = true;
         }
+
+        private void _categoryChangeBtn_Click(object sender, RoutedEventArgs e)
+        {
+           
+                var item = DataContext as DCBSItem;
+                if (item != null)
+                {
+                    item.PurchaseCategory = (PurchaseCategories)(((Int64)(item.PurchaseCategory) + 1) % 4);
+                }
+        
+        }
     }
 }
