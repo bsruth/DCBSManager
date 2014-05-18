@@ -26,6 +26,7 @@ namespace DCBSManager
         }
 
         public ListItemKeys ListItemKey;
+        public String ListBaseFileName;
         public String ListItemString;
 
         public override String ToString()
@@ -203,11 +204,11 @@ namespace DCBSManager
             }
             else
             {
-                string databaseFileName = listName.ListItemString + ".sqlite";
+                string databaseFileName = listName.ListBaseFileName + ".sqlite";
                 if (File.Exists(databaseFileName))
                 {
-                    mLoadedItems = await LoadFromDatabase(listName.ListItemString);
-                    mDatabaseName = listName.ListItemString;
+                    mLoadedItems = await LoadFromDatabase(listName.ListBaseFileName);
+                    mDatabaseName = listName.ListBaseFileName;
                 }
             }
 
@@ -262,7 +263,7 @@ namespace DCBSManager
                     
                         bool found = false;
                        foreach (var db in availableDatabases) {
-                            if (db.ListItemString.Equals(Path.GetFileNameWithoutExtension(fileName)) == true)
+                            if (db.ListBaseFileName.Equals(Path.GetFileNameWithoutExtension(fileName)) == true)
                             {
                                 found = true;
                                 break;
@@ -296,15 +297,42 @@ namespace DCBSManager
         {
             var workingDir = new DirectoryInfo(@".");
             var files = from file in workingDir.EnumerateFiles(@"*.sqlite")
-                        select new DCBSList
-                        {
-                            ListItemString = Path.GetFileNameWithoutExtension(file.Name),
-                            ListItemKey = DCBSList.ListItemKeys.Database
-                        };
+                        select Path.GetFileNameWithoutExtension(file.Name);
+            //            {
+            //                ListBaseFileName = Path.GetFileNameWithoutExtension(file.Name),
+            //                 string fileNamePattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
+            //    MatchCollection pidMatches;
+            //    Regex pidRegex = new Regex(pidPattern);
+            //    pidMatches = pidRegex.Matches(dynamicPageText);
 
-            var filesList = files.ToList();
-            filesList.Add(new DCBSList { ListItemString = "Check for Updates...", ListItemKey = DCBSList.ListItemKeys.NewList });
-            return filesList;
+            //                ListItemKey = DCBSList.ListItemKeys.Database
+            //            };
+
+            var filesList = new List<DCBSList>();
+            foreach(var file in files) {
+                var dcbsList = new DCBSList();
+                dcbsList.ListBaseFileName = file;
+                dcbsList.ListItemKey = DCBSList.ListItemKeys.Database;
+
+                             string fileNamePattern = @"([a-zA-Z]+)(\d{4})";
+                MatchCollection fileNameMatches;
+                Regex filenameRegex = new Regex(fileNamePattern);
+                fileNameMatches = filenameRegex.Matches(file);
+                if(fileNameMatches.Count == 1) {
+                    dcbsList.ListItemString = fileNameMatches[0].Groups[2].ToString();
+                    dcbsList.ListItemString += "/";
+                    dcbsList.ListItemString += DateTime.ParseExact(fileNameMatches[0].Groups[1].ToString(), "MMMM", CultureInfo.CurrentCulture).Month.ToString("00");
+                    dcbsList.ListItemString += " " + fileNameMatches[0].Groups[1].ToString();
+                }
+                else
+                {
+                    dcbsList.ListItemString = dcbsList.ListBaseFileName;
+                }
+                filesList.Add(dcbsList);
+            }
+            var sortedFiles = filesList.OrderByDescending(file => file.ListItemString).ToList();
+            sortedFiles.Add(new DCBSList { ListBaseFileName = "Check for Updates...", ListItemKey = DCBSList.ListItemKeys.NewList, ListItemString = "Check for Updates..." });
+            return sortedFiles;
         }
 
         public List<DCBSItem> GetSelectedItems()
