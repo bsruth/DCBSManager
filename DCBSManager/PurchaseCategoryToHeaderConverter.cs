@@ -23,7 +23,7 @@ namespace DCBSManager
                 string valueString = value as string;
                 if (valueString != null)
                 {
-                    if (string.Compare(valueString, "None") == 0)
+                    if (string.Compare(valueString, "Pass") == 0)
                     {
                         purchaseCategory = PurchaseCategories.None;
                     }
@@ -38,6 +38,10 @@ namespace DCBSManager
                     else if (string.Compare(valueString, "Retail") == 0)
                     {
                         purchaseCategory = PurchaseCategories.Retail;
+                    }
+                    else if (string.Compare(valueString, "Total") == 0)
+                    {
+                        purchaseCategory = PurchaseCategories.Total;
                     }
                     else
                     {
@@ -61,13 +65,15 @@ namespace DCBSManager
             switch (purchaseCategory)
             {
                 case PurchaseCategories.None:
-                    return "Total";
+                    return "Pass";
                 case PurchaseCategories.Maybe:
                     return "Maybe";
                 case PurchaseCategories.Definite:
                     return "DCBS";
                 case PurchaseCategories.Retail:
                     return "Retail";
+                case PurchaseCategories.Total:
+                    return "Total";
             }
 
             return "UNKNOWN";

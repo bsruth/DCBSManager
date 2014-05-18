@@ -16,7 +16,8 @@ namespace DCBSManager
         None = 0,
         Maybe = 1,
         Definite = 2,
-        Retail = 3
+        Retail = 3,
+        Total = 4
     };
 
     class DCBSItem : INotifyPropertyChanged

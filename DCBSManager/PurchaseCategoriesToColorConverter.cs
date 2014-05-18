@@ -36,6 +36,10 @@ namespace DCBSManager
                     {
                         purchaseCategory = PurchaseCategories.Retail;
                     }
+                    else if (string.Compare(valueString, "Total") == 0)
+                    {
+                        purchaseCategory = PurchaseCategories.Total;
+                    }
                     else
                     {
                         throw new InvalidOperationException("The string value to convert must be a SystemMessageType");
@@ -58,6 +62,7 @@ namespace DCBSManager
             switch (purchaseCategory)
             {
                 case PurchaseCategories.None:
+                case PurchaseCategories.Total:
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF888888"));
                 case PurchaseCategories.Maybe:
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF000055"));
