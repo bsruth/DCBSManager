@@ -70,7 +70,8 @@
                      Content="{Binding RelativeSource={RelativeSource TemplatedParent},
                                        Path=LabelText}"
                      Padding="2,0,0,0"
-                     FontStyle="Italic" />
+                     FontStyle="Italic"
+                     VerticalAlignment="Center"/>
               <Border x:Name="PART_SearchIconBorder"
                       Grid.Column="1"
                       BorderThickness="1"

@@ -179,30 +179,6 @@ namespace DCBSManager
             SelectedList.ItemsSource = definiteItems;
         }
 
-        private void allFilter_Click(object sender, RoutedEventArgs e)
-        {
-            if (mLL != null) { 
-            SelectedList.ItemsSource = mLL.GetSelectedItems();
-                }
-        }
-
-        private void _selectedFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selectedItem = e.AddedItems[0].ToString();
-            switch(selectedItem)
-            {
-                case "DCBS/Retail":
-                    definiteFilter_Click(null, null);
-                    break;
-                case "All":
-                    allFilter_Click(null, null);
-                    break;
-                case "Maybe":
-                    maybeFilter_Click(null, null);
-                    break;
-            }
-        }
-
         private void _dcbsFilter_Click(object sender, RoutedEventArgs e)
         {
             var selectedItems = mLL.GetSelectedItems();
