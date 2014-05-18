@@ -51,7 +51,7 @@ namespace DCBSManager
             _retailCostCalc = new CostCalculator(mLL.RetailItems, PurchaseCategories.Retail);
             _retailCostCalc.RetailTaxPercentage = 0.093;
 
-            _overallCostCalc = new CostCalculator(mLL.PurchaseItems, PurchaseCategories.None);
+            _overallCostCalc = new CostCalculator(mLL.PurchaseItems, PurchaseCategories.Total);
             _overallCostCalc.RetailTaxPercentage = 0.093;
             _overallCostCalc.ShippingCost = 6.95;
             _overallCostCalc.IndividualBagBoardCost = 0.12;
@@ -201,6 +201,22 @@ namespace DCBSManager
                     maybeFilter_Click(null, null);
                     break;
             }
+        }
+
+        private void _dcbsFilter_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = mLL.GetSelectedItems();
+            var definiteItems = selectedItems
+                .Where(item => (item.PurchaseCategory == PurchaseCategories.Definite));
+            SelectedList.ItemsSource = definiteItems;
+        }
+
+        private void _retailFilter_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = mLL.GetSelectedItems();
+            var definiteItems = selectedItems
+                .Where(item => (item.PurchaseCategory == PurchaseCategories.Retail));
+            SelectedList.ItemsSource = definiteItems;
         }
     }
 }

@@ -48,11 +48,6 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Content="Dump To Excel" Click="dumpSelectedItemsToExcel_Click"/>
-                    <ComboBox Grid.Row="0" Grid.Column="1" x:Name="_selectedFilter" SelectionChanged="_selectedFilter_SelectionChanged" SelectedIndex="0" >
-                        <System:String>All</System:String>
-                        <System:String>DCBS/Retail</System:String>
-                        <System:String>Maybe</System:String>
-                    </ComboBox>
                     <ListView Grid.Row="1" Grid.ColumnSpan="4" x:Name="SelectedList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page">
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -71,10 +66,26 @@
 
         <Grid x:Name="totalsGrid" Grid.Column="1">
             <StackPanel Orientation="Vertical" Width="100" Margin="0, 23, 0, 0">
-                <dcbsmgr:TotalsDisplay x:Name="_dcbsTotal"   />
-                <dcbsmgr:TotalsDisplay x:Name="_maybeTotal"   />
-                <dcbsmgr:TotalsDisplay x:Name="_retailTotal"   />
-                <dcbsmgr:TotalsDisplay x:Name="_overallTotal"   />
+                <Button x:Name="_dcbsFilter" Click="_dcbsFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                    <Button.Content>
+                    <dcbsmgr:TotalsDisplay x:Name="_dcbsTotal"   />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="_maybeFilter" Click="maybeFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                    <Button.Content>
+                        <dcbsmgr:TotalsDisplay x:Name="_maybeTotal"   />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="_retailFilter" Click="_retailFilter_Click"  HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                    <Button.Content>
+                        <dcbsmgr:TotalsDisplay x:Name="_retailTotal"   />
+                    </Button.Content>
+                </Button>
+                <Button x:Name="_definiteFilter" Click="definiteFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                    <Button.Content>
+                        <dcbsmgr:TotalsDisplay x:Name="_overallTotal"   />
+                    </Button.Content>
+                </Button>
             </StackPanel>
         </Grid>
 
