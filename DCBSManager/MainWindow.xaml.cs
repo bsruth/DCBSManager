@@ -100,7 +100,7 @@ namespace DCBSManager
                     }
                     else if (string.Compare(selectedTab.Header.ToString(), "Selected Items", true) == 0)
                     {
-                        SelectedList.ItemsSource = mLL.GetSelectedItems();
+                        DCBSList.ItemsSource = mLL.GetSelectedItems();
 
                     }
                 }
@@ -168,7 +168,7 @@ namespace DCBSManager
             var selectedItems = mLL.GetSelectedItems();
             var maybeItems = selectedItems
                 .Where(item => item.PurchaseCategory == PurchaseCategories.Maybe);
-            SelectedList.ItemsSource = maybeItems;
+            DCBSList.ItemsSource = maybeItems;
         }
 
         private void definiteFilter_Click(object sender, RoutedEventArgs e)
@@ -176,7 +176,7 @@ namespace DCBSManager
             var selectedItems = mLL.GetSelectedItems();
             var definiteItems = selectedItems
                 .Where(item => ( (item.PurchaseCategory == PurchaseCategories.Retail) || (item.PurchaseCategory == PurchaseCategories.Definite)));
-            SelectedList.ItemsSource = definiteItems;
+            DCBSList.ItemsSource = definiteItems;
         }
 
         private void _dcbsFilter_Click(object sender, RoutedEventArgs e)
@@ -184,7 +184,7 @@ namespace DCBSManager
             var selectedItems = mLL.GetSelectedItems();
             var definiteItems = selectedItems
                 .Where(item => (item.PurchaseCategory == PurchaseCategories.Definite));
-            SelectedList.ItemsSource = definiteItems;
+            DCBSList.ItemsSource = definiteItems;
         }
 
         private void _retailFilter_Click(object sender, RoutedEventArgs e)
@@ -192,7 +192,12 @@ namespace DCBSManager
             var selectedItems = mLL.GetSelectedItems();
             var definiteItems = selectedItems
                 .Where(item => (item.PurchaseCategory == PurchaseCategories.Retail));
-            SelectedList.ItemsSource = definiteItems;
+            DCBSList.ItemsSource = definiteItems;
+        }
+
+        private async void _showAllItems_Click(object sender, RoutedEventArgs e)
+        {
+            DCBSList.ItemsSource = await mLL.FilterList("");
         }
     }
 }
