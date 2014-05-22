@@ -562,12 +562,13 @@ namespace DCBSManager
         /// </summary>
         /// <param name="filterText"></param>
         /// <returns></returns>
-        public async Task<List<DCBSItem>> FilterList(string filterText)
+        public async Task<List<DCBSItem>> FilterList(string filterText, List<DCBSItem> listToFilter)
         {
             
-            var filterTask = Task<List<DCBSItem>>.Factory.StartNew(() =>  { 
-                
-                return mLoadedItems.Where(item => {
+            var filterTask = Task<List<DCBSItem>>.Factory.StartNew(() =>  {
+
+                return listToFilter.Where(item =>
+                {
 
                     return (item.Title.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0) ||
                            (item.Category.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
