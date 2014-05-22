@@ -48,11 +48,11 @@
 
         <Grid x:Name="totalsGrid" Grid.Column="1">
             <StackPanel Orientation="Vertical" Width="100" Margin="0, 23, 0, 0">
-                <Button x:Name="_showAllItems" Click="_showAllItems_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Foreground="White" Background="#FF888888" Height="50">
+                <Button x:Name="_showAllItems" Click="_showAllItems_Click" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" BorderThickness="0" Foreground="White" Background="Transparent" MinHeight="50">
                     <Button.Content>
-                        <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Vertical" Background="#FF888888">
                             <TextBlock Text="All Items" HorizontalAlignment="Center" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding ItemsSource.Count, ElementName=DCBSList, StringFormat=Filtered Items: \{0\}}"/>
+                        <TextBlock TextWrapping="Wrap" Text="{Binding ItemsSource.Count, ElementName=DCBSList, StringFormat=Filtered Items: \{0\}}"/>
                         </StackPanel>
                     </Button.Content>
                 </Button>
