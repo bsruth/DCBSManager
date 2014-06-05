@@ -57,6 +57,7 @@ namespace DCBSManager
         int _dcbsItemsCount = 0;
         int _retailItemsCount = 0;
         int _maybeItemsCount = 0;
+        bool _loadingNewList = false;
 
         const string all_items_table_name = "all_items";
         const string col_code = "code";
@@ -81,6 +82,23 @@ namespace DCBSManager
 
 
         #region Properties
+
+        public bool NewListLoading
+        {
+            get
+            {
+                return _loadingNewList;
+            }
+
+            set
+            {
+                if (value != _loadingNewList)
+                {
+                    _loadingNewList = value;
+                    OnPropertyChanged("NewListLoading");
+                }
+            }
+        }
 
         public ObservableCollection<DCBSItem> DefiniteItems
         {
@@ -190,8 +208,10 @@ namespace DCBSManager
 
         public async Task<List<DCBSItem>> LoadList(DCBSList listName)
         {
+            NewListLoading = true;
             if (listName.ListItemKey == DCBSList.ListItemKeys.NewList)
             {
+               
                 var updatedList = CheckForUpdatedList();
                 if (updatedList != "")
                 {
@@ -216,6 +236,8 @@ namespace DCBSManager
             UpdateCategoryLists(ref _maybeItems, new PurchaseCategories[] { PurchaseCategories.Maybe });
             UpdateCategoryLists(ref _retailItems, new PurchaseCategories[] { PurchaseCategories.Retail });
             UpdateCategoryLists(ref _purchaseItems, new PurchaseCategories[] { PurchaseCategories.Retail, PurchaseCategories.Definite });
+
+            NewListLoading = false;
             return mLoadedItems;
         }
 
