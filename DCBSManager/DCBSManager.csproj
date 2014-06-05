@@ -63,6 +63,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CostCalculator.cs" />
+    <Compile Include="InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="PurchaseCategoriesToColorConverter.cs" />
     <Compile Include="PurchaseCategoryToHeaderConverter.cs" />
     <Compile Include="SearchBox\SearchTextBox.cs" />
