@@ -4,6 +4,10 @@
         xmlns:dcbsmgr="clr-namespace:DCBSManager"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="DCBSManager.MainWindow"
         Title="DCBS Manager" Height="350" Width="525" x:Name="MWindow">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <dcbsmgr:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConveter"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -30,7 +34,8 @@
                         </ComboBox.ItemTemplate>
                     </ComboBox>
                     <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="1" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="50" FontSize="16" Margin="5,5,5,5"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                    <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1" Grid.ColumnSpan="4" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page">
+                    <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1" Grid.ColumnSpan="4" 
+                              VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" Visibility="{Binding NewListLoading, Converter={StaticResource  InverseBooleanToVisibilityConveter}}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -39,6 +44,11 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
+                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Visibility="{Binding NewListLoading, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center">
+                        <TextBlock Text="Loading List  " HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <ProgressBar Height="20" Width="200" IsIndeterminate="True"/>
+                    </StackPanel>
+                    
                 </Grid>
             </TabItem>
             <TabItem Header="Cart">
