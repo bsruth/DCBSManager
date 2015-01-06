@@ -189,6 +189,7 @@ namespace DCBSManager
             {
                 ImgURL = "http://media.dcbservice.com/small/" + DCBSOrderCode + ".jpg";
 
+
                 try
                 {
                     ThumbnailRawBytes = (new WebClient()).DownloadData(ImgURL);
@@ -208,13 +209,34 @@ namespace DCBSManager
 
                 var pageText = sr.ReadToEnd().Trim();
 
-                string dynamicContentPattern = @"<!--START DYNAMIC STUFF -->([\s\S]+)<!-- END DYNAMIC STUFF -->";
+                string detailURLPattern = @"""/product/" + DCBSOrderCode + @"([^""]+)";
+
+                Regex detailContentRegex = new Regex(detailURLPattern, RegexOptions.IgnoreCase);
+                // Get matches of pattern in text
+                var detailURLMatches = detailContentRegex.Matches(pageText);
+
+                string detailURL = "";
+                if (detailURLMatches.Count >= 1 && detailURLMatches[0].Groups.Count >= 2)
+                {
+                    detailURL = detailURLMatches[0].Groups[1].ToString();
+                }
+
+
+                string detailuri = "http://www.dcbservice.com/product/" + DCBSOrderCode + "/" + detailURL;
+                System.Net.WebRequest detailReq = System.Net.WebRequest.Create(detailuri);
+                detailReq.Proxy = null;
+                System.Net.WebResponse detailResp = detailReq.GetResponse();
+                System.IO.StreamReader detailSr = new System.IO.StreamReader(detailResp.GetResponseStream());
+
+                var detailPageText = detailSr.ReadToEnd().Trim();
+
+                string dynamicContentPattern = @"<div class=""productdetail"">([\s\S]+)<div class=""clear-fix""";
 
                 MatchCollection dynamicContentMatches;
 
                 Regex dynamicContentRegex = new Regex(dynamicContentPattern);
                 // Get matches of pattern in text
-                dynamicContentMatches = dynamicContentRegex.Matches(pageText);
+                dynamicContentMatches = dynamicContentRegex.Matches(detailPageText);
 
                 string dynamicPageText = "";
                 if (dynamicContentMatches.Count >= 1 && dynamicContentMatches[0].Groups.Count >= 2)
@@ -222,57 +244,94 @@ namespace DCBSManager
                     dynamicPageText = dynamicContentMatches[0].Groups[1].ToString();
                 }
 
-                string pidPattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
+                string pidPattern = @"data-val=""(\d+)""";
+                //string pidPattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
                 MatchCollection pidMatches;
                 Regex pidRegex = new Regex(pidPattern);
                 pidMatches = pidRegex.Matches(dynamicPageText);
 
                 PID = 0;
-                if (pidMatches.Count >= 2 && pidMatches[1].Groups.Count >= 2)
+                if (pidMatches.Count >= 1 && pidMatches[0].Groups.Count >= 2)
                 {
-                    PID = Int64.Parse(pidMatches[1].Groups[1].ToString());
+                    PID = Int64.Parse(pidMatches[0].Groups[1].ToString());
                 }
 
-                //get writer, artist and cover artist
-                string creatorsPattern = @"\([WCA/]+\)[\s\w\.,&]+";
-                MatchCollection creatorsMatches;
 
-                Regex creatorRegex = new Regex(creatorsPattern);
-                // Get matches of pattern in text
-                creatorsMatches = creatorRegex.Matches(dynamicPageText);
+                string publisherPattern = @">Publisher:([^<]+)";
+                //string pidPattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
+                MatchCollection publisherMatches;
+                Regex publisherRegex = new Regex(publisherPattern);
+                publisherMatches = publisherRegex.Matches(dynamicPageText);
+
+                //string publisher = "";
+                if (publisherMatches.Count >= 1 && publisherMatches[0].Groups.Count >= 2)
+                {
+                    Category = publisherMatches[0].Groups[1].ToString().Trim();
+                }
+
 
                 Description = "";
-                List<string> creators = new List<string>();
-                foreach (var creator in creatorsMatches)
-                {
-                    var creatorString = creator.ToString();
-                    if (creatorString.Contains('\r'))
-                    {
-                        creatorString = creatorString.Substring(0, creatorString.IndexOf('\r'));
-                    }
-                    creatorString = creatorString.Trim();
-                    if (creators.Contains(creatorString) == false)
-                    {
-                        creators.Add(creatorString);
-                        Description += (creatorString + " ");
-                    }
 
+                string writerPattern = @">Writer:([^<]+)";
+                //string pidPattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
+                MatchCollection writerMatches;
+                Regex writerRegex = new Regex(writerPattern);
+                writerMatches = writerRegex.Matches(dynamicPageText);
+
+                string writer = "";
+                if (writerMatches.Count >= 1 && writerMatches[0].Groups.Count >= 2)
+                {
+                    writer = writerMatches[0].Groups[1].ToString().Trim();
+                    Description += "(W) " + writer + " ";
                 }
+
+
+                string artistPattern = @">Artist:([^<]+)";
+                //string pidPattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
+                MatchCollection artistMatches;
+                Regex artistRegex = new Regex(artistPattern);
+                artistMatches = artistRegex.Matches(dynamicPageText);
+
+                string artist = "";
+                if (artistMatches.Count >= 1 && artistMatches[0].Groups.Count >= 2)
+                {
+                    artist = artistMatches[0].Groups[1].ToString().Trim();
+                     Description += "(A) " + artist + " ";
+                }
+
+                string coverArtistPattern = @">Cover Artist:([^<]+)";
+                //string pidPattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
+                MatchCollection coverArtistMatches;
+                Regex coverArtistRegex = new Regex(coverArtistPattern);
+                coverArtistMatches = coverArtistRegex.Matches(dynamicPageText);
+
+                string coverArtist = "";
+                if (coverArtistMatches.Count >= 1 && coverArtistMatches[0].Groups.Count >= 2)
+                {
+                    coverArtist = coverArtistMatches[0].Groups[1].ToString().Trim();
+                     Description += "(CA) " + coverArtist + " ";
+                }
+
+                string releasePattern = @" Date:([^<]+)";
+                //string pidPattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
+                MatchCollection releaseMatches;
+                Regex releaseRegex = new Regex(releasePattern);
+                releaseMatches = releaseRegex.Matches(dynamicPageText);
+
+                string release = "";
+                if (releaseMatches.Count >= 1 && releaseMatches[0].Groups.Count >= 2)
+                {
+                    release = releaseMatches[0].Groups[1].ToString().Trim();
+                    Description += "(Release) " + release + " ";
+                }
+
+                Description += " " + _creatorToDescriptionSeparator;
 
                 //trim out tabs and newlines
                 dynamicPageText = Regex.Replace(dynamicPageText, @"\t|\n|\r", "");
 
-                string descriptionPattern = @"([\s\S]+?)<table";
-                if (creators.Count > 0)
-                {
-                     int endOfCreatorsIndex = dynamicPageText.IndexOf(creators.Last()) + creators.Last().Length;
-                    dynamicPageText = dynamicPageText.Substring(endOfCreatorsIndex);
-                    Description += _creatorToDescriptionSeparator;
-                } else
-                {
-                    descriptionPattern = @"/strong>.*>" + descriptionPattern;
-                }
-              
+                string descriptionPattern = @"<div class=""detaildatacol"">[\s\S]*?<p>([^<]+)";
+
                 MatchCollection descMatches;
 
                 Regex descRegex = new Regex(descriptionPattern);
@@ -285,9 +344,10 @@ namespace DCBSManager
                 }
 
 
-                
 
-            }catch(Exception ex)
+
+            }
+            catch (Exception ex)
             {
                 var blah = ex.ToString();
             }
