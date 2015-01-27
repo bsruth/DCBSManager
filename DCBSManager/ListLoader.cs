@@ -766,15 +766,63 @@ namespace DCBSManager
 
         public async Task<bool> DumpTabSeparatedValues(string fileName, IList<DCBSItem> itemsToDump)
         {
-            using (var dumpFileStream = new StreamWriter(fileName))
+            string path = "" + mDatabaseName + ".xls";
+            List<DCBSItem> mDCBSItems = new List<DCBSItem>();
+            string currentCategory = "Previews";
+            bool headerProcessed = false;
+            using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-
-                foreach (var item in itemsToDump)
+                var hssfworkbook = new HSSFWorkbook(file);
+                ISheet sheet = hssfworkbook.GetSheetAt(0);
+                System.Collections.IEnumerator rows = sheet.GetRowEnumerator();
+                while (rows.MoveNext())
                 {
-                    var tsvString = item.ToTabSeparatedValues();
-                    await dumpFileStream.WriteLineAsync(tsvString);
+                    IRow row = (HSSFRow)rows.Current;
+                    if (DISC <= row.LastCellNum)
+                    {
+                        var cell = row.GetCell(CODE);
+                        if (cell != null)
+                        {
+                            string codeString = cell.ToString();
+                            if (codeString.Contains("BB1"))
+                            {
+                                var checkCell = row.GetCell(0);
+                                checkCell.SetCellValue(1);
+                            }
+                            else
+                            {
+                                foreach (var item in itemsToDump)
+                                {
+                                    if (item.PurchaseCategory == PurchaseCategories.Definite)
+                                    {
+                                        if (codeString == item.DCBSOrderCode)
+                                        {
+                                            var checkCell = row.GetCell(2);
+                                            checkCell.SetCellValue(1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+                string outPath = mDatabaseName + "_completed.xls";
+                using (FileStream outFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
+                {
+                    hssfworkbook.Write(outFile);
+                }
+                
             }
+
+            //using (var dumpFileStream = new StreamWriter(fileName))
+            //{
+
+            //    foreach (var item in itemsToDump)
+            //    {
+            //        var tsvString = item.ToTabSeparatedValues();
+            //        await dumpFileStream.WriteLineAsync(tsvString);
+            //    }
+            //}
             return true;
         }
 
