@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Web;
 
 namespace DCBSManager
 {
@@ -502,13 +503,13 @@ namespace DCBSManager
                         {
                             var item = new DCBSItem();
                             item.DCBSOrderCode = ret.GetFieldValue<string>(0);
-                            item.Title = ret.GetFieldValue<string>(1);
+                            item.Title = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(1));
                             item.RetailPrice = ret.GetFieldValue<double>(2);
                             item.DCBSDiscount = ret.GetFieldValue<string>(3);
-                            item.Category = ret.GetFieldValue<string>(4);
+                            item.Category = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(4));
                             item.DCBSPrice = ret.GetFieldValue<double>(5);
                             item.PID = ret.GetFieldValue<Int64>(6);
-                            item.Description = ret.GetFieldValue<string>(7);
+                            item.Description = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(7));
                             if (ret.IsDBNull(8) == true)
                             {
                                 item.ThumbnailRawBytes = null;
