@@ -81,27 +81,6 @@ namespace DCBSManager
             }*/
         }
 
-        private void DCBSList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            
-
-        }
-
-        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count > 0)
-            {
-                if (e.AddedItems[0] as TabItem != null)
-                {
-                    TabItem selectedTab = (TabItem)e.AddedItems[0];
-                    if (string.Compare(selectedTab.Header.ToString(), "Cart", true) == 0)
-                    {
-                        mLL.AddToCart(webBrowser);
-                    }
-                }
-            }
-        }
-
         private async void titleSearch_Search(object sender, RoutedEventArgs e)
         {
             var searchTextBox = sender as SearchTextBox;

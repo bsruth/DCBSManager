@@ -13,48 +13,42 @@
             <ColumnDefinition/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <TabControl SelectionChanged="TabControl_SelectionChanged">
-            <TabItem Header="DCBS Items" Height="50">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="3*"/>
-                    </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="ListSelection" Grid.Column="0"  Grid.Row="0" SelectionChanged="ListSelection_SelectionChanged" Margin="5,5,5,5" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="50" FontSize="18">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" Height="50">
-                                    <TextBlock Text="{Binding}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="1" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="50" FontSize="16" Margin="5,5,5,5"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                    <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1" Grid.ColumnSpan="4" 
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            <ComboBox x:Name="ListSelection" Grid.Column="0"  Grid.Row="0" SelectionChanged="ListSelection_SelectionChanged" Margin="5,5,5,5" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="50" FontSize="18">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Height="50">
+                            <TextBlock Text="{Binding}" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="1" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="50" FontSize="16" Margin="5,5,5,5"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1" Grid.ColumnSpan="4" 
                               VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" Visibility="{Binding NewListLoading, Converter={StaticResource  InverseBooleanToVisibilityConveter}}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding Width, ElementName=DCBSList}"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Visibility="{Binding NewListLoading, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center">
-                        <TextBlock Text="Loading List  " HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <ProgressBar Height="20" Width="200" IsIndeterminate="True"/>
-                    </StackPanel>
-                    
-                </Grid>
-            </TabItem>
-            <TabItem Header="Cart">
-                <WebBrowser x:Name="webBrowser"/>
-            </TabItem>
-        </TabControl>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <dcbsmgr:DCBSItemView Height="Auto" Width="{Binding Width, ElementName=DCBSList}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Visibility="{Binding NewListLoading, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center">
+                <TextBlock Text="Loading List  " HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <ProgressBar Height="20" Width="200" IsIndeterminate="True"/>
+            </StackPanel>
+
+        </Grid>
 
         <Grid x:Name="totalsGrid" Grid.Column="1">
             <StackPanel Orientation="Vertical" Width="100" Margin="0, 23, 0, 0">
