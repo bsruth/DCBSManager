@@ -17,6 +17,7 @@ using System.IO;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using System.Data.SQLite;
+using System.Diagnostics;
 
 namespace DCBSManager
 {
@@ -103,6 +104,14 @@ namespace DCBSManager
         {
             await mLL.DumpTabSeparatedValues("dumpFile.txt", mLL.GetSelectedItems());
         }
+
+        private void goToDCBSUpload_Click(object sender, RoutedEventArgs e)
+        {
+            string url = "https://www.dcbservice.com/cart/orderupload";
+            Process.Start(new ProcessStartInfo(url));
+
+        }
+                
 
         private void ListSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

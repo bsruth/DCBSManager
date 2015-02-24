@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dcbsmgr="clr-namespace:DCBSManager"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="DCBSManager.MainWindow"
-        Title="DCBS Manager" Height="350" Width="525" x:Name="MWindow">
+        Title="DCBS Manager" Height="600" Width="525" x:Name="MWindow">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <dcbsmgr:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConveter"/>
@@ -81,6 +81,7 @@
                     </Button.Content>
                 </Button>
                 <Button Content="Dump To Excel" Click="dumpSelectedItemsToExcel_Click" Height="50"/>
+                <Button Content="DCBS Upload" Click="goToDCBSUpload_Click" Height="50"/>
             </StackPanel>
         </Grid>
 
