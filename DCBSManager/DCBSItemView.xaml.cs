@@ -31,7 +31,7 @@ namespace DCBSManager
             var dcbsItem = this.DataContext as DCBSItem;
             if (dcbsItem != null)
             {
-                string url = "http://www.dcbservice.com/category.aspx?pid=" + dcbsItem.PID.ToString();
+                string url = "https://www.dcbservice.com/search/" + dcbsItem.DCBSOrderCode;
                 Process.Start(new ProcessStartInfo(url));
             }
             e.Handled = true;
