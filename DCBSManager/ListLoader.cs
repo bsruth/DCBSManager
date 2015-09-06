@@ -18,7 +18,7 @@ using System.Web;
 
 namespace DCBSManager
 {
-    class DCBSList
+    public class DCBSList
     {
         public enum ListItemKeys
         {
@@ -36,7 +36,7 @@ namespace DCBSManager
         }
     }
 
-    class ListLoader : INotifyPropertyChanged
+    public class ListLoader : INotifyPropertyChanged
     {
 
         List<string> codes = new List<string>();
@@ -210,28 +210,35 @@ namespace DCBSManager
         public async Task<List<DCBSItem>> LoadList(DCBSList listName)
         {
             NewListLoading = true;
-            if (listName.ListItemKey == DCBSList.ListItemKeys.NewList)
-            {
+
+            //if (listName.ListItemKey == DCBSList.ListItemKeys.NewList)
+            //{
                
-                var updatedList = CheckForUpdatedList();
-                if (updatedList != "")
-                {
-                    SetupDatabase(updatedList);
-                    //codes = LoadCodes("codes.txt");
-                    mDatabaseName = updatedList;
-                    mLoadedItems = await LoadXLS();
-                }
+            //    var updatedList = CheckForUpdatedList();
+            //    if (updatedList != "")
+            //    {
+            //        SetupDatabase(updatedList);
+            //        //codes = LoadCodes("codes.txt");
+            //        mDatabaseName = updatedList;
+            //        mLoadedItems = await LoadXLS();
+            //    }
                 
-            }
-            else
-            {
+            //}
+            //else
+            //{
                 string databaseFileName = listName.ListBaseFileName + ".sqlite";
                 if (File.Exists(databaseFileName))
                 {
                     mLoadedItems = await LoadFromDatabase(listName.ListBaseFileName);
                     mDatabaseName = listName.ListBaseFileName;
-                }
+                } else
+            {
+                SetupDatabase(listName.ListBaseFileName);
+                //codes = LoadCodes("codes.txt");
+                mDatabaseName = listName.ListBaseFileName;
+                mLoadedItems = await LoadXLS();
             }
+            // }
 
             UpdateCategoryLists(ref _definiteItems, new PurchaseCategories[] { PurchaseCategories.Definite });
             UpdateCategoryLists(ref _maybeItems, new PurchaseCategories[] { PurchaseCategories.Maybe });
@@ -254,10 +261,15 @@ namespace DCBSManager
 
         }
 
-        private String CheckForUpdatedList()
+        public static void DownloadList( string fileName)
         {
-            String updatedList = "";
-           
+            //download excel file
+            string fileURL = "http://media.dcbservice.com/downloads/" + fileName;
+            var downloadClient = new WebClient();
+            downloadClient.DownloadFile(fileURL, ".\\" + fileName);
+        }
+        public static String CheckForUpdatedList()
+        {      
 
             try
             {
@@ -296,12 +308,14 @@ namespace DCBSManager
 
                        if (found == false)
                        {
+
+                        return fileName;
                            //download excel file
-                           string fileURL = "http://media.dcbservice.com/downloads/" + fileName;
-                           var downloadClient = new WebClient();
-                           downloadClient.DownloadFile(fileURL, ".\\" + fileName);
-                           updatedList = Path.GetFileNameWithoutExtension(fileName);
-                           return updatedList;
+                           //string fileURL = "http://media.dcbservice.com/downloads/" + fileName;
+                           //var downloadClient = new WebClient();
+                           //downloadClient.DownloadFile(fileURL, ".\\" + fileName);
+                           //updatedList = Path.GetFileNameWithoutExtension(fileName);
+                           //return updatedList;
                        }
 
 
@@ -313,10 +327,10 @@ namespace DCBSManager
                 var blah = ex.ToString();
             }
 
-            return updatedList;
+            return "";
 
         }
-        public List<DCBSList> GetAvailableDatabases()
+        public static  List<DCBSList> GetAvailableDatabases()
         {
             var workingDir = new DirectoryInfo(@".");
             var files = from file in workingDir.EnumerateFiles(@"*.sqlite")
@@ -726,8 +740,9 @@ namespace DCBSManager
                                 var matchResult = Regex.Match(codeString, codePattern);
                                 if (matchResult.Success)
                                 {
-                                    //if (currentCategory == "Previews")
-                                    //{
+                                    //debug: only get a single category
+                                  //  if (currentCategory == "Dark Horse Comics")
+                                   // {
                                         newItem.DCBSOrderCode = codeString;
                                         newItem.Title = row.GetCell(TITLE).ToString();
                                         newItem.RetailPrice = double.Parse(row.GetCell(COST).ToString(), NumberStyles.Currency);

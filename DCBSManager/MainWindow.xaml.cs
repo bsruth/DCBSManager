@@ -63,9 +63,9 @@ namespace DCBSManager
             this._overallTotal.DataContext = _overallCostCalc;
 
             //load available databases
-            var fileList = mLL.GetAvailableDatabases();
+            var fileList = ListLoader.GetAvailableDatabases();
 
-            this.ListSelection.ItemsSource = mLL.GetAvailableDatabases();
+            this.ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
             this.ListSelection.SelectedIndex = 0;
         }
 
@@ -122,25 +122,45 @@ namespace DCBSManager
 
             this.Cursor = Cursors.Wait;
 
-            
+
+            var selectedList = e.AddedItems[0] as DCBSList;
+
+            if(selectedList.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
+            {
+                var newListName = ListLoader.CheckForUpdatedList();
+                if(String.IsNullOrEmpty(newListName))
+                {
+                    MessageBox.Show("No new list found.");
+                    return;
+                }
+
+                if(MessageBox.Show("New list available: " + System.IO.Path.GetFileNameWithoutExtension(newListName) + " Download?", 
+                    "New List Found", MessageBoxButton.YesNo) == MessageBoxResult.Yes )
+                {
+                    ListLoader.DownloadList(newListName);
+                    selectedList = new DCBSList();
+                    selectedList.ListBaseFileName = System.IO.Path.GetFileNameWithoutExtension(newListName);
+                    selectedList.ListItemKey = DCBSManager.DCBSList.ListItemKeys.Database;
+                }
+            }
 
             var results = Task.Run(async () =>
             {
 
-                return await mLL.LoadList(e.AddedItems[0] as DCBSList);
+                return await mLL.LoadList(selectedList);
             }).ContinueWith(taskResult =>
             {
                 App.Current.Dispatcher.BeginInvoke((Action)(() =>
                 {
                     try
                     {
-                        this.DCBSList.ItemsSource = taskResult.Result;  
+                        this.DCBSList.ItemsSource = taskResult.Result;
 
                         var b = e.AddedItems[0] as DCBSList;
 
                         if (b != null && b.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
                         {
-                            this.ListSelection.ItemsSource = mLL.GetAvailableDatabases();
+                            this.ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
                             this.ListSelection.Text = mLL.mDatabaseName;
                         }
                         this.Cursor = Cursors.Arrow;
@@ -150,7 +170,9 @@ namespace DCBSManager
                         var str = ex.ToString();
                     }
                 }));
-            });            
+            });
+
+
 
         }
 

@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.20617.1 PREVIEW
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCBSManager", "DCBSManager\DCBSManager.csproj", "{AFAEA496-4663-4030-9A8E-D5C64397BAAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCBSManager", "DCBSManager.csproj", "{AFAEA496-4663-4030-9A8E-D5C64397BAAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DCBSManagerTesting", "..\DCBSManagerTesting\DCBSManagerTesting.csproj", "{5E9327DC-5893-4AA0-A9C7-E1A3D1328ECD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{AFAEA496-4663-4030-9A8E-D5C64397BAAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFAEA496-4663-4030-9A8E-D5C64397BAAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFAEA496-4663-4030-9A8E-D5C64397BAAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E9327DC-5893-4AA0-A9C7-E1A3D1328ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E9327DC-5893-4AA0-A9C7-E1A3D1328ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E9327DC-5893-4AA0-A9C7-E1A3D1328ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E9327DC-5893-4AA0-A9C7-E1A3D1328ECD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
