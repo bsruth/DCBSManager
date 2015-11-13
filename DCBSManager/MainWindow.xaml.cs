@@ -100,16 +100,12 @@ namespace DCBSManager
             }
         }
 
-        private async void dumpSelectedItemsToExcel_Click(object sender, RoutedEventArgs e)
-        {
-            await mLL.DumpTabSeparatedValues("dumpFile.txt", mLL.GetSelectedItems());
-        }
-
-        private void goToDCBSUpload_Click(object sender, RoutedEventArgs e)
+        private async void goToDCBSUpload_Click(object sender, RoutedEventArgs e)
         {
             string url = "https://www.dcbservice.com/cart/orderupload";
+            var excelFile = await mLL.PrepareDCBSOrderExcelFileForUpload(mLL.GetSelectedItems());
+            Clipboard.SetText(excelFile);
             Process.Start(new ProcessStartInfo(url));
-
         }
                 
 

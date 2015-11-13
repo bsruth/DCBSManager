@@ -848,66 +848,63 @@ namespace DCBSManager
             return itemList;
         }
 
-        public async Task<bool> DumpTabSeparatedValues(string fileName, IList<DCBSItem> itemsToDump)
+        /// <summary>
+        /// Selects all items that will be ordered from DCBS in the DCBS order file to prepare it for uploading to the
+        /// website.
+        /// </summary>
+        /// <param name="itemsToDump">List of DCBS items</param>
+        /// <returns>The complete path to the excel file.</returns>
+        public async Task<string> PrepareDCBSOrderExcelFileForUpload(IList<DCBSItem> itemsToDump)
         {
-            string path = "" + mDatabaseName + ".xls";
-            List<DCBSItem> mDCBSItems = new List<DCBSItem>();
-            string currentCategory = "Previews";
-            bool headerProcessed = false;
-            using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
+            return await Task.Run(() =>
             {
-                var hssfworkbook = new HSSFWorkbook(file);
-                ISheet sheet = hssfworkbook.GetSheetAt(0);
-                System.Collections.IEnumerator rows = sheet.GetRowEnumerator();
-                while (rows.MoveNext())
+                string path = "" + mDatabaseName + ".xls";
+                string outPath = Path.GetFullPath(mDatabaseName + "_completed.xls");
+                List<DCBSItem> mDCBSItems = new List<DCBSItem>();
+                using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    IRow row = (HSSFRow)rows.Current;
-                    if (DISC <= row.LastCellNum)
+                    var hssfworkbook = new HSSFWorkbook(file);
+                    ISheet sheet = hssfworkbook.GetSheetAt(0);
+                    System.Collections.IEnumerator rows = sheet.GetRowEnumerator();
+                    while (rows.MoveNext())
                     {
-                        var cell = row.GetCell(CODE);
-                        if (cell != null)
+                        IRow row = (HSSFRow)rows.Current;
+                        if (DISC <= row.LastCellNum)
                         {
-                            string codeString = cell.ToString();
-                            if (codeString.Contains("BB1"))
+                            var cell = row.GetCell(CODE);
+                            if (cell != null)
                             {
-                                var checkCell = row.GetCell(0);
-                                checkCell.SetCellValue(1);
-                            }
-                            else
-                            {
-                                foreach (var item in itemsToDump)
+                                string codeString = cell.ToString();
+                                if (codeString.Contains("BB1"))
                                 {
-                                    if (item.PurchaseCategory == PurchaseCategories.Definite)
+                                    var checkCell = row.GetCell(0);
+                                    checkCell.SetCellValue(1);
+                                }
+                                else
+                                {
+                                    foreach (var item in itemsToDump)
                                     {
-                                        if (codeString == item.DCBSOrderCode)
+                                        if (item.PurchaseCategory == PurchaseCategories.Definite)
                                         {
-                                            var checkCell = row.GetCell(2);
-                                            checkCell.SetCellValue(1);
+                                            if (codeString == item.DCBSOrderCode)
+                                            {
+                                                var checkCell = row.GetCell(2);
+                                                checkCell.SetCellValue(1);
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
-                string outPath = mDatabaseName + "_completed.xls";
-                using (FileStream outFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
-                {
-                    hssfworkbook.Write(outFile);
-                }
-                
-            }
+                    using (FileStream outFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
+                    {
+                        hssfworkbook.Write(outFile);
+                    }
 
-            //using (var dumpFileStream = new StreamWriter(fileName))
-            //{
-
-            //    foreach (var item in itemsToDump)
-            //    {
-            //        var tsvString = item.ToTabSeparatedValues();
-            //        await dumpFileStream.WriteLineAsync(tsvString);
-            //    }
-            //}
-            return true;
+                }
+                return outPath;
+            });
         }
 
         public string[] GetPIDS(string[] codesToGet)

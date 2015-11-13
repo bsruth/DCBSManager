@@ -80,7 +80,6 @@
                         <dcbsmgr:TotalsDisplay x:Name="_overallTotal"   />
                     </Button.Content>
                 </Button>
-                <Button Content="Dump To Excel" Click="dumpSelectedItemsToExcel_Click" Height="50"/>
                 <Button Content="DCBS Upload" Click="goToDCBSUpload_Click" Height="50"/>
             </StackPanel>
         </Grid>
