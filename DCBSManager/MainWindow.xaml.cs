@@ -157,7 +157,7 @@ namespace DCBSManager
                         if (b != null && b.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
                         {
                             this.ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
-                            this.ListSelection.Text = mLL.mDatabaseName;
+                            this.ListSelection.SelectedIndex = 0;
                         }
                         this.Cursor = Cursors.Arrow;
                     }
