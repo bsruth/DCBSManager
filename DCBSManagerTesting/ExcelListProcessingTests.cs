@@ -31,7 +31,7 @@ namespace DCBSManagerTesting
             string listName = "November2015";
             string dbFilePath = @"November2015.sqlite";
             myLoader.SetupDatabase(listName);
-            var dbLoadingTask = myLoader.LoadXLS2(listName, "Previews");
+            var dbLoadingTask = myLoader.LoadXLS(listName, "Previews");
             Task.WaitAll(dbLoadingTask);
             var awaiter = dbLoadingTask.GetAwaiter();
             var itemList = awaiter.GetResult();

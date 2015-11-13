@@ -80,7 +80,18 @@
                         <dcbsmgr:TotalsDisplay x:Name="_overallTotal"   />
                     </Button.Content>
                 </Button>
-                <Button Content="DCBS Upload" Click="goToDCBSUpload_Click" Height="50"/>
+                <Button Content="DCBS Upload" Click="goToDCBSUpload_Click" Height="50">
+                    <Button.ToolTip>
+                        <TextBlock>
+                            Opens the DCBS order upload site and copies the file path to the clipboard.
+                            <LineBreak/>
+                            Click &quot;Choose File&quot; on the website; paste the file path to upload;
+                            <LineBreak/>
+                            click &quot;Open&quot; then click &quot;Upload&quot;.
+                        </TextBlock>
+                    </Button.ToolTip>
+                </Button>
+
             </StackPanel>
         </Grid>
 
