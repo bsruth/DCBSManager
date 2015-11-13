@@ -44,7 +44,7 @@
                 </ListView.ItemTemplate>
             </ListView>
             <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Visibility="{Binding NewListLoading, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center">
-                <TextBlock Text="Loading List  " HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding ListLoadingText}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0" />
                 <ProgressBar Height="20" Width="200" IsIndeterminate="True"/>
             </StackPanel>
 
