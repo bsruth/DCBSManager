@@ -556,7 +556,7 @@ namespace DCBSManager
                                 if (ret.IsDBNull(8) == true)
                                 {
                                     item.ThumbnailRawBytes = null;
-                                    item.Thumbnail = LoadDefaultBitmapImage();
+                                    item.Thumbnail = await LoadDefaultBitmapImage();
                                 }
                                 else
                                 {
@@ -689,17 +689,17 @@ namespace DCBSManager
 
         }
 
-        public static  BitmapImage LoadDefaultBitmapImage()
+        public static async Task<BitmapImage> LoadDefaultBitmapImage()
         {
             BitmapImage defaultImage = null;
-            //await App.Current.Dispatcher.BeginInvoke((Action)(() =>
-            //{
+            await App.Current.Dispatcher.BeginInvoke((Action)(() =>
+            {
                 defaultImage  = new BitmapImage();
                 defaultImage .BeginInit();
                 defaultImage .UriSource = new Uri("pack://application:,,,/DCBSManager;component/Images/no_image.jpg", UriKind.Absolute);
                 defaultImage .EndInit();
 
-            //}));
+            }));
 
             return defaultImage;
         }
@@ -789,7 +789,6 @@ namespace DCBSManager
                                             newItem.DCBSDiscount = row.GetCell(DISC).ToString();
                                             newItem.DCBSPrice = double.Parse(row.GetCell(DCBS).ToString(), NumberStyles.Currency);
                                             newItem.Category = currentCategory;
-                                            newItem.Thumbnail = LoadDefaultBitmapImage();
                                             newItem.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
                                             mDCBSItems.Add(newItem);
                                         }
@@ -839,7 +838,7 @@ namespace DCBSManager
                 else
                 {
 
-                    item.Thumbnail = LoadDefaultBitmapImage();
+                    item.Thumbnail = await LoadDefaultBitmapImage();
                 }
                 item.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
                 AddItemToDatabase(item);
