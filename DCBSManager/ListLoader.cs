@@ -258,21 +258,21 @@ namespace DCBSManager
             }
             // }
 
-            UpdateCategoryLists(ref _definiteItems, new PurchaseCategories[] { PurchaseCategories.Definite });
-            UpdateCategoryLists(ref _maybeItems, new PurchaseCategories[] { PurchaseCategories.Maybe });
-            UpdateCategoryLists(ref _retailItems, new PurchaseCategories[] { PurchaseCategories.Retail });
-            UpdateCategoryLists(ref _purchaseItems, new PurchaseCategories[] { PurchaseCategories.Retail, PurchaseCategories.Definite });
+            
+            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite);
+            UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe );
+            UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail );
+            UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
 
             NewListLoading = false;
             return mLoadedItems;
         }
 
 
-        private void UpdateCategoryLists(ref ObservableCollection<DCBSItem> collectionToUpdate, PurchaseCategories[] categoryToUpdate) {
-
+        private void UpdateCategoryLists(ref ObservableCollection<DCBSItem> collectionToUpdate, params PurchaseCategories[] categoryToUpdate) {
             collectionToUpdate.Clear();
-            var selectedItems = this.mLoadedItems.Where(item =>  categoryToUpdate.Contains(item.PurchaseCategory));
-            foreach (var item in selectedItems)
+            var itemsToAdd = from item in mLoadedItems where categoryToUpdate.Contains(item.PurchaseCategory) select item;
+            foreach (var item in itemsToAdd)
             {
                 collectionToUpdate.Add(item);
             }
@@ -619,10 +619,10 @@ namespace DCBSManager
             }
 
 
-            UpdateCategoryLists(ref _definiteItems, new PurchaseCategories[]{PurchaseCategories.Definite});
-            UpdateCategoryLists(ref _maybeItems, new PurchaseCategories[]{PurchaseCategories.Maybe});
-            UpdateCategoryLists(ref _retailItems, new PurchaseCategories[]{PurchaseCategories.Retail});
-            UpdateCategoryLists(ref _purchaseItems, new PurchaseCategories[] { PurchaseCategories.Retail, PurchaseCategories.Definite });
+            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite);
+            UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe);
+            UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail);
+            UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
             return true;
         }
 
