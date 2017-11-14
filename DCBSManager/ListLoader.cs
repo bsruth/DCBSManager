@@ -51,8 +51,7 @@ namespace DCBSManager
         bool _loadingNewList = false;
         string _listLoadingText = "Loading";
 
-        //Database information
-        string mDatabaseName;
+        //Database information        
         const string all_items_table_name = "all_items";
         const string col_code = "code";
         const int col_code_index = 0;
@@ -189,6 +188,7 @@ namespace DCBSManager
             }
         }
 
+        public DCBSList CurrentList { get; private set; }
         #endregion
 
 
@@ -205,13 +205,12 @@ namespace DCBSManager
             if (File.Exists(databaseFileName))
             {
                 LoadedItems = await LoadFromDatabase(listName.ListBaseFileName);
-                mDatabaseName = listName.ListBaseFileName;
+                CurrentList = listName;
             }
             else
             {
                 SetupDatabase(listName.ListBaseFileName);
-                //codes = LoadCodes("codes.txt");
-                mDatabaseName = listName.ListBaseFileName;
+                CurrentList = listName;
                 LoadedItems = await LoadXLS(listName.ListBaseFileName, "");
             }
 
@@ -374,7 +373,7 @@ namespace DCBSManager
 
         public bool AddItemToDatabase(DCBSItem item)
         {
-            using (var conn = new SQLiteConnection(@"Data Source=" + mDatabaseName + ".sqlite;Version=3;"))
+            using (var conn = new SQLiteConnection(@"Data Source=" + CurrentList.ListBaseFileName + ".sqlite;Version=3;"))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
@@ -490,7 +489,7 @@ namespace DCBSManager
                 return false;
             }
 
-            using (var conn = new SQLiteConnection(@"Data Source=" + mDatabaseName + ".sqlite;Version=3;"))
+            using (var conn = new SQLiteConnection(@"Data Source=" + CurrentList.ListBaseFileName + ".sqlite;Version=3;"))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
@@ -703,8 +702,8 @@ namespace DCBSManager
         {
             return await Task.Run(() =>
             {
-                string path = "" + mDatabaseName + ".xls";
-                string outPath = Path.GetFullPath(mDatabaseName + "_completed.xls");
+                string path = "" + CurrentList.ListBaseFileName+ ".xls";
+                string outPath = Path.GetFullPath(CurrentList.ListBaseFileName + "_completed.xls");
                 List<DCBSItem> mDCBSItems = new List<DCBSItem>();
                 using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
