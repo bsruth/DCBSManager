@@ -40,10 +40,6 @@ namespace DCBSManager
     {
 
         List<string> codes = new List<string>();
-        List<DCBSItem> mSelectedItems = new System.Collections.Generic.List<DCBSItem>();
-        Queue<DCBSItem> mItemsLeftToAddToCart = new Queue<DCBSItem>();
-        WebBrowser mWebBrowser = new WebBrowser();
-
 
         ObservableCollection<DCBSItem> _definiteItems = new ObservableCollection<DCBSItem>();
         ObservableCollection<DCBSItem> _maybeItems = new ObservableCollection<DCBSItem>();
@@ -372,37 +368,6 @@ namespace DCBSManager
             return cartItems.ToList();
         }
 
-        public void AddToCart(WebBrowser webBrowser)
-        {
-            var cartItems = GetDCBSCartItems();
-            mItemsLeftToAddToCart = new Queue<DCBSItem>(cartItems);
-            
-            mWebBrowser = webBrowser;
-            mWebBrowser.Navigated += webBrowser_Navigated;
-            if(mItemsLeftToAddToCart.Count > 0) {
-                AddToWebBrowser(mWebBrowser, mItemsLeftToAddToCart.Dequeue());
-            }
-           
-        }
-
-        private void AddToWebBrowser(WebBrowser webBrowser, DCBSItem item)
-        {
-            string addToCartURI = "http://www.dcbservice.com/_cart.aspx?id=" + item.PID;
-            webBrowser.Navigate(addToCartURI);
-        }
-
-        void webBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
-        {
-            if (mItemsLeftToAddToCart.Count > 0)
-            {
-                AddToWebBrowser(mWebBrowser, mItemsLeftToAddToCart.Dequeue());
-            }
-            else
-            {
-                mWebBrowser.Navigated -= webBrowser_Navigated;
-            }
-        }
-
         void ClearDB(string databaseFileName)
         {
             using (var conn = new SQLiteConnection(@"Data Source=" + databaseFileName + ".sqlite;Version=3;"))
@@ -413,7 +378,6 @@ namespace DCBSManager
                     cmd.CommandText = "DROP TABLE all_items;";
                     var ret = cmd.ExecuteNonQuery();
                 }
-
             }
         }
 
