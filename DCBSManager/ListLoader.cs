@@ -436,15 +436,17 @@ namespace DCBSManager
                             }
                             try
                             {
-                                var item = new DCBSItem();
-                                item.DCBSOrderCode = ret.GetFieldValue<string>(col_code_index);
-                                item.Title = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(col_title_index));
-                                item.RetailPrice = ret.GetFieldValue<double>(col_retail_index);
-                                item.DCBSDiscount = ret.GetFieldValue<string>(col_discount_index);
-                                item.Category = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(col_category_index));
-                                item.DCBSPrice = ret.GetFieldValue<double>(col_dcbsprice_index);
-                                item.PID = ret.GetFieldValue<Int64>(col_pid_index);
-                                item.Description = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(col_description_index));
+                                var item = new DCBSItem
+                                {
+                                    DCBSOrderCode = ret.GetFieldValue<string>(col_code_index),
+                                    Title = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(col_title_index)),
+                                    RetailPrice = ret.GetFieldValue<double>(col_retail_index),
+                                    DCBSDiscount = ret.GetFieldValue<string>(col_discount_index),
+                                    Category = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(col_category_index)),
+                                    DCBSPrice = ret.GetFieldValue<double>(col_dcbsprice_index),
+                                    PID = ret.GetFieldValue<Int64>(col_pid_index),
+                                    Description = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(col_description_index))
+                                };
                                 if (ret.IsDBNull(col_thumbnail_index) == true)
                                 {
                                     item.ThumbnailRawBytes = null;
