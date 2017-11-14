@@ -520,20 +520,13 @@ namespace DCBSManager
         /// <returns></returns>
         static public async Task<List<DCBSItem>> FilterList(string filterText, List<DCBSItem> listToFilter)
         {
-            
-            var filterTask = Task<List<DCBSItem>>.Factory.StartNew(() =>  {
-
-                return listToFilter.Where(item =>
-                {
-
-                    return (item.Title.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0) ||
-                           (item.Category.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0);
-                 }).ToList();
-            });
-
-            List<DCBSItem> filteredList = await filterTask;
-
-            return filteredList;
+            return await Task<List<DCBSItem>>.Factory.StartNew(() =>
+            {
+                return (from item in listToFilter
+                        where item.Title.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            item.Category.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0
+                        select item).ToList();
+            }); ;
         }
 
         public static async Task<BitmapImage> BitmapImageFromBytes(byte[] bytes)
