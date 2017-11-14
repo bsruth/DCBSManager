@@ -330,7 +330,7 @@ namespace DCBSManager
                 dcbsList.ListBaseFileName = file;
                 dcbsList.ListItemKey = DCBSList.ListItemKeys.Database;
 
-                             string fileNamePattern = @"([a-zA-Z]+)(\d{4})";
+                string fileNamePattern = @"([a-zA-Z]+)(\d{4})";
                 MatchCollection fileNameMatches;
                 Regex filenameRegex = new Regex(fileNamePattern);
                 fileNameMatches = filenameRegex.Matches(file);
@@ -414,7 +414,6 @@ namespace DCBSManager
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    //cmd.CommandText = "INSERT INTO all_items (code, title) VALUES (" + item.CODE + "," + item.Title + ");";
                     cmd.CommandText = @"INSERT INTO all_items (code, title, retail_price, discount,
                                     category, dcbs_price, pid, description, thumbnail, purchase_category) VALUES
                                     (@CODE,@TITLE,@RETAIL,@DISCOUNT,@CATEGORY,@DCBSPRICE,@PID,
@@ -588,26 +587,23 @@ namespace DCBSManager
                 {
                     try
                     {
-                        stream = new MemoryStream(bytes);
-                        stream.Seek(0, SeekOrigin.Begin);
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(stream);
-                        image = new BitmapImage();
-                        image.BeginInit();
-                        MemoryStream ms = new MemoryStream();
-                        img.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
-                        ms.Seek(0, SeekOrigin.Begin);
-                        image.StreamSource = ms;
-                        image.StreamSource.Seek(0, SeekOrigin.Begin);
-                        image.EndInit();
+                        using (stream = new MemoryStream(bytes))
+                        {
+                            stream.Seek(0, SeekOrigin.Begin);
+                            System.Drawing.Image img = System.Drawing.Image.FromStream(stream);
+                            image = new BitmapImage();
+                            image.BeginInit();
+                            MemoryStream ms = new MemoryStream();
+                            img.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                            ms.Seek(0, SeekOrigin.Begin);
+                            image.StreamSource = ms;
+                            image.StreamSource.Seek(0, SeekOrigin.Begin);
+                            image.EndInit();
+                        }
                     }
                     catch (Exception)
                     {
 
-                    }
-                    finally
-                    {
-                        stream.Close();
-                        stream.Dispose();
                     }
                 }));
 
