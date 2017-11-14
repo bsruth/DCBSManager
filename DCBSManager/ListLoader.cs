@@ -41,8 +41,6 @@ namespace DCBSManager
 
         List<string> codes = new List<string>();
         List<DCBSItem> mSelectedItems = new System.Collections.Generic.List<DCBSItem>();
-        public List<DCBSItem> mLoadedItems;
-        SQLiteConnection mDatabaseConnection = null;
         Queue<DCBSItem> mItemsLeftToAddToCart = new Queue<DCBSItem>();
         WebBrowser mWebBrowser = new WebBrowser();
 
@@ -52,10 +50,6 @@ namespace DCBSManager
         ObservableCollection<DCBSItem> _retailItems = new ObservableCollection<DCBSItem>();
         ObservableCollection<DCBSItem> _purchaseItems = new ObservableCollection<DCBSItem>();
 
-
-
-        int _selectedItemsCount = 0;
-        int _dcbsItemsCount = 0;
         int _retailItemsCount = 0;
         int _maybeItemsCount = 0;
         bool _loadingNewList = false;
@@ -84,6 +78,8 @@ namespace DCBSManager
 
 
         #region Properties
+
+        public List<DCBSItem> LoadedItems { get; set; }
 
         public bool NewListLoading
         {
@@ -238,7 +234,7 @@ namespace DCBSManager
             //        SetupDatabase(updatedList);
             //        //codes = LoadCodes("codes.txt");
             //        mDatabaseName = updatedList;
-            //        mLoadedItems = await LoadXLS();
+            //        LoadedItems = await LoadXLS();
             //    }
                 
             //}
@@ -247,14 +243,14 @@ namespace DCBSManager
                 string databaseFileName = listName.ListBaseFileName + ".sqlite";
                 if (File.Exists(databaseFileName))
                 {
-                    mLoadedItems = await LoadFromDatabase(listName.ListBaseFileName);
+                    LoadedItems = await LoadFromDatabase(listName.ListBaseFileName);
                     mDatabaseName = listName.ListBaseFileName;
                 } else
             {
                 SetupDatabase(listName.ListBaseFileName);
                 //codes = LoadCodes("codes.txt");
                 mDatabaseName = listName.ListBaseFileName;
-                mLoadedItems = await LoadXLS(listName.ListBaseFileName, "");
+                LoadedItems = await LoadXLS(listName.ListBaseFileName, "");
             }
             // }
 
@@ -265,13 +261,13 @@ namespace DCBSManager
             UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
 
             NewListLoading = false;
-            return mLoadedItems;
+            return LoadedItems;
         }
 
 
         private void UpdateCategoryLists(ref ObservableCollection<DCBSItem> collectionToUpdate, params PurchaseCategories[] categoryToUpdate) {
             collectionToUpdate.Clear();
-            var itemsToAdd = from item in mLoadedItems where categoryToUpdate.Contains(item.PurchaseCategory) select item;
+            var itemsToAdd = from item in LoadedItems where categoryToUpdate.Contains(item.PurchaseCategory) select item;
             foreach (var item in itemsToAdd)
             {
                 collectionToUpdate.Add(item);
@@ -393,7 +389,7 @@ namespace DCBSManager
         public List<DCBSItem> GetSelectedItems()
         {
 
-            var selectedList = this.mLoadedItems
+            var selectedList = this.LoadedItems
                 .Where(item => item.PurchaseCategory != PurchaseCategories.None);
 
             return selectedList.ToList();
@@ -401,7 +397,7 @@ namespace DCBSManager
 
         public List<DCBSItem> GetDCBSCartItems()
         {
-            var cartItems = this.mLoadedItems
+            var cartItems = this.LoadedItems
                 .Where(item => item.PurchaseCategory == PurchaseCategories.Definite);
 
             return cartItems.ToList();

@@ -95,7 +95,7 @@ namespace DCBSManager
                 }
                 else
                 {
-                    this.DCBSList.ItemsSource = await mLL.FilterList(searchText, mLL.mLoadedItems);
+                    this.DCBSList.ItemsSource = await mLL.FilterList(searchText, mLL.LoadedItems);
                 }
             }
         }
@@ -211,7 +211,7 @@ namespace DCBSManager
         private async void _showAllItems_Click(object sender, RoutedEventArgs e)
         {
             var searchString = titleSearch.Text;
-            DCBSList.ItemsSource = await mLL.FilterList(searchString, mLL.mLoadedItems);
+            DCBSList.ItemsSource = await mLL.FilterList(searchString, mLL.LoadedItems);
         }
     }
 }
