@@ -225,39 +225,24 @@ namespace DCBSManager
         {
             NewListLoading = true;
 
-            //if (listName.ListItemKey == DCBSList.ListItemKeys.NewList)
-            //{
-               
-            //    var updatedList = CheckForUpdatedList();
-            //    if (updatedList != "")
-            //    {
-            //        SetupDatabase(updatedList);
-            //        //codes = LoadCodes("codes.txt");
-            //        mDatabaseName = updatedList;
-            //        LoadedItems = await LoadXLS();
-            //    }
-                
-            //}
-            //else
-            //{
-                string databaseFileName = listName.ListBaseFileName + ".sqlite";
-                if (File.Exists(databaseFileName))
-                {
-                    LoadedItems = await LoadFromDatabase(listName.ListBaseFileName);
-                    mDatabaseName = listName.ListBaseFileName;
-                } else
+            string databaseFileName = listName.ListBaseFileName + ".sqlite";
+            if (File.Exists(databaseFileName))
+            {
+                LoadedItems = await LoadFromDatabase(listName.ListBaseFileName);
+                mDatabaseName = listName.ListBaseFileName;
+            }
+            else
             {
                 SetupDatabase(listName.ListBaseFileName);
                 //codes = LoadCodes("codes.txt");
                 mDatabaseName = listName.ListBaseFileName;
                 LoadedItems = await LoadXLS(listName.ListBaseFileName, "");
             }
-            // }
 
-            
+
             UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite);
-            UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe );
-            UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail );
+            UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe);
+            UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail);
             UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
 
             NewListLoading = false;
@@ -322,14 +307,7 @@ namespace DCBSManager
 
                        if (found == false)
                        {
-
                         return fileName;
-                           //download excel file
-                           //string fileURL = "http://media.dcbservice.com/downloads/" + fileName;
-                           //var downloadClient = new WebClient();
-                           //downloadClient.DownloadFile(fileURL, ".\\" + fileName);
-                           //updatedList = Path.GetFileNameWithoutExtension(fileName);
-                           //return updatedList;
                        }
 
 
@@ -349,15 +327,6 @@ namespace DCBSManager
             var workingDir = new DirectoryInfo(@".");
             var files = from file in workingDir.EnumerateFiles(@"*.sqlite")
                         select Path.GetFileNameWithoutExtension(file.Name);
-            //            {
-            //                ListBaseFileName = Path.GetFileNameWithoutExtension(file.Name),
-            //                 string fileNamePattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
-            //    MatchCollection pidMatches;
-            //    Regex pidRegex = new Regex(pidPattern);
-            //    pidMatches = pidRegex.Matches(dynamicPageText);
-
-            //                ListItemKey = DCBSList.ListItemKeys.Database
-            //            };
 
             var filesList = new List<DCBSList>();
             foreach(var file in files) {
