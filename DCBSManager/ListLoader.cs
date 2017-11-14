@@ -529,6 +529,13 @@ namespace DCBSManager
             }); ;
         }
 
+        public List<DCBSItem> FilterToPurchaseCategory(params PurchaseCategories[] categories)
+        {
+            return (from item in LoadedItems
+                   where categories.Contains(item.PurchaseCategory)
+                   select item).ToList();
+        }
+
         public static async Task<BitmapImage> BitmapImageFromBytes(byte[] bytes)
         {
             BitmapImage image = null;
