@@ -20,6 +20,8 @@ namespace DCBSManager
 {
     public class DCBSList
     {
+        public static string NewListText = "Check for Updates...";
+
         public enum ListItemKeys
         {
             Database,
@@ -49,6 +51,8 @@ namespace DCBSManager
         bool _loadingNewList = false;
         string _listLoadingText = "Loading";
 
+        //Database information
+        string mDatabaseName;
         const string all_items_table_name = "all_items";
         const string col_code = "code";
         const int col_code_index = 0;
@@ -70,10 +74,8 @@ namespace DCBSManager
         const int col_thumbnail_index = 8;
         const string col_purchase_category = "purchase_category";
         const int col_purchase_category_index = 9;
-
-
-        string mDatabaseName;
-
+        
+        //Excel column indexes
         const int CODE = 1;
         const int TITLE = 3;
         const int COST = 4;
@@ -325,7 +327,7 @@ namespace DCBSManager
                 filesList.Add(dcbsList);
             }
             var sortedFiles = filesList.OrderByDescending(file => file.ListItemString).ToList();
-            sortedFiles.Add(new DCBSList { ListBaseFileName = "Check for Updates...", ListItemKey = DCBSList.ListItemKeys.NewList, ListItemString = "Check for Updates..." });
+            sortedFiles.Add(new DCBSList { ListBaseFileName = DCBSList.NewListText, ListItemKey = DCBSList.ListItemKeys.NewList, ListItemString = DCBSList.NewListText });
             return sortedFiles;
         }
 
