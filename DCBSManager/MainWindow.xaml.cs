@@ -56,7 +56,7 @@ namespace DCBSManager
             _overallTotal.DataContext = _overallCostCalc;
 
            ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
-            ListSelection.SelectedIndex = 0;
+           ListSelection.SelectedIndex = ListSelection.Items.Count > 0 ? 1 : 0;
         }
 
         private async void titleSearch_Search(object sender, RoutedEventArgs e)
@@ -132,7 +132,7 @@ namespace DCBSManager
                         if (e.AddedItems[0] is DCBSList list && list.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
                         {
                             ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
-                            ListSelection.SelectedIndex = 0;
+                            ListSelection.SelectedIndex = 1;
                         }
                     }
                     catch (Exception ex)

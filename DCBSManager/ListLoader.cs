@@ -12,7 +12,6 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Web;
 
@@ -332,7 +331,7 @@ namespace DCBSManager
                 filesList.Add(dcbsList);
             }
             var sortedFiles = filesList.OrderByDescending(file => file.ListItemString).ToList();
-            sortedFiles.Add(new DCBSList (DCBSList.NewListText, DCBSList.ListItemKeys.NewList));
+            sortedFiles.Insert(0, new DCBSList(DCBSList.NewListText, DCBSList.ListItemKeys.NewList));
             return sortedFiles;
         }
 
