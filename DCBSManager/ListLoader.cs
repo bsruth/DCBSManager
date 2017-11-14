@@ -53,15 +53,25 @@ namespace DCBSManager
 
         const string all_items_table_name = "all_items";
         const string col_code = "code";
+        const int col_code_index = 0;
         const string col_title = "title";
+        const int col_title_index = 1;
         const string col_retail = "retail";
+        const int col_retail_index = 2;
         const string col_discount = "discount";
+        const int col_discount_index = 3;
         const string col_category = "category";
+        const int col_category_index = 4;
         const string col_dcbsprice = "dcbs_price";
+        const int col_dcbsprice_index = 5;
         const string col_pid = "pid";
+        const int col_pid_index = 6;
         const string col_description = "description";
+        const int col_description_index = 7;
         const string col_thumbnail = "thumbnail";
+        const int col_thumbnail_index = 8;
         const string col_purchase_category = "purchase_category";
+        const int col_purchase_category_index = 9;
 
 
         public string mDatabaseName;
@@ -473,27 +483,27 @@ namespace DCBSManager
                             try
                             {
                                 var item = new DCBSItem();
-                                item.DCBSOrderCode = ret.GetFieldValue<string>(0);
-                                item.Title = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(1));
-                                item.RetailPrice = ret.GetFieldValue<double>(2);
-                                item.DCBSDiscount = ret.GetFieldValue<string>(3);
-                                item.Category = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(4));
-                                item.DCBSPrice = ret.GetFieldValue<double>(5);
-                                item.PID = ret.GetFieldValue<Int64>(6);
-                                item.Description = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(7));
-                                if (ret.IsDBNull(8) == true)
+                                item.DCBSOrderCode = ret.GetFieldValue<string>(col_code_index);
+                                item.Title = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(col_title_index));
+                                item.RetailPrice = ret.GetFieldValue<double>(col_retail_index);
+                                item.DCBSDiscount = ret.GetFieldValue<string>(col_discount_index);
+                                item.Category = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(col_category_index));
+                                item.DCBSPrice = ret.GetFieldValue<double>(col_dcbsprice_index);
+                                item.PID = ret.GetFieldValue<Int64>(col_pid_index);
+                                item.Description = HttpUtility.HtmlDecode(ret.GetFieldValue<string>(col_description_index));
+                                if (ret.IsDBNull(col_thumbnail_index) == true)
                                 {
                                     item.ThumbnailRawBytes = null;
                                     item.Thumbnail = await LoadDefaultBitmapImage();
                                 }
                                 else
                                 {
-                                    item.ThumbnailRawBytes = ret.GetFieldValue<byte[]>(8);
+                                    item.ThumbnailRawBytes = ret.GetFieldValue<byte[]>(col_thumbnail_index);
                                     item.Thumbnail = await BitmapImageFromBytes(item.ThumbnailRawBytes);
 
                                 }
 
-                                item.PurchaseCategory = (PurchaseCategories)ret.GetFieldValue<Int64>(9);
+                                item.PurchaseCategory = (PurchaseCategories)ret.GetFieldValue<Int64>(col_purchase_category_index);
                                 item.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
                                 itemsList.Add(item);
                             }
