@@ -1,22 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.IO;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
-using System.Data.SQLite;
 using System.Diagnostics;
 
 namespace DCBSManager
@@ -43,7 +31,7 @@ namespace DCBSManager
             this.DataContext = mLL;
 
             _dcbsCostCalc = new CostCalculator(mLL.DefiniteItems, PurchaseCategories.Definite);
-            _dcbsCostCalc.ShippingCost = 6.95;
+            _dcbsCostCalc.ShippingCost = 7.50;
             _dcbsCostCalc.IndividualBagBoardCost = 0.12;
 
             _maybeCostCalc = new CostCalculator(mLL.MaybeItems, PurchaseCategories.Maybe);
@@ -54,7 +42,7 @@ namespace DCBSManager
 
             _overallCostCalc = new CostCalculator(mLL.PurchaseItems, PurchaseCategories.Total);
             _overallCostCalc.RetailTaxPercentage = 0.093;
-            _overallCostCalc.ShippingCost = 6.95;
+            _overallCostCalc.ShippingCost = 7.50;
             _overallCostCalc.IndividualBagBoardCost = 0.12;
 
             this._dcbsTotal.DataContext = _dcbsCostCalc;
@@ -67,19 +55,6 @@ namespace DCBSManager
 
             this.ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
             this.ListSelection.SelectedIndex = 0;
-        }
-
-       
-
-        public void AddToCart()
-        {
-
-            /*if (pidIndex < pids.Length)
-            {
-                string addToCartURI = "http://www.dcbservice.com/_cart.aspx?id=" + pids[pidIndex];
-                this.webBrowser.Navigate(addToCartURI);
-                pidIndex++;
-            }*/
         }
 
         private async void titleSearch_Search(object sender, RoutedEventArgs e)
@@ -107,7 +82,6 @@ namespace DCBSManager
             Clipboard.SetText(excelFile);
             Process.Start(new ProcessStartInfo(url));
         }
-                
 
         private void ListSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
