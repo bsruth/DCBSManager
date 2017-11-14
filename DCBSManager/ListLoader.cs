@@ -528,6 +528,11 @@ namespace DCBSManager
         {
             return await Task<List<DCBSItem>>.Factory.StartNew(() =>
             {
+                if(string.IsNullOrEmpty(filterText))
+                {
+                    return listToFilter;
+                }
+
                 return (from item in listToFilter
                         where item.Title.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0 ||
                             item.Category.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0

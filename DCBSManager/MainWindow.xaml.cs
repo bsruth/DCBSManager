@@ -64,16 +64,7 @@ namespace DCBSManager
             var searchTextBox = sender as SearchTextBox;
             if (searchTextBox != null)
             {
-                var searchText = searchTextBox.Text;
-                var visibleItems = DCBSList.ItemsSource as List<DCBSItem>;
-                if ( (visibleItems != null) && (searchText != ""))
-                {
-                    this.DCBSList.ItemsSource = await ListLoader.FilterList(searchText, visibleItems);
-                }
-                else
-                {
-                    this.DCBSList.ItemsSource = await ListLoader.FilterList(searchText, mLL.LoadedItems);
-                }
+                DCBSList.ItemsSource = await ListLoader.FilterList(searchTextBox.Text, mLL.LoadedItems);
             }
         }
 
