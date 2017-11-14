@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Diagnostics;
 
 namespace DCBSManager
@@ -93,9 +92,14 @@ namespace DCBSManager
                 return;
             }
 
-            var selectedList = e.AddedItems[0] as DCBSList;
+            var newSelectedList = e.AddedItems[0] as DCBSList;
+            if(newSelectedList == mLL.CurrentList)
+            {
+                return;
+            }
 
-            if(selectedList.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
+            var oldSelectedList = e.RemovedItems.Count > 0 ? e.RemovedItems[0] : null;
+            if (newSelectedList.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
             {
                 var newListName = ListLoader.CheckForUpdatedList();
                 if(String.IsNullOrEmpty(newListName))
@@ -107,30 +111,28 @@ namespace DCBSManager
                 if(MessageBox.Show("New list available: " + System.IO.Path.GetFileNameWithoutExtension(newListName) + " Download?", 
                     "New List Found", MessageBoxButton.YesNo) == MessageBoxResult.Yes )
                 {
-                    selectedList = ListLoader.DownloadList(newListName); 
+                    newSelectedList = ListLoader.DownloadList(newListName); 
                 } else
                 {
+                    ListSelection.SelectedItem = oldSelectedList;
                     return;
                 }
             }
 
             var results = Task.Run(async () =>
             {
-                return await mLL.LoadList(selectedList);
+                return await mLL.LoadList(newSelectedList);
             }).ContinueWith(taskResult =>
             {
                 App.Current.Dispatcher.BeginInvoke((Action)(() =>
                 {
                     try
                     {
-                        this.DCBSList.ItemsSource = taskResult.Result;
-
-                        var b = e.AddedItems[0] as DCBSList;
-
-                        if (b != null && b.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
+                        DCBSList.ItemsSource = taskResult.Result;
+                        if (e.AddedItems[0] is DCBSList list && list.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
                         {
-                            this.ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
-                            this.ListSelection.SelectedIndex = 0;
+                            ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
+                            ListSelection.SelectedIndex = 0;
                         }
                     }
                     catch (Exception ex)
