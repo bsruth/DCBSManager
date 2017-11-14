@@ -518,7 +518,7 @@ namespace DCBSManager
         /// </summary>
         /// <param name="filterText"></param>
         /// <returns></returns>
-        public async Task<List<DCBSItem>> FilterList(string filterText, List<DCBSItem> listToFilter)
+        static public async Task<List<DCBSItem>> FilterList(string filterText, List<DCBSItem> listToFilter)
         {
             
             var filterTask = Task<List<DCBSItem>>.Factory.StartNew(() =>  {

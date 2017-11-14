@@ -66,11 +66,11 @@ namespace DCBSManager
                 var visibleItems = DCBSList.ItemsSource as List<DCBSItem>;
                 if ( (visibleItems != null) && (searchText != ""))
                 {
-                    this.DCBSList.ItemsSource = await mLL.FilterList(searchText, visibleItems);
+                    this.DCBSList.ItemsSource = await ListLoader.FilterList(searchText, visibleItems);
                 }
                 else
                 {
-                    this.DCBSList.ItemsSource = await mLL.FilterList(searchText, mLL.LoadedItems);
+                    this.DCBSList.ItemsSource = await ListLoader.FilterList(searchText, mLL.LoadedItems);
                 }
             }
         }
@@ -152,7 +152,7 @@ namespace DCBSManager
             var maybeItems = selectedItems
                 .Where(item => item.PurchaseCategory == PurchaseCategories.Maybe);
             var searchString = titleSearch.Text;
-            DCBSList.ItemsSource = await mLL.FilterList(searchString, maybeItems.ToList());
+            DCBSList.ItemsSource = await ListLoader.FilterList(searchString, maybeItems.ToList());
         }
 
         private async void definiteFilter_Click(object sender, RoutedEventArgs e)
@@ -161,7 +161,7 @@ namespace DCBSManager
             var definiteItems = selectedItems
                 .Where(item => ( (item.PurchaseCategory == PurchaseCategories.Retail) || (item.PurchaseCategory == PurchaseCategories.Definite)));
             var searchString = titleSearch.Text;
-            DCBSList.ItemsSource = await mLL.FilterList(searchString, definiteItems.ToList());
+            DCBSList.ItemsSource = await ListLoader.FilterList(searchString, definiteItems.ToList());
         }
 
         private async void _dcbsFilter_Click(object sender, RoutedEventArgs e)
@@ -170,7 +170,7 @@ namespace DCBSManager
             var dcbsItems = selectedItems
                 .Where(item => (item.PurchaseCategory == PurchaseCategories.Definite));
              var searchString = titleSearch.Text;
-            DCBSList.ItemsSource = await mLL.FilterList(searchString, dcbsItems.ToList());
+            DCBSList.ItemsSource = await ListLoader.FilterList(searchString, dcbsItems.ToList());
         }
 
         private async void _retailFilter_Click(object sender, RoutedEventArgs e)
@@ -179,13 +179,13 @@ namespace DCBSManager
             var definiteItems = selectedItems
                 .Where(item => (item.PurchaseCategory == PurchaseCategories.Retail));
             var searchString = titleSearch.Text;
-            DCBSList.ItemsSource = await mLL.FilterList(searchString, definiteItems.ToList());
+            DCBSList.ItemsSource = await ListLoader.FilterList(searchString, definiteItems.ToList());
         }
 
         private async void _showAllItems_Click(object sender, RoutedEventArgs e)
         {
             var searchString = titleSearch.Text;
-            DCBSList.ItemsSource = await mLL.FilterList(searchString, mLL.LoadedItems);
+            DCBSList.ItemsSource = await ListLoader.FilterList(searchString, mLL.LoadedItems);
         }
     }
 }
