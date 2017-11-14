@@ -46,8 +46,6 @@ namespace DCBSManager
         ObservableCollection<DCBSItem> _retailItems = new ObservableCollection<DCBSItem>();
         ObservableCollection<DCBSItem> _purchaseItems = new ObservableCollection<DCBSItem>();
 
-        int _retailItemsCount = 0;
-        int _maybeItemsCount = 0;
         bool _loadingNewList = false;
         string _listLoadingText = "Loading";
 
@@ -189,36 +187,6 @@ namespace DCBSManager
             }
         }
 
-        public int MaybeItemsCount
-        {
-            get
-            {
-                return _maybeItemsCount;
-            }
-            private set
-            {
-                if (_maybeItemsCount != value)
-                {
-                    _maybeItemsCount = value;
-                    OnPropertyChanged("MaybeItemsCount");
-                }
-            }
-        }
-        public int RetailItemsCount
-        {
-            get
-            {
-                return _retailItemsCount;
-            }
-            private set
-            {
-                if (_retailItemsCount != value)
-                {
-                    _retailItemsCount = value;
-                    OnPropertyChanged("RetailItemsCount");
-                }
-            }
-        }
         #endregion
 
 
@@ -368,27 +336,6 @@ namespace DCBSManager
                 .Where(item => item.PurchaseCategory != PurchaseCategories.None);
 
             return selectedList.ToList();
-        }
-
-        public List<DCBSItem> GetDCBSCartItems()
-        {
-            var cartItems = this.LoadedItems
-                .Where(item => item.PurchaseCategory == PurchaseCategories.Definite);
-
-            return cartItems.ToList();
-        }
-
-        void ClearDB(string databaseFileName)
-        {
-            using (var conn = new SQLiteConnection(@"Data Source=" + databaseFileName + ".sqlite;Version=3;"))
-            {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = "DROP TABLE all_items;";
-                    var ret = cmd.ExecuteNonQuery();
-                }
-            }
         }
 
         public void SetupDatabase(string databaseFileName)
@@ -638,41 +585,6 @@ namespace DCBSManager
 
             return defaultImage;
         }
-
-        public void ListItemsInDatabase()
-        {
-            using (var conn = new SQLiteConnection(@"Data Source=" + mDatabaseName + ".sqlite;Version=3;"))
-            {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = "SELECT * FROM all_items;";
-                    var ret = cmd.ExecuteReader();
-                    while (ret.Read())
-                    {
-                        System.Diagnostics.Debug.Print(ret.GetFieldValue<string>(0).ToString());
-                        System.Diagnostics.Debug.Print(ret.GetFieldValue<string>(1).ToString());
-                    }
-                    var i = 0;
-                }
-
-            }
-        }
-        public List<string> LoadCodes(string codeFile)
-        {
-            List<string> myCodes = new List<string>();
-            string line;
-            // Read the file and display it line by line.
-            System.IO.StreamReader file =
-                new System.IO.StreamReader(codeFile);
-            while ((line = file.ReadLine()) != null)
-            {
-                myCodes.Add(line);
-
-            }
-
-            return myCodes;
-        }
         
         /// <summary>
         /// Parses the passed DCBS Order Sheet Excel file and builds a list of DCBSItems
@@ -743,15 +655,6 @@ namespace DCBSManager
 
                 return mDCBSItems;
             });
-        }
-        /// <summary>
-        /// Overload that gets all categories
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
-        public async Task<List<DCBSItem>> ParseXLSFile(string filePath)
-        {
-            return await ParseXLSFile(filePath, "");
         }
 
         public async Task<List<DCBSItem>> LoadXLS(string listName, string category)
@@ -839,45 +742,6 @@ namespace DCBSManager
                 }
                 return outPath;
             });
-        }
-
-        public string[] GetPIDS(string[] codesToGet)
-        {
-            string[] pids = new string[codesToGet.Length];
-            try
-            {
-                for (int codeIndex = 0; codeIndex < codesToGet.Length; ++codeIndex)
-                {
-                    string uri = "http://www.dcbservice.com/search.aspx?search=" + codesToGet[codeIndex];
-                    System.Net.WebRequest req = System.Net.WebRequest.Create(uri);
-                    req.Proxy = null;
-                    System.Net.WebResponse resp = req.GetResponse();
-                    System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
-
-                    var pageText = sr.ReadToEnd().Trim();
-
-
-                    string pattern = @"category\.aspx\?id=\d+\&pid=(\d+)\'>";
-                    MatchCollection matches;
-
-                    Regex defaultRegex = new Regex(pattern);
-                    // Get matches of pattern in text
-                    matches = defaultRegex.Matches(pageText);
-
-                    if (matches.Count >= 2 && matches[1].Groups.Count >= 2)
-                    {
-                        pids[codeIndex] = matches[1].Groups[1].ToString();
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                var e = ex.ToString();
-            }
-
-            return pids;
-
         }
 
         #region INotifyPropertyChanged Implementation
