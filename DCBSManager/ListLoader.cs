@@ -199,7 +199,7 @@ namespace DCBSManager
 
         public async Task<List<DCBSItem>> LoadList(DCBSList listName)
         {
-            NewListLoading = true;
+           NewListLoading = true;
 
             string databaseFileName = listName.ListBaseFileName + ".sqlite";
             if (File.Exists(databaseFileName))
@@ -236,13 +236,19 @@ namespace DCBSManager
 
         }
 
-        public static void DownloadList( string fileName)
+        public static DCBSList DownloadList(string fileName)
         {
             //download excel file
             string fileURL = "http://media.dcbservice.com/downloads/" + fileName;
             var downloadClient = new WebClient();
             downloadClient.DownloadFile(fileURL, ".\\" + fileName);
+            return new DCBSList
+            {
+                ListBaseFileName = System.IO.Path.GetFileNameWithoutExtension(fileName),
+                ListItemKey = DCBSManager.DCBSList.ListItemKeys.Database
+            };
         }
+
         public static String CheckForUpdatedList()
         {      
 

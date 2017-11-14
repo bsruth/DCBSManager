@@ -93,9 +93,6 @@ namespace DCBSManager
                 return;
             }
 
-            this.Cursor = Cursors.Wait;
-
-
             var selectedList = e.AddedItems[0] as DCBSList;
 
             if(selectedList.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
@@ -110,18 +107,15 @@ namespace DCBSManager
                 if(MessageBox.Show("New list available: " + System.IO.Path.GetFileNameWithoutExtension(newListName) + " Download?", 
                     "New List Found", MessageBoxButton.YesNo) == MessageBoxResult.Yes )
                 {
-                    ListLoader.DownloadList(newListName);
-                    selectedList = new DCBSList
-                    {
-                        ListBaseFileName = System.IO.Path.GetFileNameWithoutExtension(newListName),
-                        ListItemKey = DCBSManager.DCBSList.ListItemKeys.Database
-                    };
+                    selectedList = ListLoader.DownloadList(newListName); 
+                } else
+                {
+                    return;
                 }
             }
 
             var results = Task.Run(async () =>
             {
-
                 return await mLL.LoadList(selectedList);
             }).ContinueWith(taskResult =>
             {
@@ -138,7 +132,6 @@ namespace DCBSManager
                             this.ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
                             this.ListSelection.SelectedIndex = 0;
                         }
-                        this.Cursor = Cursors.Arrow;
                     }
                     catch (Exception ex)
                     {
