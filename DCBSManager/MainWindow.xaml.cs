@@ -58,10 +58,7 @@ namespace DCBSManager
             _retailTotal.DataContext = _retailCostCalc;
             _overallTotal.DataContext = _overallCostCalc;
 
-            //load available databases
-            var fileList = ListLoader.GetAvailableDatabases();
-
-            ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
+           ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
             ListSelection.SelectedIndex = 0;
         }
 
