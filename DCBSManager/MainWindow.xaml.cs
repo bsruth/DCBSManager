@@ -16,7 +16,7 @@ namespace DCBSManager
     public partial class MainWindow : Window
     {
 
-        ListLoader mLL = null;
+        ListLoader mLL = new ListLoader();
         CostCalculator _dcbsCostCalc = null;
         CostCalculator _maybeCostCalc = null;
         CostCalculator _retailCostCalc = null;
@@ -25,8 +25,6 @@ namespace DCBSManager
         public MainWindow()
         {
             InitializeComponent();
-            mLL = new ListLoader();
-
 
             DataContext = mLL;
 
