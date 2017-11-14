@@ -28,33 +28,41 @@ namespace DCBSManager
             mLL = new ListLoader();
 
 
-            this.DataContext = mLL;
+            DataContext = mLL;
 
-            _dcbsCostCalc = new CostCalculator(mLL.DefiniteItems, PurchaseCategories.Definite);
-            _dcbsCostCalc.ShippingCost = 7.50;
-            _dcbsCostCalc.IndividualBagBoardCost = 0.12;
+            _dcbsCostCalc = new CostCalculator(mLL.DefiniteItems, PurchaseCategories.Definite)
+            {
+                ShippingCost = 7.50,
+                IndividualBagBoardCost = 0.12
+            };
 
-            _maybeCostCalc = new CostCalculator(mLL.MaybeItems, PurchaseCategories.Maybe);
-            _maybeCostCalc.IndividualBagBoardCost = 0.12;
+            _maybeCostCalc = new CostCalculator(mLL.MaybeItems, PurchaseCategories.Maybe)
+            {
+                IndividualBagBoardCost = 0.12
+            };
 
-            _retailCostCalc = new CostCalculator(mLL.RetailItems, PurchaseCategories.Retail);
-            _retailCostCalc.RetailTaxPercentage = 0.093;
+            _retailCostCalc = new CostCalculator(mLL.RetailItems, PurchaseCategories.Retail)
+            {
+                RetailTaxPercentage = 0.093
+            };
 
-            _overallCostCalc = new CostCalculator(mLL.PurchaseItems, PurchaseCategories.Total);
-            _overallCostCalc.RetailTaxPercentage = 0.093;
-            _overallCostCalc.ShippingCost = 7.50;
-            _overallCostCalc.IndividualBagBoardCost = 0.12;
+            _overallCostCalc = new CostCalculator(mLL.PurchaseItems, PurchaseCategories.Total)
+            {
+                RetailTaxPercentage = 0.093,
+                ShippingCost = 7.50,
+                IndividualBagBoardCost = 0.12
+            };
 
-            this._dcbsTotal.DataContext = _dcbsCostCalc;
-            this._maybeTotal.DataContext = _maybeCostCalc;
-            this._retailTotal.DataContext = _retailCostCalc;
-            this._overallTotal.DataContext = _overallCostCalc;
+            _dcbsTotal.DataContext = _dcbsCostCalc;
+            _maybeTotal.DataContext = _maybeCostCalc;
+            _retailTotal.DataContext = _retailCostCalc;
+            _overallTotal.DataContext = _overallCostCalc;
 
             //load available databases
             var fileList = ListLoader.GetAvailableDatabases();
 
-            this.ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
-            this.ListSelection.SelectedIndex = 0;
+            ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
+            ListSelection.SelectedIndex = 0;
         }
 
         private async void titleSearch_Search(object sender, RoutedEventArgs e)
@@ -108,9 +116,11 @@ namespace DCBSManager
                     "New List Found", MessageBoxButton.YesNo) == MessageBoxResult.Yes )
                 {
                     ListLoader.DownloadList(newListName);
-                    selectedList = new DCBSList();
-                    selectedList.ListBaseFileName = System.IO.Path.GetFileNameWithoutExtension(newListName);
-                    selectedList.ListItemKey = DCBSManager.DCBSList.ListItemKeys.Database;
+                    selectedList = new DCBSList
+                    {
+                        ListBaseFileName = System.IO.Path.GetFileNameWithoutExtension(newListName),
+                        ListItemKey = DCBSManager.DCBSList.ListItemKeys.Database
+                    };
                 }
             }
 
