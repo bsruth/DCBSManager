@@ -20,6 +20,27 @@ namespace DCBSManager
 {
     public class DCBSList
     {
+        public DCBSList(string baseFileName, ListItemKeys listType)
+        {
+            ListBaseFileName = baseFileName;
+            ListDatabaseFileName = baseFileName + ".sqlite";
+            ListItemKey = listType;
+            string fileNamePattern = @"([a-zA-Z]+)(\d{4})";
+            MatchCollection fileNameMatches;
+            Regex filenameRegex = new Regex(fileNamePattern);
+            fileNameMatches = filenameRegex.Matches(baseFileName);
+            if (fileNameMatches.Count == 1)
+            {
+                ListItemString = fileNameMatches[0].Groups[2].ToString();
+                ListItemString += "/";
+                ListItemString += DateTime.ParseExact(fileNameMatches[0].Groups[1].ToString(), "MMMM", CultureInfo.CurrentCulture).Month.ToString("00");
+                ListItemString += " " + fileNameMatches[0].Groups[1].ToString();
+            }
+            else
+            {
+                ListItemString = ListBaseFileName;
+            }
+        }
         public static string NewListText = "Check for Updates...";
 
         public enum ListItemKeys
@@ -28,9 +49,10 @@ namespace DCBSManager
             NewList
         }
 
-        public ListItemKeys ListItemKey;
-        public String ListBaseFileName;
-        public String ListItemString;
+        public ListItemKeys ListItemKey { get; private set; }
+        public string ListBaseFileName { get; private set; }
+        public string ListItemString { get; private set; }
+        public string ListDatabaseFileName { get; private set; }
 
         public override String ToString()
         {
@@ -200,16 +222,14 @@ namespace DCBSManager
         public async Task<List<DCBSItem>> LoadList(DCBSList listName)
         {
            NewListLoading = true;
-
-            string databaseFileName = listName.ListBaseFileName + ".sqlite";
-            if (File.Exists(databaseFileName))
+            if (File.Exists(listName.ListDatabaseFileName))
             {
-                LoadedItems = await LoadFromDatabase(listName.ListBaseFileName);
+                LoadedItems = await LoadFromDatabase(listName.ListDatabaseFileName);
                 CurrentList = listName;
             }
             else
             {
-                SetupDatabase(listName.ListBaseFileName);
+                SetupDatabase(listName.ListDatabaseFileName);
                 CurrentList = listName;
                 LoadedItems = await LoadXLS(listName.ListBaseFileName, "");
             }
@@ -241,11 +261,7 @@ namespace DCBSManager
             string fileURL = "http://media.dcbservice.com/downloads/" + fileName;
             var downloadClient = new WebClient();
             downloadClient.DownloadFile(fileURL, ".\\" + fileName);
-            return new DCBSList
-            {
-                ListBaseFileName = System.IO.Path.GetFileNameWithoutExtension(fileName),
-                ListItemKey = DCBSManager.DCBSList.ListItemKeys.Database
-            };
+            return new DCBSList(Path.GetFileNameWithoutExtension(fileName), DCBSList.ListItemKeys.Database);
         }
 
         public static String CheckForUpdatedList()
@@ -311,28 +327,12 @@ namespace DCBSManager
 
             var filesList = new List<DCBSList>();
             foreach(var file in files) {
-                var dcbsList = new DCBSList();
-                dcbsList.ListBaseFileName = file;
-                dcbsList.ListItemKey = DCBSList.ListItemKeys.Database;
-
-                string fileNamePattern = @"([a-zA-Z]+)(\d{4})";
-                MatchCollection fileNameMatches;
-                Regex filenameRegex = new Regex(fileNamePattern);
-                fileNameMatches = filenameRegex.Matches(file);
-                if(fileNameMatches.Count == 1) {
-                    dcbsList.ListItemString = fileNameMatches[0].Groups[2].ToString();
-                    dcbsList.ListItemString += "/";
-                    dcbsList.ListItemString += DateTime.ParseExact(fileNameMatches[0].Groups[1].ToString(), "MMMM", CultureInfo.CurrentCulture).Month.ToString("00");
-                    dcbsList.ListItemString += " " + fileNameMatches[0].Groups[1].ToString();
-                }
-                else
-                {
-                    dcbsList.ListItemString = dcbsList.ListBaseFileName;
-                }
+                var dcbsList = new DCBSList(file, DCBSList.ListItemKeys.Database);
+             
                 filesList.Add(dcbsList);
             }
             var sortedFiles = filesList.OrderByDescending(file => file.ListItemString).ToList();
-            sortedFiles.Add(new DCBSList { ListBaseFileName = DCBSList.NewListText, ListItemKey = DCBSList.ListItemKeys.NewList, ListItemString = DCBSList.NewListText });
+            sortedFiles.Add(new DCBSList (DCBSList.NewListText, DCBSList.ListItemKeys.NewList));
             return sortedFiles;
         }
 
@@ -347,12 +347,12 @@ namespace DCBSManager
 
         public void SetupDatabase(string databaseFileName)
         {
-            if (File.Exists(databaseFileName + ".sqlite") == false)
+            if (File.Exists(databaseFileName) == false)
             {
-                SQLiteConnection.CreateFile(databaseFileName + ".sqlite");
+                SQLiteConnection.CreateFile(databaseFileName);
             }
 
-            using (var conn = new SQLiteConnection(@"Data Source=" + databaseFileName + ".sqlite;Version=3;"))
+            using (var conn = new SQLiteConnection(@"Data Source=" + databaseFileName + ";Version=3;"))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
@@ -373,7 +373,7 @@ namespace DCBSManager
 
         public bool AddItemToDatabase(DCBSItem item)
         {
-            using (var conn = new SQLiteConnection(@"Data Source=" + CurrentList.ListBaseFileName + ".sqlite;Version=3;"))
+            using (var conn = new SQLiteConnection(@"Data Source=" + CurrentList.ListDatabaseFileName + ";Version=3;"))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
@@ -417,7 +417,7 @@ namespace DCBSManager
             {
                 List<DCBSItem> itemsList = new List<DCBSItem>();
 
-                using (var conn = new SQLiteConnection(@"Data Source=" + databaseName + ".sqlite;Version=3;"))
+                using (var conn = new SQLiteConnection(@"Data Source=" + databaseName + ";Version=3;"))
                 {
                     conn.Open();
                     using (var cmd = conn.CreateCommand())
@@ -489,7 +489,7 @@ namespace DCBSManager
                 return false;
             }
 
-            using (var conn = new SQLiteConnection(@"Data Source=" + CurrentList.ListBaseFileName + ".sqlite;Version=3;"))
+            using (var conn = new SQLiteConnection(@"Data Source=" + CurrentList.ListDatabaseFileName + ";Version=3;"))
             {
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
