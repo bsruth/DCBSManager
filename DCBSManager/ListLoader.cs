@@ -72,7 +72,7 @@ namespace DCBSManager
         const int col_purchase_category_index = 9;
 
 
-        public string mDatabaseName;
+        string mDatabaseName;
 
         const int CODE = 1;
         const int TITLE = 3;
