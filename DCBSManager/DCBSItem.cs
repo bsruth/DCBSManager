@@ -300,7 +300,7 @@ namespace DCBSManager
             }
             return tmpItem;
         }
-        public void LoadInfo()
+        public void LoadFromWebsite()
         {
             try
             {

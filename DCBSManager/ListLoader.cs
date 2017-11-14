@@ -681,7 +681,7 @@ namespace DCBSManager
             foreach(var item in itemList)
             {
                 ListLoadingText = "Loading " + item.Category + " (" + itemNumber.ToString() + " of " + totalItems.ToString() + ")";
-                item.LoadInfo();
+                item.LoadFromWebsite();
                 if (item.ThumbnailRawBytes != null)
                 {
                     item.Thumbnail = await BitmapImageFromBytes(item.ThumbnailRawBytes);
