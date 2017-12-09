@@ -20,6 +20,7 @@ namespace DCBSManager
         CostCalculator _maybeCostCalc = null;
         CostCalculator _retailCostCalc = null;
         CostCalculator _overallCostCalc = null;
+        DCBSItem _selectedItem = null;
 
         public MainWindow()
         {
@@ -65,6 +66,12 @@ namespace DCBSManager
             if (searchTextBox != null)
             {
                 DCBSList.ItemsSource = await ListLoader.FilterList(searchTextBox.Text, mLL.LoadedItems);
+                DCBSList.ScrollIntoView(_selectedItem);
+                DCBSList.SelectedItem = _selectedItem;
+                if (String.IsNullOrEmpty(searchTextBox.Text))
+                {
+                    DCBSList.Focus();
+                }
             }
         }
 
@@ -161,6 +168,14 @@ namespace DCBSManager
         {
             var searchString = titleSearch.Text;
             DCBSList.ItemsSource = await ListLoader.FilterList(searchString, mLL.LoadedItems);
+        }
+
+        private void DCBSList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+            {
+                _selectedItem = e.AddedItems[0] as DCBSItem;
+            }
         }
     }
 }
