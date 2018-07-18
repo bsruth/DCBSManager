@@ -78,9 +78,24 @@ namespace DCBSManager
         private async void goToDCBSUpload_Click(object sender, RoutedEventArgs e)
         {
             string url = "https://www.dcbservice.com/cart/orderupload";
-            var excelFile = await mLL.PrepareDCBSOrderExcelFileForUpload(mLL.GetSelectedItems());
+            var excelFile = await mLL.PrepareDCBSOrderExcelFileForUpload(mLL.GetSelectedItems(), ListLoader.OrderStore.DCBS);
+            if(excelFile == string.Empty)
+            {
+                MessageBox.Show("Could not find DCBS excel file");
+                return;
+            }
             Clipboard.SetText(excelFile);
             Process.Start(new ProcessStartInfo(url));
+        }
+        private async void kowabunga_Click(object sender, RoutedEventArgs e)
+        {
+            var excelFile = await mLL.PrepareDCBSOrderExcelFileForUpload(mLL.GetSelectedItems(), ListLoader.OrderStore.Kowabunga);
+            if(excelFile == string.Empty)
+            {
+                MessageBox.Show("Could not find Kowabunga excel file");
+                return;
+            }
+            Clipboard.SetText(excelFile);
         }
 
         private void ListSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)

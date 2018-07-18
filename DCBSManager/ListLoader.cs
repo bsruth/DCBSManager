@@ -1,5 +1,6 @@
 ﻿using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,6 +20,8 @@ namespace DCBSManager
 {
     public class DCBSList
     {
+        public string _month;
+        public string _year;
         public DCBSList(string baseFileName, ListItemKeys listType)
         {
             ListBaseFileName = baseFileName;
@@ -30,6 +33,8 @@ namespace DCBSManager
             fileNameMatches = filenameRegex.Matches(baseFileName);
             if (fileNameMatches.Count == 1)
             {
+                _year = fileNameMatches[0].Groups[2].ToString();
+                _month = fileNameMatches[0].Groups[1].ToString();
                 ListItemString = fileNameMatches[0].Groups[2].ToString();
                 ListItemString += "/";
                 ListItemString += DateTime.ParseExact(fileNameMatches[0].Groups[1].ToString(), "MMMM", CultureInfo.CurrentCulture).Month.ToString("00");
@@ -95,13 +100,20 @@ namespace DCBSManager
         const string col_purchase_category = "purchase_category";
         const int col_purchase_category_index = 9;
         
-        //Excel column indexes
+        //Excel column indexes for DCBS
         const int CODE = 1;
         const int TITLE = 3;
         const int COST = 4;
         const int DISC = 5;
         const int DCBS = 6;
 
+        //excel column indexes for Kowabunga
+        //same as DCBS, plus
+        const int SHIP_DATE = 14;
+        const int WRITER = 15;
+        const int ARTIST = 16;
+        const int COVER_ART = 17;
+        const int DESC = 18;
 
         #region Properties
 
@@ -698,60 +710,97 @@ namespace DCBSManager
             return itemList;
         }
 
+
+        public enum OrderStore
+        {
+            DCBS,
+            Kowabunga
+        };
+
+        private void AddItemsToSheet(ISheet orderSheet, IList<DCBSItem> itemsToAdd)
+        {
+            System.Collections.IEnumerator rows = orderSheet.GetRowEnumerator();
+            while (rows.MoveNext())
+            {
+                IRow row = (IRow)rows.Current;
+                if (DISC <= row.LastCellNum)
+                {
+                    var cell = row.GetCell(CODE);
+                    if (cell != null)
+                    {
+                        string codeString = cell.ToString();
+                        if (codeString.Contains("BB1"))
+                        {
+                            var checkCell = row.GetCell(0);
+                            checkCell.SetCellValue(1);
+                        }
+                        else
+                        {
+                            foreach (var item in itemsToAdd)
+                            {
+                                if (item.PurchaseCategory == PurchaseCategories.Definite)
+                                {
+                                    if (codeString == item.DCBSOrderCode)
+                                    {
+                                        var checkCell = row.GetCell(2);
+                                        checkCell.SetCellValue(1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
         /// <summary>
         /// Selects all items that will be ordered from DCBS in the DCBS order file to prepare it for uploading to the
         /// website.
         /// </summary>
         /// <param name="itemsToDump">List of DCBS items</param>
         /// <returns>The complete path to the excel file.</returns>
-        public async Task<string> PrepareDCBSOrderExcelFileForUpload(IList<DCBSItem> itemsToDump)
+        public async Task<string> PrepareDCBSOrderExcelFileForUpload(IList<DCBSItem> itemsToDump, OrderStore store)
         {
             return await Task.Run(() =>
             {
                 string path = "" + CurrentList.ListBaseFileName+ ".xls";
                 string outPath = Path.GetFullPath(CurrentList.ListBaseFileName + "_completed.xls");
+                if(store == OrderStore.Kowabunga)
+                {
+                    path = "Kowabunga_Order_Form_" + CurrentList._year + "_" + CurrentList._month + ".xlsx";
+                    outPath = Path.GetFullPath("Kowabunga_Order_Form_" + CurrentList._year + "_" + CurrentList._month + "_completed.xlsx");
+                    
+                }
+                if(File.Exists(path) == false)
+                {
+                    return "";
+                }
                 List<DCBSItem> mDCBSItems = new List<DCBSItem>();
                 using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    var hssfworkbook = new HSSFWorkbook(file);
-                    ISheet sheet = hssfworkbook.GetSheetAt(0);
-                    System.Collections.IEnumerator rows = sheet.GetRowEnumerator();
-                    while (rows.MoveNext())
+                    if (store == OrderStore.Kowabunga)
                     {
-                        IRow row = (HSSFRow)rows.Current;
-                        if (DISC <= row.LastCellNum)
+                        var workbook = new XSSFWorkbook(file);
+                        ISheet sheet = workbook.GetSheetAt(0);
+                        AddItemsToSheet(sheet, itemsToDump);
+                        XSSFFormulaEvaluator.EvaluateAllFormulaCells(workbook);
+                        using (FileStream outFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
                         {
-                            var cell = row.GetCell(CODE);
-                            if (cell != null)
-                            {
-                                string codeString = cell.ToString();
-                                if (codeString.Contains("BB1"))
-                                {
-                                    var checkCell = row.GetCell(0);
-                                    checkCell.SetCellValue(1);
-                                }
-                                else
-                                {
-                                    foreach (var item in itemsToDump)
-                                    {
-                                        if (item.PurchaseCategory == PurchaseCategories.Definite)
-                                        {
-                                            if (codeString == item.DCBSOrderCode)
-                                            {
-                                                var checkCell = row.GetCell(2);
-                                                checkCell.SetCellValue(1);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            workbook.Write(outFile);
+                        }
+                    } else
+                    {
+                        var workbook = new HSSFWorkbook(file);
+                        ISheet sheet = workbook.GetSheetAt(0);
+                        AddItemsToSheet(sheet, itemsToDump);
+                        HSSFFormulaEvaluator.EvaluateAllFormulaCells(workbook);
+                        using (FileStream outFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
+                        {
+                            workbook.Write(outFile);
                         }
                     }
-                    using (FileStream outFile = new FileStream(outPath, FileMode.Create, FileAccess.Write))
-                    {
-                        hssfworkbook.Write(outFile);
-                    }
-
+                    
                 }
                 return outPath;
             });
