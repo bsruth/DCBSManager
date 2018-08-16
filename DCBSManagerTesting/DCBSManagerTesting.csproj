@@ -53,6 +53,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="DCBSItemTest.cs" />
     <Compile Include="NewListCheckTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExcelListProcessingTests.cs" />
