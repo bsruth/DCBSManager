@@ -17,7 +17,10 @@ namespace DCBSManagerTesting
             DCBSItem newItem = new DCBSItem();
             //newItem.DCBSOrderCode = "AUG180971";
             //newItem.DCBSOrderCode = "AUG180001";
-            newItem.DCBSOrderCode = "AUG180467";
+            //newItem.DCBSOrderCode = "AUG180467";
+            //newItem.DCBSOrderCode = "AUG181847";
+            //newItem.DCBSOrderCode = "AUG181821";
+            newItem.DCBSOrderCode = "AUG181945";
             newItem.LoadFromPreviewsWorld();
 
            
