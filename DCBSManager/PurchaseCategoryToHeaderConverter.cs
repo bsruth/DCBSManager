@@ -43,6 +43,9 @@ namespace DCBSManager
                         case "Received":
                             purchaseCategory = PurchaseCategories.Received;
                             break;
+                        case "NotReceived":
+                            purchaseCategory = PurchaseCategories.NotReceived;
+                            break;
                         default:
                             throw new InvalidOperationException("The string value to convert must be a SystemMessageType");
                     }
@@ -75,6 +78,8 @@ namespace DCBSManager
                     return "Total";
                 case PurchaseCategories.Received:
                     return "Received";
+                case PurchaseCategories.NotReceived:
+                    return "Not Received";
             }
 
             return "UNKNOWN";

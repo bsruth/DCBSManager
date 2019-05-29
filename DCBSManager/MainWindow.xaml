@@ -102,7 +102,11 @@
                         </TextBlock>
                     </Button.ToolTip>
                 </Button>
-
+                <Button x:Name="_notReceivedFilter" Click="notReceivedFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                    <Button.Content>
+                        <dcbsmgr:TotalsDisplay x:Name="_notReceivedTotal"   />
+                    </Button.Content>
+                </Button>
 
             </StackPanel>
         </Grid>

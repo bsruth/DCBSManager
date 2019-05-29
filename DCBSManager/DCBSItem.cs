@@ -14,7 +14,8 @@ namespace DCBSManager
         Definite = 2,
         Retail = 3,
         Received = 4,
-        Total = 5
+        Total = 5,
+        NotReceived = 6
         
     };
 

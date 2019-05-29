@@ -73,6 +73,7 @@ namespace DCBSManager
         ObservableCollection<DCBSItem> _maybeItems = new ObservableCollection<DCBSItem>();
         ObservableCollection<DCBSItem> _retailItems = new ObservableCollection<DCBSItem>();
         ObservableCollection<DCBSItem> _purchaseItems = new ObservableCollection<DCBSItem>();
+        ObservableCollection<DCBSItem> _notReceivedItems = new ObservableCollection<DCBSItem>();
 
         bool _loadingNewList = false;
         string _listLoadingText = "Loading";
@@ -221,6 +222,23 @@ namespace DCBSManager
             }
         }
 
+        public ObservableCollection<DCBSItem> NotReceivedItems
+        {
+            get
+            {
+                return _notReceivedItems;
+            }
+
+            private set
+            {
+                if (value != null)
+                {
+                    _notReceivedItems = value;
+                    OnPropertyChanged("NotReceivedItems");
+                }
+            }
+        }
+
         public DCBSList CurrentList { get; private set; }
         #endregion
 
@@ -250,6 +268,7 @@ namespace DCBSManager
             UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe);
             UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail);
             UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
+            UpdateCategoryLists(ref _notReceivedItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
 
             NewListLoading = false;
             return LoadedItems;
@@ -527,7 +546,8 @@ namespace DCBSManager
             UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite);
             UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe);
             UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail);
-            UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
+            UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Received);
+            UpdateCategoryLists(ref _notReceivedItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
             return true;
         }
 

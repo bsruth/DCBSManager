@@ -20,6 +20,7 @@ namespace DCBSManager
         CostCalculator _maybeCostCalc = null;
         CostCalculator _retailCostCalc = null;
         CostCalculator _overallCostCalc = null;
+        CostCalculator _notReceivedCostCalc = null;
         DCBSItem _selectedItem = null;
 
         public MainWindow()
@@ -50,11 +51,18 @@ namespace DCBSManager
                 ShippingCost = 7.50,
                 IndividualBagBoardCost = 0.12
             };
+            _notReceivedCostCalc = new CostCalculator(mLL.NotReceivedItems, PurchaseCategories.NotReceived)
+            {
+                RetailTaxPercentage = 0.093,
+                ShippingCost = 7.50,
+                IndividualBagBoardCost = 0.12
+            };
 
             _dcbsTotal.DataContext = _dcbsCostCalc;
             _maybeTotal.DataContext = _maybeCostCalc;
             _retailTotal.DataContext = _retailCostCalc;
             _overallTotal.DataContext = _overallCostCalc;
+            _notReceivedTotal.DataContext = _notReceivedCostCalc;
 
            ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
            ListSelection.SelectedIndex = ListSelection.Items.Count > 0 ? 1 : 0;
@@ -166,7 +174,11 @@ namespace DCBSManager
 
         private void definiteFilter_Click(object sender, RoutedEventArgs e)
         {
-            DCBSList.ItemsSource = mLL.FilterToPurchaseCategory(PurchaseCategories.Retail, PurchaseCategories.Definite);
+            DCBSList.ItemsSource = mLL.FilterToPurchaseCategory(PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Received );
+        }
+        private void notReceivedFilter_Click(object sender, RoutedEventArgs e)
+        {
+            DCBSList.ItemsSource = mLL.FilterToPurchaseCategory(PurchaseCategories.Definite, PurchaseCategories.Retail);
         }
 
         private void _dcbsFilter_Click(object sender, RoutedEventArgs e)

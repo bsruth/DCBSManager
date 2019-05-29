@@ -13,7 +13,6 @@ namespace DCBSManager
 
         #region Members
         double _totalCost = 0.0;
-        double _retailTotalCost = 0.0;
         double _itemsCost = 0.0;
         int _itemCount = 0;
         ObservableCollection<DCBSItem> _itemsToCalculate = null;
@@ -176,8 +175,7 @@ namespace DCBSManager
             var maybeCost = maybeItems.Sum(item => item.DCBSPrice);
             var maybeCount = maybeItems.Count();
             var maybeTotal = (maybeCost + (maybeCount * IndividualBagBoardCost)) * (1 + TaxPercentage);
-
-
+            
             TotalCost = retailTotal + dcbsTotal + maybeTotal;
             ItemCount = retailCount + dcbsCount + maybeCount;
 
