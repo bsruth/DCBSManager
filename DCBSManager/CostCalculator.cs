@@ -169,6 +169,10 @@ namespace DCBSManager
                 dcbsTotal += (ShippingCost + HandlingCost);
             }
 
+            var receivedItems = itemsList.Where(item => item.PurchaseCategory == PurchaseCategories.Received);
+            //TODO: it would be nice to keep the original purchase price of received items
+            var receivedItemsCount = receivedItems.Count();
+
 
 
             var maybeItems = itemsList.Where(item => item.PurchaseCategory == PurchaseCategories.Maybe);
@@ -178,8 +182,10 @@ namespace DCBSManager
             
             TotalCost = retailTotal + dcbsTotal + maybeTotal;
             ItemCount = retailCount + dcbsCount + maybeCount;
-
-
+            if (PurchaseCategory != PurchaseCategories.NotReceived)
+            {
+                ItemCount += receivedItemsCount;
+            }
         }
     }
 }
