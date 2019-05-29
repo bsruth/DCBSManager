@@ -23,36 +23,35 @@ namespace DCBSManager
                 string valueString = value as string;
                 if (valueString != null)
                 {
-                    if (string.Compare(valueString, "Pass") == 0)
+                    switch (valueString)
                     {
-                        purchaseCategory = PurchaseCategories.None;
-                    }
-                    else if (string.Compare(valueString, "Maybe") == 0)
-                    {
-                        purchaseCategory = PurchaseCategories.Maybe;
-                    }
-                    else if (string.Compare(valueString, "Definite") == 0)
-                    {
-                        purchaseCategory = PurchaseCategories.Definite;
-                    }
-                    else if (string.Compare(valueString, "Retail") == 0)
-                    {
-                        purchaseCategory = PurchaseCategories.Retail;
-                    }
-                    else if (string.Compare(valueString, "Total") == 0)
-                    {
-                        purchaseCategory = PurchaseCategories.Total;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("The string value to convert must be a SystemMessageType");
+                        case "Pass":
+                            purchaseCategory = PurchaseCategories.None;
+                            break;
+                        case "Maybe":
+                            purchaseCategory = PurchaseCategories.Maybe;
+                            break;
+                        case "Definite":
+                            purchaseCategory = PurchaseCategories.Definite;
+                            break;
+                        case "Retail":
+                            purchaseCategory = PurchaseCategories.Retail;
+                            break;
+                        case "Total":
+                            purchaseCategory = PurchaseCategories.Total;
+                            break;
+                        case "Received":
+                            purchaseCategory = PurchaseCategories.Received;
+                            break;
+                        default:
+                            throw new InvalidOperationException("The string value to convert must be a SystemMessageType");
                     }
                 }
                 else
                 {
                     throw new InvalidOperationException("The value to convert must be convertible to a SystemMessageType");
                 }
-                
+
             }
             else
             {
@@ -69,11 +68,13 @@ namespace DCBSManager
                 case PurchaseCategories.Maybe:
                     return "Maybe";
                 case PurchaseCategories.Definite:
-                    return "DCBS";
+                    return "Mail Order";
                 case PurchaseCategories.Retail:
                     return "Retail";
                 case PurchaseCategories.Total:
                     return "Total";
+                case PurchaseCategories.Received:
+                    return "Received";
             }
 
             return "UNKNOWN";

@@ -43,7 +43,8 @@ namespace DCBSManager
                 var item = DataContext as DCBSItem;
                 if (item != null)
                 {
-                    item.PurchaseCategory = (PurchaseCategories)(((Int64)(item.PurchaseCategory) + 1) % 4);
+                    int numberOfSelectableCategories = Enum.GetNames(typeof(PurchaseCategories)).Length - 1;
+                    item.PurchaseCategory = (PurchaseCategories)(((Int64)(item.PurchaseCategory) + 1) % numberOfSelectableCategories);
                 }
         
         }

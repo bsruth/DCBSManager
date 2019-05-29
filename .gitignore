@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/DCBSManagerTesting/bin
+/DCBSManagerTesting/obj
+/DCBSManager/.vs/DCBSManager/v15
+/DCBSManager/bin
+/DCBSManager/obj
