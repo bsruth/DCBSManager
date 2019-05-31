@@ -22,11 +22,10 @@ namespace DCBSManager
     {
         public string _month;
         public string _year;
-        public DCBSList(string baseFileName, ListItemKeys listType)
+        public DCBSList(string baseFileName)
         {
             ListBaseFileName = baseFileName;
             ListDatabaseFileName = baseFileName + ".sqlite";
-            ListItemKey = listType;
             string fileNamePattern = @"([a-zA-Z]+)(\d{4})";
             MatchCollection fileNameMatches;
             Regex filenameRegex = new Regex(fileNamePattern);
@@ -45,15 +44,7 @@ namespace DCBSManager
                 ListItemString = ListBaseFileName;
             }
         }
-        public static string NewListText = "Check for Updates...";
 
-        public enum ListItemKeys
-        {
-            Database,
-            NewList
-        }
-
-        public ListItemKeys ListItemKey { get; private set; }
         public string ListBaseFileName { get; private set; }
         public string ListItemString { get; private set; }
         public string ListDatabaseFileName { get; private set; }
@@ -291,7 +282,7 @@ namespace DCBSManager
             string fileURL = "http://media.dcbservice.com/downloads/" + fileName;
             var downloadClient = new WebClient();
             downloadClient.DownloadFile(fileURL, ".\\" + fileName);
-            return new DCBSList(Path.GetFileNameWithoutExtension(fileName), DCBSList.ListItemKeys.Database);
+            return new DCBSList(Path.GetFileNameWithoutExtension(fileName));
         }
 
         public static String CheckForUpdatedList()
@@ -357,12 +348,11 @@ namespace DCBSManager
 
             var filesList = new List<DCBSList>();
             foreach(var file in files) {
-                var dcbsList = new DCBSList(file, DCBSList.ListItemKeys.Database);
+                var dcbsList = new DCBSList(file);
              
                 filesList.Add(dcbsList);
             }
             var sortedFiles = filesList.OrderByDescending(file => file.ListItemString).ToList();
-            sortedFiles.Insert(0, new DCBSList(DCBSList.NewListText, DCBSList.ListItemKeys.NewList));
             return sortedFiles;
         }
 

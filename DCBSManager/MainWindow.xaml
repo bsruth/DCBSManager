@@ -21,6 +21,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
             <ComboBox x:Name="ListSelection" Grid.Column="0"  Grid.Row="0" SelectionChanged="ListSelection_SelectionChanged" Margin="5,5,5,5" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="50" FontSize="18">
@@ -32,7 +33,8 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="1" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="50" FontSize="16" Margin="5,5,5,5"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Button x:Name="_updateCheckButton" Grid.Column="1" Grid.Row="0" FontSize="16" FontWeight="Bold" Content="Check for Updates" Margin="5" Padding="5" Click="_updateCheckButton_Click"/>
+            <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="2" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="50" FontSize="16" Margin="5,5,5,5"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1" Grid.ColumnSpan="4" SelectionChanged="DCBSList_SelectionChanged"
                               VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" Visibility="{Binding NewListLoading, Converter={StaticResource  InverseBooleanToVisibilityConveter}}">
                 <ListView.ItemTemplate>

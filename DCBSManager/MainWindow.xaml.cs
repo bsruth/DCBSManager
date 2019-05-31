@@ -65,7 +65,7 @@ namespace DCBSManager
             _notReceivedTotal.DataContext = _notReceivedCostCalc;
 
            ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
-           ListSelection.SelectedIndex = ListSelection.Items.Count > 0 ? 1 : 0;
+           ListSelection.SelectedIndex = 0;
         }
 
         private async void titleSearch_Search(object sender, RoutedEventArgs e)
@@ -119,27 +119,6 @@ namespace DCBSManager
                 return;
             }
 
-            var oldSelectedList = e.RemovedItems.Count > 0 ? e.RemovedItems[0] : null;
-            if (newSelectedList.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
-            {
-                var newListName = ListLoader.CheckForUpdatedList();
-                if(String.IsNullOrEmpty(newListName))
-                {
-                    MessageBox.Show("No new list found.");
-                    return;
-                }
-
-                if(MessageBox.Show("New list available: " + System.IO.Path.GetFileNameWithoutExtension(newListName) + " Download?", 
-                    "New List Found", MessageBoxButton.YesNo) == MessageBoxResult.Yes )
-                {
-                    newSelectedList = ListLoader.DownloadList(newListName); 
-                } else
-                {
-                    ListSelection.SelectedItem = oldSelectedList;
-                    return;
-                }
-            }
-
             var results = Task.Run(async () =>
             {
                 return await mLL.LoadList(newSelectedList);
@@ -150,11 +129,6 @@ namespace DCBSManager
                     try
                     {
                         DCBSList.ItemsSource = taskResult.Result;
-                        if (e.AddedItems[0] is DCBSList list && list.ListItemKey == DCBSManager.DCBSList.ListItemKeys.NewList)
-                        {
-                            ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
-                            ListSelection.SelectedIndex = 1;
-                        }
                     }
                     catch (Exception ex)
                     {
@@ -203,6 +177,44 @@ namespace DCBSManager
             {
                 _selectedItem = e.AddedItems[0] as DCBSItem;
             }
+        }
+
+        private void _updateCheckButton_Click(object sender, RoutedEventArgs e)
+        {
+          
+                var newListName = ListLoader.CheckForUpdatedList();
+                if (String.IsNullOrEmpty(newListName))
+                {
+                    MessageBox.Show("No new list found.");
+                    return;
+                }
+
+                if (MessageBox.Show("New list available: " + System.IO.Path.GetFileNameWithoutExtension(newListName) + " Download?",
+                    "New List Found", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                { 
+                    return;
+                }
+            var newSelectedList = ListLoader.DownloadList(newListName);
+            var results = Task.Run(async () =>
+            {
+                return await mLL.LoadList(newSelectedList);
+            }).ContinueWith(taskResult =>
+            {
+                App.Current.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    try
+                    {
+                        DCBSList.ItemsSource = taskResult.Result;
+                        ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
+                        ListSelection.SelectedIndex = 0;
+                    }
+                    catch (Exception ex)
+                    {
+                        var str = ex.ToString();
+                    }
+                }));
+            });
+
         }
     }
 }
