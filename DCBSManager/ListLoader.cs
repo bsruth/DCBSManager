@@ -22,27 +22,54 @@ namespace DCBSManager
     {
         public string _month;
         public string _year;
-        public DCBSList(string baseFileName)
+
+        private string GetDatabaseName( string baseFileName )
         {
-            ListBaseFileName = baseFileName;
-            ListDatabaseFileName = baseFileName + ".sqlite";
+            return baseFileName + ".sqlite";
+        }
+
+        private string GetListItemString( string baseFileName )
+        {
+            string listItemString = baseFileName;
+
             string fileNamePattern = @"([a-zA-Z]+)(\d{4})";
             MatchCollection fileNameMatches;
             Regex filenameRegex = new Regex(fileNamePattern);
             fileNameMatches = filenameRegex.Matches(baseFileName);
-            if (fileNameMatches.Count == 1)
+            try
             {
-                _year = fileNameMatches[0].Groups[2].ToString();
-                _month = fileNameMatches[0].Groups[1].ToString();
-                ListItemString = fileNameMatches[0].Groups[2].ToString();
-                ListItemString += "/";
-                ListItemString += DateTime.ParseExact(fileNameMatches[0].Groups[1].ToString(), "MMMM", CultureInfo.CurrentCulture).Month.ToString("00");
-                ListItemString += " " + fileNameMatches[0].Groups[1].ToString();
-            }
-            else
+                if (fileNameMatches.Count == 1 && fileNameMatches[0].Groups.Count == 3)
+                {
+                    _year = fileNameMatches[0].Groups[2].ToString();
+                    _month = fileNameMatches[0].Groups[1].ToString();
+                    StringBuilder itemStringBuilder = new StringBuilder();
+                    itemStringBuilder.Append(_year);
+                    itemStringBuilder.Append("/");
+                    itemStringBuilder.Append(DateTime.ParseExact(_month, "MMMM", CultureInfo.CurrentCulture).Month.ToString("00"));
+                    itemStringBuilder.Append(" " + _month);
+                    listItemString = itemStringBuilder.ToString();
+                }
+            } catch( Exception )
             {
-                ListItemString = ListBaseFileName;
+                //eat the exception, we'll use the base file name
             }
+
+            return listItemString;
+
+        }
+        public DCBSList(string baseFileName)
+        {
+            try
+            {
+                ListBaseFileName = baseFileName;
+                ListDatabaseFileName = GetDatabaseName(baseFileName);
+                ListItemString = GetListItemString(baseFileName);
+            } catch( Exception ex )
+            {
+                System.Windows.MessageBox.Show("ERROR: " + ex.ToString() + " " + ex.StackTrace.ToString());
+            }
+
+            
         }
 
         public string ListBaseFileName { get; private set; }
