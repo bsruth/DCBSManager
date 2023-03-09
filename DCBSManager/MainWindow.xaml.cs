@@ -216,5 +216,15 @@ namespace DCBSManager
             });
 
         }
+
+        private void DCBSList_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            var item = DCBSList.SelectedItem as DCBSItem;
+            
+            if(item != null && e.Key == System.Windows.Input.Key.Space)
+            {
+                item.MoveToNextPurchaseCategory();
+            }
+        }
     }
 }

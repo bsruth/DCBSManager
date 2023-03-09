@@ -36,7 +36,7 @@
             <Button x:Name="_updateCheckButton" Grid.Column="1" Grid.Row="0" FontSize="16" FontWeight="Bold" Content="Check for Updates" Margin="5" Padding="5" Click="_updateCheckButton_Click"/>
             <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="2" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="50" FontSize="16" Margin="5,5,5,5"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1" Grid.ColumnSpan="4" SelectionChanged="DCBSList_SelectionChanged"
-                              VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" Visibility="{Binding NewListLoading, Converter={StaticResource  InverseBooleanToVisibilityConveter}}">
+                              VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" Visibility="{Binding NewListLoading, Converter={StaticResource  InverseBooleanToVisibilityConveter}}" KeyUp="DCBSList_KeyUp">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>

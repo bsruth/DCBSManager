@@ -513,6 +513,17 @@ namespace DCBSManager
             return DisplayValue;
         }
 
+        public void MoveToNextPurchaseCategory()
+        {
+            int numberOfSelectableCategories = Enum.GetNames(typeof(PurchaseCategories)).Length;
+
+            PurchaseCategory = (PurchaseCategories)(((Int64)(PurchaseCategory) + 1) % numberOfSelectableCategories);
+            if (PurchaseCategory == PurchaseCategories.NotReceived || PurchaseCategory == PurchaseCategories.Total)
+            {
+                PurchaseCategory = PurchaseCategories.Matt;
+            }
+        }
+
         #region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
