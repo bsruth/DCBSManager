@@ -23,7 +23,7 @@ namespace DCBSManager
    public class DCBSItem : INotifyPropertyChanged
     {
         const string _creatorToDescriptionSeparator = " %%% ";
-        static Int64 kowabungaPID = 0;
+        static Int64 deepDiscountPID = 0;
 
         #region Members
         PurchaseCategories _purchaseCategory = PurchaseCategories.None;
@@ -312,7 +312,7 @@ namespace DCBSManager
                 detailReq.Proxy = null;
                 System.Net.WebResponse detailResp = detailReq.GetResponse();
                 System.IO.StreamReader detailSr = new System.IO.StreamReader(detailResp.GetResponseStream());
-                this.PID = kowabungaPID++;
+                this.PID = deepDiscountPID++;
                 remainingPageText = detailSr.ReadToEnd().Trim();
                 //thumbnail
                 Regex thumbnailPattern = new Regex(@"id=""MainContentImage""\s*src=""(.+?)\?");

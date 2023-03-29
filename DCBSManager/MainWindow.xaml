@@ -93,7 +93,7 @@
                         </TextBlock>
                     </Button.ToolTip>
                 </Button>
-                <Button Content="Kowabunga" Click="kowabunga_Click" Height="50">
+                <Button Content="Deep Discount" Click="deepDiscount_Click" Height="50">
                     <Button.ToolTip>
                         <TextBlock>
                             Opens the DCBS order upload site and copies the file path to the clipboard.

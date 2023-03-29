@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Web;
+using System.Security;
 
 namespace DCBSManager
 {
@@ -126,7 +127,7 @@ namespace DCBSManager
         const int DISC = 5;
         const int DCBS = 6;
 
-        //excel column indexes for Kowabunga
+        //excel column indexes for DeepDiscount
         //same as DCBS, plus
         const int SHIP_DATE = 14;
         const int WRITER = 15;
@@ -752,7 +753,7 @@ namespace DCBSManager
         public enum OrderStore
         {
             DCBS,
-            Kowabunga
+            DeepDiscount
         };
 
         private void AddItemsToSheet(ISheet orderSheet, IList<DCBSItem> itemsToAdd)
@@ -798,16 +799,17 @@ namespace DCBSManager
         /// </summary>
         /// <param name="itemsToDump">List of DCBS items</param>
         /// <returns>The complete path to the excel file.</returns>
+
         public async Task<string> PrepareDCBSOrderExcelFileForUpload(IList<DCBSItem> itemsToDump, OrderStore store)
         {
             return await Task.Run(() =>
             {
                 string path = "" + CurrentList.ListBaseFileName+ ".xls";
                 string outPath = Path.GetFullPath(CurrentList.ListBaseFileName + "_completed.xls");
-                if(store == OrderStore.Kowabunga)
+                if(store == OrderStore.DeepDiscount)
                 {
-                    path = "Kowabunga_Order_Form_" + CurrentList._year + "_" + CurrentList._month + ".xlsx";
-                    outPath = Path.GetFullPath("Kowabunga_Order_Form_" + CurrentList._year + "_" + CurrentList._month + "_completed.xlsx");
+                    path = "DeepDiscountComics_Order_Form_" + CurrentList._year + "_" + CurrentList._month + ".xlsx";
+                    outPath = Path.GetFullPath("DeepDiscountComics_Order_Form_" + CurrentList._year + "_" + CurrentList._month + "_completed.xlsx");
                     
                 }
                 if(File.Exists(path) == false)
@@ -817,7 +819,7 @@ namespace DCBSManager
                 List<DCBSItem> mDCBSItems = new List<DCBSItem>();
                 using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    if (store == OrderStore.Kowabunga)
+                    if (store == OrderStore.DeepDiscount)
                     {
                         var workbook = new XSSFWorkbook(file);
                         ISheet sheet = workbook.GetSheetAt(0);

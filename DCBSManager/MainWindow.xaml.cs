@@ -95,12 +95,12 @@ namespace DCBSManager
             Clipboard.SetText(excelFile);
             Process.Start(new ProcessStartInfo(url));
         }
-        private async void kowabunga_Click(object sender, RoutedEventArgs e)
+        private async void deepDiscount_Click(object sender, RoutedEventArgs e)
         {
-            var excelFile = await mLL.PrepareDCBSOrderExcelFileForUpload(mLL.GetSelectedItems(), ListLoader.OrderStore.Kowabunga);
+            var excelFile = await mLL.PrepareDCBSOrderExcelFileForUpload(mLL.GetSelectedItems(), ListLoader.OrderStore.DeepDiscount);
             if(excelFile == string.Empty)
             {
-                MessageBox.Show("Could not find Kowabunga excel file");
+                MessageBox.Show("Could not find Deep Discount excel file");
                 return;
             }
             Clipboard.SetText(excelFile);
