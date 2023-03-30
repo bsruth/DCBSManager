@@ -160,7 +160,7 @@ namespace DCBSManager
             var retailCount = retailItems.Count();
             var retailTotal = (retailCost + (retailCount * RetailIndividualBagBoardCost)) * (1 + RetailTaxPercentage);
 
-            var dcbsItems = itemsList.Where(item => item.PurchaseCategory == PurchaseCategories.Definite);
+            var dcbsItems = itemsList.Where(item => item.PurchaseCategory == PurchaseCategories.Definite || item.PurchaseCategory == PurchaseCategories.Matt);
             var dcbsCost = dcbsItems.Sum(item => item.DCBSPrice);
             var dcbsCount = dcbsItems.Count();
             var dcbsTotal = ((dcbsCost + (dcbsCount * IndividualBagBoardCost)) * (1 + TaxPercentage));

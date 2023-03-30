@@ -283,11 +283,11 @@ namespace DCBSManager
             }
 
 
-            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite);
+            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite, PurchaseCategories.Matt);
             UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe);
             UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail);
-            UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
-            UpdateCategoryLists(ref _notReceivedItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
+            UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Matt);
+            UpdateCategoryLists(ref _notReceivedItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Matt);
 
             NewListLoading = false;
             return LoadedItems;
@@ -561,11 +561,11 @@ namespace DCBSManager
             }
 
 
-            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite);
+            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite, PurchaseCategories.Matt);
             UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe);
             UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail);
-            UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Received);
-            UpdateCategoryLists(ref _notReceivedItems, PurchaseCategories.Retail, PurchaseCategories.Definite);
+            UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Received, PurchaseCategories.Matt);
+            UpdateCategoryLists(ref _notReceivedItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Matt);
             return true;
         }
 
@@ -777,9 +777,18 @@ namespace DCBSManager
                         {
                             foreach (var item in itemsToAdd)
                             {
-                                if (item.PurchaseCategory == PurchaseCategories.Definite)
+                                if (item.PurchaseCategory == PurchaseCategories.Definite || item.PurchaseCategory == PurchaseCategories.Matt)
                                 {
-                                    if (codeString == item.DCBSOrderCode)
+                                    var cellTitle = row.GetCell(TITLE).ToString();
+                                   
+                                   var upperCellTitle = cellTitle.ToUpper().Replace("#", "").Replace(":", "").Replace("&", "AND");
+                                    var upperItemTitle = item.Title.ToUpper().Replace("#", "").Replace(":", "").Replace("&", "AND");
+                                    //int indexCell = upperCellTitle.Zip(upperItemTitle, (c1, c2) => c1 == c2).TakeWhile(b => b).Count() + 1;
+                                   // int indexItem = upperItemTitle.Zip(upperCellTitle, (c1, c2) => c1 == c2).TakeWhile(b => b).Count() + 1;
+                                    bool cellIsSubstrTitle = !String.IsNullOrEmpty(cellTitle) && upperItemTitle.Contains(upperCellTitle);
+                                    bool titleIsSubstrCell = !String.IsNullOrEmpty(cellTitle) && upperCellTitle.Contains(upperItemTitle);
+                                    
+                                    if (codeString == item.DCBSOrderCode || cellIsSubstrTitle || titleIsSubstrCell) 
                                     {
                                         var checkCell = row.GetCell(2);
                                         checkCell.SetCellValue(1);
