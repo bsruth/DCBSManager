@@ -19,14 +19,25 @@ namespace DCBSManager
         Matt = 7
         
     };
+    public enum Distributor
+    {
+        Diamond,
+        PRH,
+        Lunar,
+        Bundle,
+        Unknown,
+        Invalid
+    };
 
-   public class DCBSItem : INotifyPropertyChanged
+    public class DCBSItem : INotifyPropertyChanged
     {
         const string _creatorToDescriptionSeparator = " %%% ";
         static Int64 deepDiscountPID = 0;
 
         #region Members
         PurchaseCategories _purchaseCategory = PurchaseCategories.None;
+        Distributor _distributor = Distributor.Invalid;
+        string _orderCode = "";
         #endregion
 
         #region Events
@@ -42,17 +53,35 @@ namespace DCBSManager
         #region Properties
         public string DCBSOrderCode
         {
-            get;
-            set;
-            //get
-            //{
-            //    return "APR12345";
-            //}
-            //set
-            //{
-
-            //}
+            get
+            {
+                return _orderCode;
+             }
+            set
+            {
+                _orderCode = value;
+                this.Distributor = Distributor.Invalid;
+            }
         }
+
+        public Distributor Distributor
+        {
+            get
+            {
+                if (_distributor == Distributor.Invalid)
+                {
+                    _distributor = GetDistributorFromOrderCode(DCBSOrderCode);
+                }
+                return _distributor;
+            
+            }
+            private set
+            {
+                _distributor = value;
+            }
+            
+        }
+       
         public string Title
         {
             get;
@@ -130,6 +159,42 @@ namespace DCBSManager
         {
             get;
             set;
+        }
+
+        public static Distributor GetDistributorFromOrderCode(string orderCode)
+        {
+
+            if (string.IsNullOrEmpty(orderCode))
+            {
+                return Distributor.Invalid;
+            }
+
+            const string LunarRegexPattern = @"^\d{4}[a-zA-Z0-9]{2}\d{3}$";
+            if (Regex.Match(orderCode, LunarRegexPattern).Success)
+            {
+                return Distributor.Lunar;
+            }
+
+            const string PRHRegexPattern = @"^(?:\d{13}|\d{17})$";
+            if (Regex.Match(orderCode, PRHRegexPattern).Success)
+            {
+                return Distributor.PRH;
+            }
+
+            const string DiamondRegexPattern = @"^[A-Z]{3}[0-9]{6}[A-Z]*$";
+            if (Regex.Match(orderCode, DiamondRegexPattern).Success)
+            {
+                return Distributor.Diamond;
+            }
+
+            const string DeepDiscountBundlePattern = @"^[A-Z]{3}[0-9]{2}_[A-Z]+_[A-Z]$";
+            if (Regex.Match(orderCode, DeepDiscountBundlePattern).Success)
+            {
+                return Distributor.Bundle;
+            }
+
+
+            return Distributor.Unknown;
         }
 
         public PurchaseCategories PurchaseCategory

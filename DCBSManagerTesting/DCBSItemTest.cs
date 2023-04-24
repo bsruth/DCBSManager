@@ -29,62 +29,43 @@ namespace DCBSManagerTesting
 
         }
 
-        enum Distributor
-        {
-            Diamond,
-            PRH,
-            Lunar,
-            Bundle,
-            Unknown
-        };
-
-        Distributor GetDistributorFromOrderCode(string orderCode)
-        {
-            const string LunarRegexPattern = @"^\d{4}[a-zA-Z0-9]{2}\d{3}$";
-            if (Regex.Match(orderCode, LunarRegexPattern).Success)
-            {
-                return Distributor.Lunar;
-            }
-
-            const string PRHRegexPattern = @"^(?:\d{13}|\d{17})$";
-            if (Regex.Match(orderCode, PRHRegexPattern).Success)
-            {
-                return Distributor.PRH;
-            }
-
-            const string DiamondRegexPattern = @"^[A-Z]{3}[0-9]{6}[A-Z]*$";
-            if (Regex.Match(orderCode, DiamondRegexPattern).Success)
-            {
-                return Distributor.Diamond;
-            }
-
-            const string DeepDiscountBundlePattern = @"^[A-Z]{3}[0-9]{2}_[A-Z]+_[A-Z]$";
-            if (Regex.Match(orderCode, DeepDiscountBundlePattern).Success)
-            {
-                return Distributor.Bundle;
-            }
-
-            return Distributor.Unknown;
-        }
+      
 
 
         [TestMethod]
         public void GetSiteFromOrderCode_TEST()
         {
 
+            var newItem = new DCBSItem();
+
+            Assert.AreEqual(Distributor.Invalid, newItem.Distributor);
+
+            newItem.DCBSOrderCode = "";
+            Assert.AreEqual(Distributor.Invalid, newItem.Distributor);
+
             const string LunarOrderCode = "0423DC003";
-            Assert.AreEqual(Distributor.Lunar, GetDistributorFromOrderCode(LunarOrderCode));
+            newItem.DCBSOrderCode = LunarOrderCode;
+            Assert.AreEqual(Distributor.Lunar, newItem.Distributor);
 
             const string PenguinISBN = "9781506734729";
+            newItem.DCBSOrderCode = PenguinISBN;
+            Assert.AreEqual(Distributor.PRH, newItem.Distributor);
+
             const string PenguinComic = "75960609600803531";
-            Assert.AreEqual(Distributor.PRH, GetDistributorFromOrderCode(PenguinISBN));
-            Assert.AreEqual(Distributor.PRH, GetDistributorFromOrderCode(PenguinComic));
+            newItem.DCBSOrderCode = PenguinComic;
+            Assert.AreEqual(Distributor.PRH, newItem.Distributor);
 
             const string DiamondOrderCode = "APR230038";
-            Assert.AreEqual(Distributor.Diamond, GetDistributorFromOrderCode(DiamondOrderCode));
+            newItem.DCBSOrderCode = DiamondOrderCode;
+            Assert.AreEqual(Distributor.Diamond, newItem.Distributor);
 
             const string DeepDiscountBundleCode = "APR23_DDC_A";
-            Assert.AreEqual(Distributor.Bundle, GetDistributorFromOrderCode(DeepDiscountBundleCode));
+            newItem.DCBSOrderCode = DeepDiscountBundleCode;
+            Assert.AreEqual(Distributor.Bundle, newItem.Distributor);
+
+            newItem.DCBSOrderCode = "slk07oijllkjg8";
+            Assert.AreEqual(Distributor.Unknown, newItem.Distributor);
+
 
         }
     }
