@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -17,7 +18,7 @@ namespace DCBSManager
         Total = 5,
         NotReceived = 6,
         Matt = 7
-        
+
     };
     public enum Distributor
     {
@@ -56,7 +57,7 @@ namespace DCBSManager
             get
             {
                 return _orderCode;
-             }
+            }
             set
             {
                 _orderCode = value;
@@ -73,15 +74,15 @@ namespace DCBSManager
                     _distributor = GetDistributorFromOrderCode(DCBSOrderCode);
                 }
                 return _distributor;
-            
+
             }
             private set
             {
                 _distributor = value;
             }
-            
+
         }
-       
+
         public string Title
         {
             get;
@@ -161,6 +162,32 @@ namespace DCBSManager
             set;
         }
 
+        public static string GetImageURLFromOrderCodeAndDistributor(string orderCode, Distributor distributor)
+        {
+
+
+            switch (distributor)
+            {
+                case Distributor.Lunar:
+                    return String.Format("https://media.lunardistribution.com/images/covers/{0}.jpg", orderCode);
+
+                case Distributor.Diamond:
+                    // call load from previewsworld
+                    return "";
+
+                case Distributor.PRH:
+                    return String.Format("https://images.randomhouse.com/cover/{0}", orderCode);
+
+                case Distributor.Unknown:
+
+                case Distributor.Invalid:
+
+                case Distributor.Bundle:
+                    return "";
+
+            }
+            return string.Empty;
+        }
         public static Distributor GetDistributorFromOrderCode(string orderCode)
         {
 
@@ -367,8 +394,51 @@ namespace DCBSManager
             return tmpItem;
         }
 
+        public void LoadFromDistributors()
+        {
+            switch (this.Distributor)
+            {
+                case Distributor.PRH:
+                case Distributor.Lunar:
+                    if (this.Distributor == Distributor.PRH)
+                    {
+                        PID = long.Parse(DCBSOrderCode);
+                    }
+                    else
+                    {
+                        var pidString = DCBSOrderCode;
+                        StringBuilder sb = new StringBuilder(DCBSOrderCode);
+                        sb.Remove(4, 2);
+                        pidString = sb.ToString();
+                        PID = long.Parse(pidString);
+
+                    }
+                    ImgURL = GetImageURLFromOrderCodeAndDistributor(DCBSOrderCode, this.Distributor);
+                    try
+                    {
+                        ThumbnailRawBytes = (new WebClient()).DownloadData(ImgURL);
+                    }
+                    catch (Exception)
+                    {
+                        //image failed, just use the no_image url
+                        ImgURL = "";
+                        ThumbnailRawBytes = null;
+                    }
+                    break;
+                case Distributor.Diamond:
+                    LoadFromPreviewsWorld();
+                    break;
+                case Distributor.Invalid:
+                case Distributor.Unknown:
+                case Distributor.Bundle:
+                    break;
+
+
+            }
+        }
         public void LoadFromPreviewsWorld()
         {
+
             string remainingPageText = "";
             try
             {
@@ -381,7 +451,7 @@ namespace DCBSManager
                 remainingPageText = detailSr.ReadToEnd().Trim();
                 //thumbnail
                 Regex thumbnailPattern = new Regex(@"id=""MainContentImage""\s*src=""(.+?)\?");
-                
+
                 var thumbnailMatches = thumbnailPattern.Matches(remainingPageText);
                 if (thumbnailMatches.Count >= 1 && thumbnailMatches[0].Groups.Count >= 2)
                 {
@@ -398,17 +468,17 @@ namespace DCBSManager
                         ImgURL = "";
                         ThumbnailRawBytes = null;
                     }
-              
+
                 }
 
-            string publisherPattern = @"Publisher"">([^<]+)([\s\S]+)";
-            MatchCollection publisherMatches;
-            Regex publisherRegex = new Regex(publisherPattern);
-            publisherMatches = publisherRegex.Matches(remainingPageText);
+                string publisherPattern = @"Publisher"">([^<]+)([\s\S]+)";
+                MatchCollection publisherMatches;
+                Regex publisherRegex = new Regex(publisherPattern);
+                publisherMatches = publisherRegex.Matches(remainingPageText);
 
-            if (publisherMatches.Count >= 1 && publisherMatches[0].Groups.Count >= 2)
-            {
-                Category = publisherMatches[0].Groups[1].ToString().Trim();
+                if (publisherMatches.Count >= 1 && publisherMatches[0].Groups.Count >= 2)
+                {
+                    Category = publisherMatches[0].Groups[1].ToString().Trim();
                     Category = Regex.Replace(Category, "&amp;", "&");
 
                     if (thumbnailMatches[0].Groups.Count >= 3)
@@ -433,86 +503,87 @@ namespace DCBSManager
                 }
                 Description = "";
 
-            string writerPattern = @"\(W[^\)]*\)([^\(]+)";
-            MatchCollection writerMatches;
-            Regex writerRegex = new Regex(writerPattern);
-            writerMatches = writerRegex.Matches(creatorSection);
+                string writerPattern = @"\(W[^\)]*\)([^\(]+)";
+                MatchCollection writerMatches;
+                Regex writerRegex = new Regex(writerPattern);
+                writerMatches = writerRegex.Matches(creatorSection);
 
-            string writer = "";
-            if (writerMatches.Count >= 1 && writerMatches[0].Groups.Count >= 2)
-            {
-                writer = writerMatches[0].Groups[1].ToString().Trim();
-                writer = Regex.Replace(writer, "\\s+", " ");
-                Description += "(W) " + writer + " ";
-            }
+                string writer = "";
+                if (writerMatches.Count >= 1 && writerMatches[0].Groups.Count >= 2)
+                {
+                    writer = writerMatches[0].Groups[1].ToString().Trim();
+                    writer = Regex.Replace(writer, "\\s+", " ");
+                    Description += "(W) " + writer + " ";
+                }
 
 
-            string artistPattern = @"\(A[^\)]*\)([^(\(|<)]+)";
-            MatchCollection artistMatches;
-            Regex artistRegex = new Regex(artistPattern);
-            artistMatches = artistRegex.Matches(creatorSection);
+                string artistPattern = @"\(A[^\)]*\)([^(\(|<)]+)";
+                MatchCollection artistMatches;
+                Regex artistRegex = new Regex(artistPattern);
+                artistMatches = artistRegex.Matches(creatorSection);
 
-            string artist = "";
-            if (artistMatches.Count >= 1 && artistMatches[0].Groups.Count >= 2)
-            {
-                artist = artistMatches[0].Groups[1].ToString().Trim();
+                string artist = "";
+                if (artistMatches.Count >= 1 && artistMatches[0].Groups.Count >= 2)
+                {
+                    artist = artistMatches[0].Groups[1].ToString().Trim();
                     artist = Regex.Replace(artist, "\\s+", " ");
                     Description += "(A) " + artist + " ";
-            }
+                }
 
-            string coverArtistPattern = @"[\(|\/]CA[^\)]*\)([^(\(|<)]+)";
-            MatchCollection coverArtistMatches;
-            Regex coverArtistRegex = new Regex(coverArtistPattern);
-            coverArtistMatches = coverArtistRegex.Matches(creatorSection);
+                string coverArtistPattern = @"[\(|\/]CA[^\)]*\)([^(\(|<)]+)";
+                MatchCollection coverArtistMatches;
+                Regex coverArtistRegex = new Regex(coverArtistPattern);
+                coverArtistMatches = coverArtistRegex.Matches(creatorSection);
 
-            string coverArtist = "";
-            if (coverArtistMatches.Count >= 1 && coverArtistMatches[0].Groups.Count >= 2)
-            {
-                coverArtist = coverArtistMatches[0].Groups[1].ToString().Trim();
+                string coverArtist = "";
+                if (coverArtistMatches.Count >= 1 && coverArtistMatches[0].Groups.Count >= 2)
+                {
+                    coverArtist = coverArtistMatches[0].Groups[1].ToString().Trim();
                     coverArtist = Regex.Replace(coverArtist, "\\s+", " ");
                     Description += "(CA) " + coverArtist + " ";
-            }
+                }
 
 
 
 
-            string releasePattern = @"ReleaseDate"">([^<]+)";
-            MatchCollection releaseMatches;
-            Regex releaseRegex = new Regex(releasePattern);
-            releaseMatches = releaseRegex.Matches(remainingPageText);
+                string releasePattern = @"ReleaseDate"">([^<]+)";
+                MatchCollection releaseMatches;
+                Regex releaseRegex = new Regex(releasePattern);
+                releaseMatches = releaseRegex.Matches(remainingPageText);
 
-            string release = "";
-            if (releaseMatches.Count >= 1 && releaseMatches[0].Groups.Count >= 2)
-            {
-                release = releaseMatches[0].Groups[1].ToString().Trim();
-                Description += "(Release) " + release + " ";
-            }
+                string release = "";
+                if (releaseMatches.Count >= 1 && releaseMatches[0].Groups.Count >= 2)
+                {
+                    release = releaseMatches[0].Groups[1].ToString().Trim();
+                    Description += "(Release) " + release + " ";
+                }
 
-            Description += " " + _creatorToDescriptionSeparator;
+                Description += " " + _creatorToDescriptionSeparator;
 
-            //trim out tabs and newlines
+                //trim out tabs and newlines
 
-            string descriptionPattern = @"<div class=""Creators"">[\s\S]*?<\/div>([\s\S]+?)<div";
+                string descriptionPattern = @"<div class=""Creators"">[\s\S]*?<\/div>([\s\S]+?)<div";
 
 
-            Regex descRegex = new Regex(descriptionPattern);
-            // Get matches of pattern in text
-            var descMatches = descRegex.Matches(remainingPageText);
+                Regex descRegex = new Regex(descriptionPattern);
+                // Get matches of pattern in text
+                var descMatches = descRegex.Matches(remainingPageText);
 
-            if (descMatches.Count >= 1 && descMatches[0].Groups.Count >= 2)
-            {
+                if (descMatches.Count >= 1 && descMatches[0].Groups.Count >= 2)
+                {
                     var descriptionHTML = descMatches[0].Groups[1].ToString();
                     descriptionHTML = Regex.Replace(descriptionHTML, @"\s+", " ");
                     if (descriptionHTML != "")
                     {
                         Description += Regex.Replace(descriptionHTML, @"<[^>]*>|&[^;]+;", "");
                     }
-            }
+                }
             }
             catch (Exception ex)
             {
                 var blah = ex.ToString();
             }
+
         }
 
         public void LoadFromWebsite()

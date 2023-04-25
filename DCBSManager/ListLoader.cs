@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Web;
 using System.Security;
+using NPOI.OpenXmlFormats.Spreadsheet;
 
 namespace DCBSManager
 {
@@ -129,11 +130,12 @@ namespace DCBSManager
 
         //excel column indexes for DeepDiscount
         //same as DCBS, plus
-        const int SHIP_DATE = 14;
-        const int WRITER = 15;
-        const int ARTIST = 16;
-        const int COVER_ART = 17;
-        const int DESC = 18;
+        const int PUBLISHER = 14;
+        const int SHIP_DATE = 16;
+        const int WRITER = 17;
+        const int ARTIST = 18;
+        const int COVER_ART = 19;
+        const int DESC = 20;
 
         #region Properties
 
@@ -662,59 +664,77 @@ namespace DCBSManager
             {
                 List<DCBSItem> mDCBSItems = new List<DCBSItem>();
 
-                string currentCategory = "Previews";
-                bool headerProcessed = false;
                 using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    var hssfworkbook = new HSSFWorkbook(file);
+                    var hssfworkbook = new XSSFWorkbook(file);
                     ISheet sheet = hssfworkbook.GetSheetAt(0);
                     System.Collections.IEnumerator rows = sheet.GetRowEnumerator();
 
+                    var first = true;
+                    var deepDiscountList = false;
                     while (rows.MoveNext())
                     {
-                        IRow row = (HSSFRow)rows.Current;
+                        IRow row = (XSSFRow)rows.Current;
+
+                        if (first)
+                        {
+                            var titleCell = row.GetCell(1);
+                            deepDiscountList = titleCell.ToString().StartsWith("Deep");
+                            first = false;
+                        }
+                       
                         if (DISC <= row.LastCellNum)
                         {
+                           
+
                             var cell = row.GetCell(CODE);
                             if (cell != null)
                             {
                                 string codeString = cell.ToString();
-                                if (String.Compare(codeString, "Previews", true) == 0)
+                                DCBSItem newItem = new DCBSItem();
+                                newItem.DCBSOrderCode = codeString;
+
+                                if (newItem.Distributor == Distributor.Invalid || newItem.Distributor == Distributor.Unknown)
                                 {
-                                    headerProcessed = true;
+                                    continue;
+                                }
+                                
+                                newItem.Title = row.GetCell(TITLE)?.ToString() ?? "";
+                                newItem.Category = row.GetCell(PUBLISHER)?.ToString() ?? "Unknown";
+                                var costCell = row.GetCell(COST);
+                                if (costCell.CellType == CellType.Numeric)
+                                {
+                                    var costString = costCell?.ToString() ?? "0";
+                                    newItem.RetailPrice = double.Parse(costString, NumberStyles.Currency);
                                 }
                                 else
                                 {
+                                    newItem.RetailPrice = 0;
+                                }
+                               
+                                newItem.DCBSDiscount = row.GetCell(DISC)?.ToString() ?? "";
 
-                                    const string codePattern = @"[A-Z]{3}[0-9]{6}[A-Z]*";
-                                    var matchResult = Regex.Match(codeString, codePattern);
-                                    if (matchResult.Success)
-                                    {
-                                        if (String.IsNullOrEmpty(category) || currentCategory == category)
-                                        {
-                                            DCBSItem newItem = new DCBSItem();
-                                            newItem.DCBSOrderCode = codeString;
-                                            newItem.Title = row.GetCell(TITLE).ToString();
-                                            newItem.RetailPrice = double.Parse(row.GetCell(COST).ToString(), NumberStyles.Currency);
-                                            newItem.DCBSDiscount = row.GetCell(DISC).ToString();
-                                            newItem.DCBSPrice = double.Parse(row.GetCell(DCBS).ToString(), NumberStyles.Currency);
-                                            newItem.Category = currentCategory;
-                                            newItem.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
-                                            mDCBSItems.Add(newItem);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (headerProcessed && (codeString != ""))
-                                        {
-                                            currentCategory = codeString;
-                                        }
-                                    }
+
+                                var priceCell = row.GetCell(DCBS);
+                                if (priceCell.CellType == CellType.Numeric)
+                                {
+                                    var costString = priceCell?.ToString() ?? "0";
+                                    newItem.DCBSPrice = double.Parse(costString, NumberStyles.Currency);
+                                }
+                                else
+                                {
+                                    newItem.DCBSPrice = 0;
+                                }
+                               
+                                newItem.Description = row.GetCell(DESC)?.ToString() ?? "";
+
+                                newItem.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
+                                mDCBSItems.Add(newItem);
+                                   
                                 }
                             }
                         }
                     }
-                }
 
                 return mDCBSItems;
             });
@@ -732,7 +752,8 @@ namespace DCBSManager
             {
                 ListLoadingText = "Loading " + item.Category + " (" + itemNumber.ToString() + " of " + totalItems.ToString() + ")";
                 //item.LoadFromWebsite();
-                item.LoadFromPreviewsWorld();
+                //item.LoadFromPreviewsWorld();
+                item.LoadFromDistributors();
                 if (item.ThumbnailRawBytes != null)
                 {
                     item.Thumbnail = await BitmapImageFromBytes(item.ThumbnailRawBytes);

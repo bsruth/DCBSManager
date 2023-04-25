@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Diagnostics;
+using System.IO;
 
 namespace DCBSManager
 {
@@ -194,7 +195,15 @@ namespace DCBSManager
                 { 
                     return;
                 }
-            var newSelectedList = ListLoader.DownloadList(newListName);
+            DCBSList newSelectedList;
+            if (File.Exists(newListName))
+            {
+                newSelectedList = new DCBSList(Path.GetFileNameWithoutExtension(newListName));
+            }
+            else
+            {
+                newSelectedList = ListLoader.DownloadList(newListName);
+            }
             var results = Task.Run(async () =>
             {
                 return await mLL.LoadList(newSelectedList);
