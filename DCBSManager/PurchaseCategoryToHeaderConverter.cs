@@ -82,6 +82,8 @@ namespace DCBSManager
                     return "Not Received";
                 case PurchaseCategories.Matt:
                     return "Matt";
+                case PurchaseCategories.MattReceived:
+                    return "MattReceived";
             }
 
             return "UNKNOWN";

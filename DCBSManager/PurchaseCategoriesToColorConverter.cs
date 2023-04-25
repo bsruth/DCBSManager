@@ -46,6 +46,9 @@ namespace DCBSManager
                         case "Matt":
                             purchaseCategory = PurchaseCategories.Matt;
                             break;
+                        case "MattReceived":
+                            purchaseCategory = PurchaseCategories.MattReceived;
+                            break;
                         default:
                             throw new InvalidOperationException("The string value to convert must be a SystemMessageType");
                     }
@@ -81,6 +84,8 @@ namespace DCBSManager
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFF0000"));
                 case PurchaseCategories.Matt:
                     return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFA71930"));
+                case PurchaseCategories.MattReceived:
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#590d1a"));
             }
 
             return new SolidColorBrush((Color)Colors.Black);

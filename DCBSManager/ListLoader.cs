@@ -605,7 +605,7 @@ namespace DCBSManager
             MemoryStream stream = null;
 
 
-           await App.Current.Dispatcher.BeginInvoke((Action)(() =>
+           await App.Current.Dispatcher.BeginInvoke((Action)( () =>
                 {
                     try
                     {
@@ -625,13 +625,14 @@ namespace DCBSManager
                     }
                     catch (Exception)
                     {
-
+                        // we'll load the default if we have a null image
                     }
                 }));
 
-
-            
-
+            if (image == null)
+            {
+                image = await LoadDefaultBitmapImage();
+            }
             return image;
 
         }

@@ -17,7 +17,8 @@ namespace DCBSManager
         Received = 4,
         Total = 5,
         NotReceived = 6,
-        Matt = 7
+        Matt = 7,
+        MattReceived = 8
 
     };
     public enum Distributor
@@ -660,7 +661,7 @@ namespace DCBSManager
                 PurchaseCategory = PurchaseCategories.Matt;
             }
         }
-
+        
         #region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler PropertyChanged;

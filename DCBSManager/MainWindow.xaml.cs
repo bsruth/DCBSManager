@@ -149,7 +149,7 @@ namespace DCBSManager
 
         private void definiteFilter_Click(object sender, RoutedEventArgs e)
         {
-            DCBSList.ItemsSource = mLL.FilterToPurchaseCategory(PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Received, PurchaseCategories.Matt );
+            DCBSList.ItemsSource = mLL.FilterToPurchaseCategory(PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Received, PurchaseCategories.MattReceived, PurchaseCategories.Matt );
         }
         private void notReceivedFilter_Click(object sender, RoutedEventArgs e)
         {
