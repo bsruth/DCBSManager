@@ -173,8 +173,7 @@ namespace DCBSManager
                     return String.Format("https://media.lunardistribution.com/images/covers/{0}.jpg", orderCode);
 
                 case Distributor.Diamond:
-                    // call load from previewsworld
-                    return "";
+                    return String.Format("http://media.dcbservice.com/small/{0}.jpg",orderCode);
 
                 case Distributor.PRH:
                     return String.Format("https://images.randomhouse.com/cover/{0}", orderCode);
@@ -400,43 +399,46 @@ namespace DCBSManager
             switch (this.Distributor)
             {
                 case Distributor.PRH:
+                    PID = long.Parse(DCBSOrderCode);
+                    break;
                 case Distributor.Lunar:
-                    if (this.Distributor == Distributor.PRH)
                     {
-                        PID = long.Parse(DCBSOrderCode);
-                    }
-                    else
-                    {
+
                         var pidString = DCBSOrderCode;
                         StringBuilder sb = new StringBuilder(DCBSOrderCode);
                         sb.Remove(4, 2);
                         pidString = sb.ToString();
                         PID = long.Parse(pidString);
-
-                    }
-                    ImgURL = GetImageURLFromOrderCodeAndDistributor(DCBSOrderCode, this.Distributor);
-                    try
-                    {
-                        ThumbnailRawBytes = (new WebClient()).DownloadData(ImgURL);
-                    }
-                    catch (Exception)
-                    {
-                        //image failed, just use the no_image url
-                        ImgURL = "";
-                        ThumbnailRawBytes = null;
                     }
                     break;
                 case Distributor.Diamond:
-                    LoadFromPreviewsWorld();
+                    {
+
+                        var pidString = DCBSOrderCode.Substring(3);
+                        PID = long.Parse(pidString);
+                    }
                     break;
+
                 case Distributor.Invalid:
                 case Distributor.Unknown:
                 case Distributor.Bundle:
-                    break;
-
+                    return;
 
             }
+
+            ImgURL = GetImageURLFromOrderCodeAndDistributor(DCBSOrderCode, this.Distributor);
+            try
+            {
+                ThumbnailRawBytes = (new WebClient()).DownloadData(ImgURL);
+            }
+            catch (Exception)
+            {
+                //image failed, just use the no_image url
+                ImgURL = "";
+                ThumbnailRawBytes = null;
+            }
         }
+
         public void LoadFromPreviewsWorld()
         {
 
@@ -451,7 +453,7 @@ namespace DCBSManager
                 this.PID = deepDiscountPID++;
                 remainingPageText = detailSr.ReadToEnd().Trim();
                 //thumbnail
-                Regex thumbnailPattern = new Regex(@"id=""MainContentImage""\s*src=""(.+?)\?");
+                Regex thumbnailPattern = new Regex(@"id=""MainContentImage""\s*src=""([^""]+)""");
 
                 var thumbnailMatches = thumbnailPattern.Matches(remainingPageText);
                 if (thumbnailMatches.Count >= 1 && thumbnailMatches[0].Groups.Count >= 2)

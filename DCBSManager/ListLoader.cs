@@ -801,16 +801,9 @@ namespace DCBSManager
                             {
                                 if (item.PurchaseCategory == PurchaseCategories.Definite || item.PurchaseCategory == PurchaseCategories.Matt)
                                 {
-                                    var cellTitle = row.GetCell(TITLE).ToString();
                                    
-                                   var upperCellTitle = cellTitle.ToUpper().Replace("#", "").Replace(":", "").Replace("&", "AND");
-                                    var upperItemTitle = item.Title.ToUpper().Replace("#", "").Replace(":", "").Replace("&", "AND");
-                                    //int indexCell = upperCellTitle.Zip(upperItemTitle, (c1, c2) => c1 == c2).TakeWhile(b => b).Count() + 1;
-                                   // int indexItem = upperItemTitle.Zip(upperCellTitle, (c1, c2) => c1 == c2).TakeWhile(b => b).Count() + 1;
-                                    bool cellIsSubstrTitle = !String.IsNullOrEmpty(cellTitle) && upperItemTitle.Contains(upperCellTitle);
-                                    bool titleIsSubstrCell = !String.IsNullOrEmpty(cellTitle) && upperCellTitle.Contains(upperItemTitle);
                                     
-                                    if (codeString == item.DCBSOrderCode || cellIsSubstrTitle || titleIsSubstrCell) 
+                                    if (codeString == item.DCBSOrderCode) 
                                     {
                                         var checkCell = row.GetCell(2);
                                         checkCell.SetCellValue(1);
