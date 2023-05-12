@@ -726,8 +726,15 @@ namespace DCBSManager
                                 {
                                     newItem.DCBSPrice = 0;
                                 }
-                               
-                                newItem.Description = row.GetCell(DESC)?.ToString() ?? "";
+
+                                var writer = row.GetCell(WRITER)?.ToString() ?? "";
+                                var artist = row.GetCell(ARTIST)?.ToString() ?? "";
+                                var coverArtist = row.GetCell(COVER_ART)?.ToString() ?? "";
+                                newItem.Description = "(W) " + (String.IsNullOrEmpty(writer) ? "TBA" : writer) + " ";
+                                newItem.Description += "(A) " + (String.IsNullOrEmpty(artist) ? "TBA" : artist) + " ";
+                                newItem.Description += "(CA) " + (String.IsNullOrEmpty(coverArtist) ? "TBA" : coverArtist) + " ";
+
+                                newItem.Description += row.GetCell(DESC)?.ToString() ?? "";
 
                                 newItem.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
                                 mDCBSItems.Add(newItem);
