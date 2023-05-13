@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -651,6 +652,22 @@ namespace DCBSManager
         public override String ToString()
         {
             return DisplayValue;
+        }
+
+        public void MoveToPreviousPurchaseCategory()
+        {
+            if (PurchaseCategory == PurchaseCategories.None)
+            {
+                PurchaseCategory = PurchaseCategories.MattReceived;
+            }
+            else if (PurchaseCategory == PurchaseCategories.Matt)
+            {
+                PurchaseCategory = PurchaseCategories.Received;
+            }
+            else
+            {
+                PurchaseCategory = (PurchaseCategories)((Int64)(PurchaseCategory) - 1);
+            }
         }
 
         public void MoveToNextPurchaseCategory()

@@ -229,10 +229,23 @@ namespace DCBSManager
         private void DCBSList_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             var item = DCBSList.SelectedItem as DCBSItem;
-            
-            if(item != null && e.Key == System.Windows.Input.Key.Space)
+            if (item == null)
             {
-                item.MoveToNextPurchaseCategory();
+                return;
+            }
+            switch (e.Key)
+            {
+
+                case System.Windows.Input.Key.Space:
+                case System.Windows.Input.Key.Right:
+                    item.MoveToNextPurchaseCategory();
+                    break;
+                case System.Windows.Input.Key.Left:
+                    item.MoveToPreviousPurchaseCategory();
+                    break;
+                default:
+                    return;
+
             }
         }
     }
