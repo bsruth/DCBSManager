@@ -587,7 +587,8 @@ namespace DCBSManager
 
                 return (from item in listToFilter
                         where item.Title.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            item.Category.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0
+                            item.Category.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            item.DCBSOrderCode.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0
                         select item).ToList();
             }); ;
         }
