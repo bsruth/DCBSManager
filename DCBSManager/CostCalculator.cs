@@ -160,13 +160,23 @@ namespace DCBSManager
             var retailCount = retailItems.Count();
             var retailTotal = (retailCost + (retailCount * RetailIndividualBagBoardCost)) * (1 + RetailTaxPercentage);
 
-            var dcbsItems = itemsList.Where(item => item.PurchaseCategory == PurchaseCategories.Definite || item.PurchaseCategory == PurchaseCategories.Matt);
+            var dcbsItems = itemsList.Where(item => item.PurchaseCategory == PurchaseCategories.Definite);
             var dcbsCost = dcbsItems.Sum(item => item.DCBSPrice);
             var dcbsCount = dcbsItems.Count();
             var dcbsTotal = ((dcbsCost + (dcbsCount * IndividualBagBoardCost)) * (1 + TaxPercentage));
             if (dcbsCount > 0)
             {
                 dcbsTotal += (ShippingCost + HandlingCost);
+            }
+
+
+            var mattItems = itemsList.Where(item => item.PurchaseCategory == PurchaseCategories.Matt);
+            var mattCost = mattItems.Sum(item => item.DCBSPrice);
+            var mattCount = mattItems.Count();
+            var mattTotal = ((mattCost + (mattCount * IndividualBagBoardCost)) * (1 + TaxPercentage));
+            if (mattCount > 0)
+            {
+                mattTotal += (ShippingCost + HandlingCost);
             }
 
             var receivedItems = itemsList.Where(item => item.PurchaseCategory == PurchaseCategories.Received);
@@ -180,12 +190,14 @@ namespace DCBSManager
             var maybeCount = maybeItems.Count();
             var maybeTotal = (maybeCost + (maybeCount * IndividualBagBoardCost)) * (1 + TaxPercentage);
             
-            TotalCost = retailTotal + dcbsTotal + maybeTotal;
-            ItemCount = retailCount + dcbsCount + maybeCount;
+            TotalCost = retailTotal + dcbsTotal + maybeTotal + mattTotal;
+            ItemCount = retailCount + dcbsCount + maybeCount + mattCount;
             if (PurchaseCategory != PurchaseCategories.NotReceived)
             {
                 ItemCount += receivedItemsCount;
             }
+
+           Console.WriteLine("Total {0} Category: {1}", ItemCount, Enum.GetName(typeof( PurchaseCategories), PurchaseCategory));
         }
     }
 }

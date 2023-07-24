@@ -94,6 +94,8 @@ namespace DCBSManager
         ObservableCollection<DCBSItem> _retailItems = new ObservableCollection<DCBSItem>();
         ObservableCollection<DCBSItem> _purchaseItems = new ObservableCollection<DCBSItem>();
         ObservableCollection<DCBSItem> _notReceivedItems = new ObservableCollection<DCBSItem>();
+        ObservableCollection<DCBSItem> _mattItems = new ObservableCollection<DCBSItem>();
+
 
         bool _loadingNewList = false;
         string _listLoadingText = "Loading";
@@ -259,6 +261,22 @@ namespace DCBSManager
                 }
             }
         }
+        public ObservableCollection<DCBSItem> MattItems
+        {
+            get
+            {
+                return _mattItems;
+            }
+
+            private set
+            {
+                if (value != null)
+                {
+                    _mattItems = value;
+                    OnPropertyChanged("MattItems");
+                }
+            }
+        }
 
         public DCBSList CurrentList { get; private set; }
         #endregion
@@ -285,7 +303,8 @@ namespace DCBSManager
             }
 
 
-            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite, PurchaseCategories.Matt);
+            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite);
+            UpdateCategoryLists(ref _mattItems, PurchaseCategories.Matt);
             UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe);
             UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail);
             UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Matt);
@@ -563,7 +582,8 @@ namespace DCBSManager
             }
 
 
-            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite, PurchaseCategories.Matt);
+            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite);
+            UpdateCategoryLists(ref _mattItems, PurchaseCategories.Matt);
             UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe);
             UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail);
             UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Received, PurchaseCategories.Matt);

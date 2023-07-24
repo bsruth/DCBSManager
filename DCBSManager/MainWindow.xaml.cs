@@ -65,10 +65,10 @@ namespace DCBSManager
             _retailTotal.DataContext = _retailCostCalc;
             _overallTotal.DataContext = _overallCostCalc;
             _notReceivedTotal.DataContext = _notReceivedCostCalc;
-            _mattCostCalc = new CostCalculator(mLL.PurchaseItems, PurchaseCategories.Matt)
+            _mattCostCalc = new CostCalculator(mLL.MattItems, PurchaseCategories.Matt)
             {
                 RetailTaxPercentage = 0.093,
-                ShippingCost = 7.50,
+                ShippingCost = 0.00,
                 IndividualBagBoardCost = 0.12
             };
             _mattTotal.DataContext = _mattCostCalc;
@@ -166,7 +166,7 @@ namespace DCBSManager
 
         private void _dcbsFilter_Click(object sender, RoutedEventArgs e)
         {
-            DCBSList.ItemsSource = mLL.FilterToPurchaseCategory(PurchaseCategories.Definite, PurchaseCategories.Matt);
+            DCBSList.ItemsSource = mLL.FilterToPurchaseCategory(PurchaseCategories.Definite);
         }
         
         private void _retailFilter_Click(object sender, RoutedEventArgs e)
