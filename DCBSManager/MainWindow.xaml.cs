@@ -84,10 +84,6 @@ namespace DCBSManager
                 DCBSList.ItemsSource = await ListLoader.FilterList(searchTextBox.Text, mLL.LoadedItems);
                 DCBSList.ScrollIntoView(_selectedItem);
                 DCBSList.SelectedItem = _selectedItem;
-                if (String.IsNullOrEmpty(searchTextBox.Text))
-                {
-                    DCBSList.Focus();
-                }
             }
         }
 
