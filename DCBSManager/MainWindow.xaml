@@ -77,6 +77,11 @@
                         <dcbsmgr:TotalsDisplay x:Name="_retailTotal"   />
                     </Button.Content>
                 </Button>
+                <Button x:Name="_mattFilter" Click="mattFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                    <Button.Content>
+                        <dcbsmgr:TotalsDisplay x:Name="_mattTotal"   />
+                    </Button.Content>
+                </Button>
                 <Button x:Name="_definiteFilter" Click="definiteFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <Button.Content>
                         <dcbsmgr:TotalsDisplay x:Name="_overallTotal"   />
