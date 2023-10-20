@@ -64,7 +64,10 @@
                     </Button>
 
                 </Grid>
-                <TextBlock Grid.Row="3" Grid.Column="1" Foreground="{StaticResource OffWhite}" Text="{Binding DCBSOrderCode}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Background="Transparent" BorderThickness="0" Foreground="{StaticResource OffWhite}"
+                         Text="{Binding DCBSOrderCode}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0" IsReadOnly="True"
+                         TextWrapping="Wrap" />
+
             </Grid>
         </Border>
     </Border>
