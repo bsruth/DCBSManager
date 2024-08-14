@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Web;
 using System.Security;
 using NPOI.OpenXmlFormats.Spreadsheet;
+using System.Windows.Forms.VisualStyles;
 
 namespace DCBSManager
 {
@@ -334,6 +335,36 @@ namespace DCBSManager
             return new DCBSList(Path.GetFileNameWithoutExtension(fileName));
         }
 
+
+        static String GetCurrentMonthName()
+        {
+            var dateTime = DateTime.Now;
+            return CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(dateTime.Month);
+        }
+
+        /**
+         * Checks to see if we have an excel file for the current month in the form MonthnameYYYY.xls
+         * i.e. August2024.xls
+         */
+        public static String CheckForLocalUndownloadedExcelFile()
+        {
+            var currentMonth = GetCurrentMonthName();
+            StringBuilder sb = new StringBuilder(currentMonth);
+            sb.Append(DateTime.Now.Year.ToString());
+            var baseName = sb.ToString();
+            var excelFile = baseName + ".xls";
+            var sqlFile = baseName + ".sqlite";
+
+            sb.Append(".xls");
+
+            if (File.Exists(excelFile) && !File.Exists(sqlFile))
+            {
+                return excelFile;
+            }
+
+            return "";
+        }
+
         public static String CheckForUpdatedList()
         {      
 
@@ -376,9 +407,11 @@ namespace DCBSManager
                        {
                         return fileName;
                        }
-
-
-                    
+                }
+                var localExcelFilename = CheckForLocalUndownloadedExcelFile();
+                if (!String.IsNullOrEmpty(localExcelFilename))
+                {
+                    return localExcelFilename;
                 }
             }
             catch (Exception ex)
