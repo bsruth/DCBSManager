@@ -354,9 +354,11 @@ namespace DCBSManager
             var baseName = sb.ToString();
             var excelFile = baseName + ".xls";
             var sqlFile = baseName + ".sqlite";
-
-            sb.Append(".xls");
-
+            var deepDiscountFile = "DeepDiscountComics_Order_Form_" + DateTime.Now.Year.ToString() + "_" + currentMonth + ".xlsx";
+            if (File.Exists(deepDiscountFile))
+            {
+                File.Copy(deepDiscountFile, excelFile, true);
+            }
             if (File.Exists(excelFile) && !File.Exists(sqlFile))
             {
                 return excelFile;
@@ -366,7 +368,12 @@ namespace DCBSManager
         }
 
         public static String CheckForUpdatedList()
-        {      
+        {
+            var localExcelFilename = CheckForLocalUndownloadedExcelFile();
+            if (!String.IsNullOrEmpty(localExcelFilename))
+            {
+                return localExcelFilename;
+            }
 
             try
             {
@@ -407,11 +414,6 @@ namespace DCBSManager
                        {
                         return fileName;
                        }
-                }
-                var localExcelFilename = CheckForLocalUndownloadedExcelFile();
-                if (!String.IsNullOrEmpty(localExcelFilename))
-                {
-                    return localExcelFilename;
                 }
             }
             catch (Exception ex)
@@ -721,7 +723,7 @@ namespace DCBSManager
 
                 using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    var hssfworkbook = new XSSFWorkbook(file);
+                    var hssfworkbook = new XSSFWorkbook(file, true);
                     ISheet sheet = hssfworkbook.GetSheetAt(0);
                     System.Collections.IEnumerator rows = sheet.GetRowEnumerator();
 
