@@ -197,7 +197,7 @@ namespace DCBSManager
                 return Distributor.Invalid;
             }
 
-            const string LunarRegexPattern = @"^\d{4}[a-zA-Z0-9]{2}\d{3}$";
+            const string LunarRegexPattern = @"^\d{4}[a-zA-Z0-9]{2}\d{3,}$";
             if (Regex.Match(orderCode, LunarRegexPattern).Success)
             {
                 return Distributor.Lunar;
