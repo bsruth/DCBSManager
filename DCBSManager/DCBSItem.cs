@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Collections.Generic;
 
 namespace DCBSManager
 {
@@ -144,18 +145,6 @@ namespace DCBSManager
         {
             get;
             set;
-            //            get
-            //            {
-            //                return @"Each panel control implements distinct layout logic performed in Measure() and Arrange(). Measure determines the size of the panel and each of its children. Arrange() determines the rectangle where each control renders.
-            //
-            //The last child of the DockPanel fills the remaining space. You can disable this behavior by setting the LastChild property to false.
-            //
-            //The stack panel asks each child for its desired size and then stacks them. The stack panel calls Measure() on each child with an available size of infinity and then uses the child's desired size.";
-            //            }
-            //            set
-            //            {
-
-            //            }
         }
 
         public string ImgURL
@@ -164,30 +153,30 @@ namespace DCBSManager
             set;
         }
 
-        public static string GetImageURLFromOrderCodeAndDistributor(string orderCode, Distributor distributor)
+        public static IEnumerable<string> GetImageURLFromOrderCodeAndDistributor(string orderCode, Distributor distributor)
         {
 
 
             switch (distributor)
             {
                 case Distributor.Lunar:
-                    return String.Format("https://media.lunardistribution.com/images/covers/{0}.jpg", orderCode);
+                    yield return String.Format("https://media.lunardistribution.com/images/covers/{0}.jpg", orderCode);
+                    yield break;
 
                 case Distributor.Diamond:
-                    return String.Format("http://media.dcbservice.com/small/{0}.jpg",orderCode);
+                    yield return String.Format("http://media.dcbservice.com/small/{0}.jpg", orderCode);
+                    yield break;
 
                 case Distributor.PRH:
-                    return String.Format("https://images.randomhouse.com/cover/{0}", orderCode);
+                    yield return String.Format("https://images.randomhouse.com/cover/{0}", orderCode);
+                    yield return String.Format("https://images4.penguinrandomhouse.com/cover/{0}", orderCode);
+                    yield break;
 
                 case Distributor.Unknown:
-
                 case Distributor.Invalid:
-
                 case Distributor.Bundle:
-                    return "";
-
+                    yield break;
             }
-            return string.Empty;
         }
         public static Distributor GetDistributorFromOrderCode(string orderCode)
         {
@@ -229,7 +218,6 @@ namespace DCBSManager
         {
             get
             {
-                //return PurchaseCategories.Definite;
                 return _purchaseCategory;
             }
             set
@@ -265,18 +253,6 @@ namespace DCBSManager
         {
             get;
             set;
-            //get
-            //{
-            //    var defaultImage = new BitmapImage();
-            //    defaultImage.BeginInit();
-            //    defaultImage.UriSource = new Uri("pack://application:,,,/DCBSManager;component/Images/no_image.jpg", UriKind.Absolute);
-            //    defaultImage.EndInit();
-            //    return defaultImage;
-            //}
-            //set
-            //{
-
-            //}
         }
         #endregion
 
@@ -317,7 +293,6 @@ namespace DCBSManager
             Regex publisherRegex = new Regex(publisherPattern);
             publisherMatches = publisherRegex.Matches(dynamicPageText);
 
-            //string publisher = "";
             if (publisherMatches.Count >= 1 && publisherMatches[0].Groups.Count >= 2)
             {
                 tmpItem.Category = publisherMatches[0].Groups[1].ToString().Trim();
@@ -404,7 +379,6 @@ namespace DCBSManager
                     break;
                 case Distributor.Lunar:
                     {
-
                         var pidString = DCBSOrderCode;
                         StringBuilder sb = new StringBuilder(DCBSOrderCode);
                         sb.Remove(4, 2);
@@ -414,7 +388,6 @@ namespace DCBSManager
                     break;
                 case Distributor.Diamond:
                     {
-
                         var pidString = DCBSOrderCode.Substring(3);
                         PID = long.Parse(pidString);
                     }
@@ -424,17 +397,32 @@ namespace DCBSManager
                 case Distributor.Unknown:
                 case Distributor.Bundle:
                     return;
-
             }
 
-            ImgURL = GetImageURLFromOrderCodeAndDistributor(DCBSOrderCode, this.Distributor);
-            try
+            var possibleUrls = GetImageURLFromOrderCodeAndDistributor(DCBSOrderCode, this.Distributor);
+            bool imageFound = false;
+
+            foreach (var url in possibleUrls)
             {
-                ThumbnailRawBytes = (new WebClient()).DownloadData(ImgURL);
+                if (string.IsNullOrEmpty(url)) continue;
+
+                ImgURL = url;
+                try
+                {
+                    ThumbnailRawBytes = (new WebClient()).DownloadData(ImgURL);
+                    imageFound = true;
+                    break;
+                }
+                catch (Exception)
+                {
+                    // Try next URL
+                    continue;
+                }
             }
-            catch (Exception)
+
+            if (!imageFound)
             {
-                //image failed, just use the no_image url
+                //no images succeeded, use the default
                 ImgURL = "";
                 ThumbnailRawBytes = null;
             }
@@ -594,16 +582,30 @@ namespace DCBSManager
         {
             try
             {
-                ImgURL = "http://media.dcbservice.com/small/" + DCBSOrderCode + ".jpg";
+                var possibleUrls = GetImageURLFromOrderCodeAndDistributor(DCBSOrderCode, Distributor.Diamond);
+                bool imageFound = false;
 
-
-                try
+                foreach (var url in possibleUrls)
                 {
-                    ThumbnailRawBytes = (new WebClient()).DownloadData(ImgURL);
+                    if (string.IsNullOrEmpty(url)) continue;
+
+                    ImgURL = url;
+                    try
+                    {
+                        ThumbnailRawBytes = (new WebClient()).DownloadData(ImgURL);
+                        imageFound = true;
+                        break;
+                    }
+                    catch (Exception)
+                    {
+                        // Try next URL
+                        continue;
+                    }
                 }
-                catch (Exception)
+
+                if (!imageFound)
                 {
-                    //image failed, just use the no_image url
+                    //no images succeeded, use the default
                     ImgURL = "";
                     ThumbnailRawBytes = null;
                 }
@@ -627,7 +629,6 @@ namespace DCBSManager
                 {
                     detailURL = detailURLMatches[0].Groups[1].ToString();
                 }
-
 
                 string detailuri = "https://www.dcbservice.com/product/" + DCBSOrderCode + detailURL;
                 System.Net.WebRequest detailReq = System.Net.WebRequest.Create(detailuri);
