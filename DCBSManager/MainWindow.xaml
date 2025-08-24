@@ -17,6 +17,7 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -35,8 +36,24 @@
             </ComboBox>
             <Button x:Name="_updateCheckButton" Grid.Column="1" Grid.Row="0" FontSize="16" FontWeight="Bold" Content="Check for Updates" Margin="5" Padding="5" Click="_updateCheckButton_Click"/>
             <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="2" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="50" FontSize="16" Margin="5,5,5,5"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-            <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" SelectionMode="Single" Margin="0" Grid.Row="1" Grid.ColumnSpan="4" SelectionChanged="DCBSList_SelectionChanged"
-                              VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.CacheLength="2" VirtualizingPanel.CacheLengthUnit="Page" Visibility="{Binding NewListLoading, Converter={StaticResource  InverseBooleanToVisibilityConveter}}" KeyUp="DCBSList_KeyUp">
+            
+            <!-- Loading Status Row -->
+            <Border Grid.Row="1" Grid.ColumnSpan="3" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,1" 
+                    Visibility="{Binding NewListLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                    <TextBlock Text="{Binding ListLoadingText}" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="14"/>
+                    <ProgressBar Height="20" Width="200" IsIndeterminate="True"/>
+                </StackPanel>
+            </Border>
+
+            <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                     Grid.Row="2" Grid.ColumnSpan="3"
+                     HorizontalContentAlignment="Stretch" SelectionMode="Single" 
+                     SelectionChanged="DCBSList_SelectionChanged"
+                     VirtualizingPanel.ScrollUnit="Pixel" 
+                     VirtualizingPanel.CacheLength="2" 
+                     VirtualizingPanel.CacheLengthUnit="Page" 
+                     KeyUp="DCBSList_KeyUp">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -45,11 +62,6 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Visibility="{Binding NewListLoading, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding ListLoadingText}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0" />
-                <ProgressBar Height="20" Width="200" IsIndeterminate="True"/>
-            </StackPanel>
-
         </Grid>
 
         <Grid x:Name="totalsGrid" Grid.Column="1">
@@ -58,33 +70,33 @@
                     <Button.Content>
                         <StackPanel Orientation="Vertical" Background="#FF888888">
                             <TextBlock Text="All Items" HorizontalAlignment="Center" FontWeight="Bold"/>
-                        <TextBlock TextWrapping="Wrap" Text="{Binding ItemsSource.Count, ElementName=DCBSList, StringFormat=Filtered Items: \{0\}}"/>
+                            <TextBlock TextWrapping="Wrap" Text="{Binding ItemsSource.Count, ElementName=DCBSList, StringFormat=Filtered Items: \{0\}}"/>
                         </StackPanel>
                     </Button.Content>
                 </Button>
                 <Button x:Name="_dcbsFilter" Click="_dcbsFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <Button.Content>
-                        <dcbsmgr:TotalsDisplay x:Name="_dcbsTotal"   />
+                        <dcbsmgr:TotalsDisplay x:Name="_dcbsTotal"/>
                     </Button.Content>
                 </Button>
                 <Button x:Name="_maybeFilter" Click="maybeFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <Button.Content>
-                        <dcbsmgr:TotalsDisplay x:Name="_maybeTotal"   />
+                        <dcbsmgr:TotalsDisplay x:Name="_maybeTotal"/>
                     </Button.Content>
                 </Button>
-                <Button x:Name="_retailFilter" Click="_retailFilter_Click"  HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
+                <Button x:Name="_retailFilter" Click="_retailFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <Button.Content>
-                        <dcbsmgr:TotalsDisplay x:Name="_retailTotal"   />
+                        <dcbsmgr:TotalsDisplay x:Name="_retailTotal"/>
                     </Button.Content>
                 </Button>
                 <Button x:Name="_mattFilter" Click="mattFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <Button.Content>
-                        <dcbsmgr:TotalsDisplay x:Name="_mattTotal"   />
+                        <dcbsmgr:TotalsDisplay x:Name="_mattTotal"/>
                     </Button.Content>
                 </Button>
                 <Button x:Name="_definiteFilter" Click="definiteFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <Button.Content>
-                        <dcbsmgr:TotalsDisplay x:Name="_overallTotal"   />
+                        <dcbsmgr:TotalsDisplay x:Name="_overallTotal"/>
                     </Button.Content>
                 </Button>
                 <Button Content="DCBS Upload" Click="goToDCBSUpload_Click" Height="50">
@@ -111,12 +123,10 @@
                 </Button>
                 <Button x:Name="_notReceivedFilter" Click="notReceivedFilter_Click" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" Background="Transparent">
                     <Button.Content>
-                        <dcbsmgr:TotalsDisplay x:Name="_notReceivedTotal"   />
+                        <dcbsmgr:TotalsDisplay x:Name="_notReceivedTotal"/>
                     </Button.Content>
                 </Button>
-
             </StackPanel>
         </Grid>
-
     </Grid>
 </Window>
