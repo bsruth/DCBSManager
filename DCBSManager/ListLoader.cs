@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Web;
@@ -87,6 +88,7 @@ namespace DCBSManager
 
     public class ListLoader : INotifyPropertyChanged
     {
+        private CancellationTokenSource _loadCancellationSource;
 
         List<string> codes = new List<string>();
 
@@ -287,32 +289,47 @@ namespace DCBSManager
         {
         }
 
+        public void CancelLoading()
+        {
+            _loadCancellationSource?.Cancel();
+        }
 
         public async Task<List<DCBSItem>> LoadList(DCBSList listName)
         {
            NewListLoading = true;
-            if (File.Exists(listName.ListDatabaseFileName))
+            _loadCancellationSource = new CancellationTokenSource();
+            
+            try 
             {
-                LoadedItems = await LoadFromDatabase(listName.ListDatabaseFileName);
-                CurrentList = listName;
+                if (File.Exists(listName.ListDatabaseFileName))
+                {
+                    LoadedItems = await LoadFromDatabase(listName.ListDatabaseFileName, _loadCancellationSource.Token);
+                    CurrentList = listName;
+                }
+                else
+                {
+                    SetupDatabase(listName.ListDatabaseFileName);
+                    CurrentList = listName;
+                    LoadedItems = await LoadXLS(listName.ListBaseFileName, "", _loadCancellationSource.Token);
+                }
+
+                if (!_loadCancellationSource.Token.IsCancellationRequested)
+                {
+                    UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite);
+                    UpdateCategoryLists(ref _mattItems, PurchaseCategories.Matt);
+                    UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe);
+                    UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail);
+                    UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Matt);
+                    UpdateCategoryLists(ref _notReceivedItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Matt);
+                }
             }
-            else
+            finally
             {
-                SetupDatabase(listName.ListDatabaseFileName);
-                CurrentList = listName;
-                LoadedItems = await LoadXLS(listName.ListBaseFileName, "");
+                NewListLoading = false;
+                _loadCancellationSource = null;
             }
 
-
-            UpdateCategoryLists(ref _definiteItems, PurchaseCategories.Definite);
-            UpdateCategoryLists(ref _mattItems, PurchaseCategories.Matt);
-            UpdateCategoryLists(ref _maybeItems, PurchaseCategories.Maybe);
-            UpdateCategoryLists(ref _retailItems, PurchaseCategories.Retail);
-            UpdateCategoryLists(ref _purchaseItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Matt);
-            UpdateCategoryLists(ref _notReceivedItems, PurchaseCategories.Retail, PurchaseCategories.Definite, PurchaseCategories.Matt);
-
-            NewListLoading = false;
-            return LoadedItems;
+            return LoadedItems ?? new List<DCBSItem>();
         }
 
 
@@ -514,19 +531,18 @@ namespace DCBSManager
             return true;
         }
 
-        public async Task<List<DCBSItem>> LoadFromDatabase(string databaseName)
+        public async Task<List<DCBSItem>> LoadFromDatabase(string databaseName, CancellationToken cancellationToken)
         {
             ListLoadingText = "Loading from database";
             return await Task.Run(async () =>
             {
                 List<DCBSItem> itemsList = new List<DCBSItem>();
-
+                LoadedItems = itemsList;
                 using (var conn = new SQLiteConnection(@"Data Source=" + databaseName + ";Version=3;"))
                 {
                     conn.Open();
                     using (var cmd = conn.CreateCommand())
                     {
-                        //get the number of items so we can display it
                         cmd.CommandText = "SELECT COUNT(*) FROM all_items";
                         int count = Convert.ToInt32(cmd.ExecuteScalar());
                         int itemNumber = 1;
@@ -534,6 +550,7 @@ namespace DCBSManager
                         var ret = cmd.ExecuteReader();
                         while (ret.Read())
                         {
+                            cancellationToken.ThrowIfCancellationRequested();
                             if(count > 0)
                             {
                                 ListLoadingText = "Loading from database (" + itemNumber.ToString() + " of " + count.ToString() + ")";
@@ -560,27 +577,142 @@ namespace DCBSManager
                                 {
                                     item.ThumbnailRawBytes = ret.GetFieldValue<byte[]>(col_thumbnail_index);
                                     item.Thumbnail = await BitmapImageFromBytes(item.ThumbnailRawBytes);
-
                                 }
-
                                 item.PurchaseCategory = (PurchaseCategories)ret.GetFieldValue<Int64>(col_purchase_category_index);
                                 item.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
                                 itemsList.Add(item);
+                                LoadedItems = itemsList;
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             {
-                                var blah = ex.ToString();
+                                continue;
                             }
-
                             ++itemNumber;
                         }
+                    }
+                }
+                return itemsList;
+            }, cancellationToken);
+        }
 
+        public async Task<List<DCBSItem>> LoadXLS(string listName, string category, CancellationToken cancellationToken)
+        {
+            string excelFileName = listName + ".xls";
+            ListLoadingText = "Parsing " + excelFileName;
+            var itemList = await ParseXLSFile(excelFileName, category, cancellationToken);
+            LoadedItems = itemList;
+            int itemNumber = 1;
+            int totalItems = itemList.Count;
+            foreach(var item in itemList)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                ListLoadingText = "Loading " + item.Category + " (" + itemNumber.ToString() + " of " + totalItems.ToString() + ")";
+                item.LoadFromDistributors();
+                if (item.ThumbnailRawBytes != null)
+                {
+                    item.Thumbnail = await BitmapImageFromBytes(item.ThumbnailRawBytes);
+                }
+                else
+                {
+                    item.Thumbnail = await LoadDefaultBitmapImage();
+                }
+                item.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
+                AddItemToDatabase(item);
+                LoadedItems = itemList;
+                ++itemNumber;
+            }
+            return itemList;
+        }
+
+        public async Task<List<DCBSItem>> ParseXLSFile(string filePath, string category, CancellationToken cancellationToken)
+        {
+            return await Task.Run(() =>
+            {
+                List<DCBSItem> mDCBSItems = new List<DCBSItem>();
+
+                using (FileStream file = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    var hssfworkbook = new XSSFWorkbook(file, true);
+                    ISheet sheet = hssfworkbook.GetSheetAt(0);
+                    System.Collections.IEnumerator rows = sheet.GetRowEnumerator();
+
+                    var first = true;
+                    var deepDiscountList = false;
+                    while (rows.MoveNext())
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        
+                        IRow row = (XSSFRow)rows.Current;
+
+                        if (first)
+                        {
+                            var titleCell = row.GetCell(1);
+                            deepDiscountList = titleCell.ToString().StartsWith("Deep");
+                            first = false;
+                        }
+                       
+                        if (DISC <= row.LastCellNum)
+                        {
+                           
+
+                            var cell = row.GetCell(CODE);
+                            if (cell != null)
+                            {
+                                string codeString = cell.ToString();
+                                DCBSItem newItem = new DCBSItem();
+                                newItem.DCBSOrderCode = codeString;
+
+                                if (newItem.Distributor == Distributor.Invalid || newItem.Distributor == Distributor.Unknown)
+                                {
+                                    continue;
+                                }
+                                
+                                newItem.Title = row.GetCell(TITLE)?.ToString() ?? "";
+                                newItem.Category = row.GetCell(PUBLISHER)?.ToString() ?? "Unknown";
+                                var costCell = row.GetCell(COST);
+                                if (costCell.CellType == CellType.Numeric)
+                                {
+                                    var costString = costCell?.ToString() ?? "0";
+                                    newItem.RetailPrice = double.Parse(costString, NumberStyles.Currency);
+                                }
+                                else
+                                {
+                                    newItem.RetailPrice = 0;
+                                }
+                               
+                                newItem.DCBSDiscount = row.GetCell(DISC)?.ToString() ?? "";
+
+
+                                var priceCell = row.GetCell(DCBS);
+                                if (priceCell.CellType == CellType.Numeric)
+                                {
+                                    var costString = priceCell?.ToString() ?? "0";
+                                    newItem.DCBSPrice = double.Parse(costString, NumberStyles.Currency);
+                                }
+                                else
+                                {
+                                    newItem.DCBSPrice = 0;
+                                }
+
+                                var writer = row.GetCell(WRITER)?.ToString() ?? "";
+                                var artist = row.GetCell(ARTIST)?.ToString() ?? "";
+                                var coverArtist = row.GetCell(COVER_ART)?.ToString() ?? "";
+                                newItem.Description = "(W) " + (String.IsNullOrEmpty(writer) ? "TBA" : writer) + " ";
+                                newItem.Description += "(A) " + (String.IsNullOrEmpty(artist) ? "TBA" : artist) + " ";
+                                newItem.Description += "(CA) " + (String.IsNullOrEmpty(coverArtist) ? "TBA" : coverArtist) + " ";
+
+                                newItem.Description += row.GetCell(DESC)?.ToString() ?? "";
+
+                                newItem.PurchaseCategoryChanged += ItemPurchaseCategoryChanged;
+                                mDCBSItems.Add(newItem);
+                                   
+                                }
+                            }
+                        }
                     }
 
-                }
-
-                return itemsList;
-            });
+                return mDCBSItems;
+            }, cancellationToken);
         }
 
         private async void ItemPurchaseCategoryChanged(object sender, PurchaseCategoryChangedRoutedEventArgs e)

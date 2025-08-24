@@ -123,9 +123,20 @@ namespace DCBSManager
                 return;
             }
 
+            _updateCheckButton.Content = "Cancel";
+            _updateCheckButton.Click -= _updateCheckButton_Click;
+            _updateCheckButton.Click += CancelLoading_Click;
+
             var results = Task.Run(async () =>
             {
-                return await mLL.LoadList(newSelectedList);
+                try 
+                {
+                    return await mLL.LoadList(newSelectedList);
+                }
+                catch (OperationCanceledException)
+                {
+                    return mLL.LoadedItems ?? new List<DCBSItem>();
+                }
             }).ContinueWith(taskResult =>
             {
                 App.Current.Dispatcher.BeginInvoke((Action)(() =>
@@ -133,6 +144,9 @@ namespace DCBSManager
                     try
                     {
                         DCBSList.ItemsSource = taskResult.Result;
+                        _updateCheckButton.Content = "Check for Updates";
+                        _updateCheckButton.Click -= CancelLoading_Click;
+                        _updateCheckButton.Click += _updateCheckButton_Click;
                     }
                     catch (Exception ex)
                     {
@@ -140,9 +154,82 @@ namespace DCBSManager
                     }
                 }));
             });
+        }
 
+        private void CancelLoading_Click(object sender, RoutedEventArgs e)
+        {
+            mLL.CancelLoading();
+            DCBSList.ItemsSource = mLL.LoadedItems ?? new List<DCBSItem>();
+            _updateCheckButton.Content = "Check for Updates";
+            _updateCheckButton.Click -= CancelLoading_Click;
+            _updateCheckButton.Click += _updateCheckButton_Click;
+        }
 
+        private void _updateCheckButton_Click(object sender, RoutedEventArgs e)
+        {
+            var newListName = ListLoader.CheckForUpdatedList();
+            if (String.IsNullOrEmpty(newListName))
+            {
+                MessageBox.Show("No new list found.");
+                return;
+            }
 
+            if (MessageBox.Show("New list available: " + System.IO.Path.GetFileNameWithoutExtension(newListName) + " Download?",
+                "New List Found", MessageBoxButton.YesNo) == MessageBoxResult.No)
+            { 
+                return;
+            }
+
+            _updateCheckButton.Content = "Cancel";
+            _updateCheckButton.Click -= _updateCheckButton_Click;
+            _updateCheckButton.Click += CancelLoading_Click;
+
+            DCBSList newSelectedList;
+            if (File.Exists(newListName))
+            {
+                newSelectedList = new DCBSList(Path.GetFileNameWithoutExtension(newListName));
+            }
+            else
+            {
+                newSelectedList = ListLoader.DownloadList(newListName);
+            }
+            var results = Task.Run(async () =>
+            {
+                try
+                {
+                    return await mLL.LoadList(newSelectedList);
+                }
+                catch (OperationCanceledException)
+                {
+                    return mLL.LoadedItems ?? new List<DCBSItem>();
+                }
+            }).ContinueWith(taskResult =>
+            {
+                App.Current.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    try
+                    {
+                        DCBSList.ItemsSource = taskResult.Result;
+                        ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
+                        ListSelection.SelectedIndex = 0;
+                        _updateCheckButton.Content = "Check for Updates";
+                        _updateCheckButton.Click -= CancelLoading_Click;
+                        _updateCheckButton.Click += _updateCheckButton_Click;
+                    }
+                    catch (Exception ex)
+                    {
+                        var str = ex.ToString();
+                    }
+                }));
+            });
+        }
+
+        private void DCBSList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+            {
+                _selectedItem = e.AddedItems[0] as DCBSItem;
+            }
         }
 
         private void maybeFilter_Click(object sender, RoutedEventArgs e)
@@ -178,60 +265,6 @@ namespace DCBSManager
         {
             var searchString = titleSearch.Text;
             DCBSList.ItemsSource = await ListLoader.FilterList(searchString, mLL.LoadedItems);
-        }
-
-        private void DCBSList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count > 0)
-            {
-                _selectedItem = e.AddedItems[0] as DCBSItem;
-            }
-        }
-
-        private void _updateCheckButton_Click(object sender, RoutedEventArgs e)
-        {
-          
-                var newListName = ListLoader.CheckForUpdatedList();
-                if (String.IsNullOrEmpty(newListName))
-                {
-                    MessageBox.Show("No new list found.");
-                    return;
-                }
-
-                if (MessageBox.Show("New list available: " + System.IO.Path.GetFileNameWithoutExtension(newListName) + " Download?",
-                    "New List Found", MessageBoxButton.YesNo) == MessageBoxResult.No)
-                { 
-                    return;
-                }
-            DCBSList newSelectedList;
-            if (File.Exists(newListName))
-            {
-                newSelectedList = new DCBSList(Path.GetFileNameWithoutExtension(newListName));
-            }
-            else
-            {
-                newSelectedList = ListLoader.DownloadList(newListName);
-            }
-            var results = Task.Run(async () =>
-            {
-                return await mLL.LoadList(newSelectedList);
-            }).ContinueWith(taskResult =>
-            {
-                App.Current.Dispatcher.BeginInvoke((Action)(() =>
-                {
-                    try
-                    {
-                        DCBSList.ItemsSource = taskResult.Result;
-                        ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
-                        ListSelection.SelectedIndex = 0;
-                    }
-                    catch (Exception ex)
-                    {
-                        var str = ex.ToString();
-                    }
-                }));
-            });
-
         }
 
         private void DCBSList_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
