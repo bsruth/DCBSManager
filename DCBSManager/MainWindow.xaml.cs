@@ -123,10 +123,6 @@ namespace DCBSManager
                 return;
             }
 
-            _updateCheckButton.Content = "Cancel";
-            _updateCheckButton.Click -= _updateCheckButton_Click;
-            _updateCheckButton.Click += CancelLoading_Click;
-
             var results = Task.Run(async () =>
             {
                 try 
@@ -144,9 +140,6 @@ namespace DCBSManager
                     try
                     {
                         DCBSList.ItemsSource = taskResult.Result;
-                        _updateCheckButton.Content = "Check for Updates";
-                        _updateCheckButton.Click -= CancelLoading_Click;
-                        _updateCheckButton.Click += _updateCheckButton_Click;
                     }
                     catch (Exception ex)
                     {
@@ -160,9 +153,6 @@ namespace DCBSManager
         {
             mLL.CancelLoading();
             DCBSList.ItemsSource = mLL.LoadedItems ?? new List<DCBSItem>();
-            _updateCheckButton.Content = "Check for Updates";
-            _updateCheckButton.Click -= CancelLoading_Click;
-            _updateCheckButton.Click += _updateCheckButton_Click;
         }
 
         private void _updateCheckButton_Click(object sender, RoutedEventArgs e)
@@ -179,10 +169,6 @@ namespace DCBSManager
             { 
                 return;
             }
-
-            _updateCheckButton.Content = "Cancel";
-            _updateCheckButton.Click -= _updateCheckButton_Click;
-            _updateCheckButton.Click += CancelLoading_Click;
 
             DCBSList newSelectedList;
             if (File.Exists(newListName))
@@ -212,9 +198,6 @@ namespace DCBSManager
                         DCBSList.ItemsSource = taskResult.Result;
                         ListSelection.ItemsSource = ListLoader.GetAvailableDatabases();
                         ListSelection.SelectedIndex = 0;
-                        _updateCheckButton.Content = "Check for Updates";
-                        _updateCheckButton.Click -= CancelLoading_Click;
-                        _updateCheckButton.Click += _updateCheckButton_Click;
                     }
                     catch (Exception ex)
                     {

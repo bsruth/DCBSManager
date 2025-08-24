@@ -6,7 +6,7 @@
         Title="DCBS Manager" Height="600" Width="525" x:Name="MWindow">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <dcbsmgr:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConveter"/>
+        <dcbsmgr:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -24,8 +24,9 @@
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <ComboBox x:Name="ListSelection" Grid.Column="0"  Grid.Row="0" SelectionChanged="ListSelection_SelectionChanged" Margin="5,5,5,5" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="50" FontSize="18">
+            <ComboBox x:Name="ListSelection" Grid.Column="0"  Grid.Row="0" SelectionChanged="ListSelection_SelectionChanged" Margin="5,5,5,5" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="50" FontSize="18" IsEnabled="{Binding NewListLoading, Converter={StaticResource InverseBooleanConverter}}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal" Height="50">
@@ -34,20 +35,28 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <Button x:Name="_updateCheckButton" Grid.Column="1" Grid.Row="0" FontSize="16" FontWeight="Bold" Content="Check for Updates" Margin="5" Padding="5" Click="_updateCheckButton_Click"/>
-            <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="2" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="50" FontSize="16" Margin="5,5,5,5"  VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Button x:Name="_updateCheckButton" Grid.Column="1" Grid.Row="0" FontSize="16" FontWeight="Bold" Content="Check for Updates" Margin="5" Padding="5" Click="_updateCheckButton_Click" IsEnabled="{Binding NewListLoading, Converter={StaticResource InverseBooleanConverter}}"/>
+            <dcbsmgr:SearchTextBox Grid.Row="0" Grid.Column="2" x:Name="titleSearch" LabelText="Search" Search="titleSearch_Search"  Height="50" FontSize="16" Margin="5,5,5,5"  VerticalAlignment="Center" VerticalContentAlignment="Center" IsEnabled="{Binding NewListLoading, Converter={StaticResource InverseBooleanConverter}}"/>
             
             <!-- Loading Status Row -->
-            <Border Grid.Row="1" Grid.ColumnSpan="3" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,1" 
+            <Border Grid.Row="1" Grid.ColumnSpan="4" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,1" 
                     Visibility="{Binding NewListLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-                    <TextBlock Text="{Binding ListLoadingText}" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="14"/>
-                    <ProgressBar Height="20" Width="200" IsIndeterminate="True"/>
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                        <TextBlock Text="{Binding ListLoadingText}" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="14"/>
+                        <ProgressBar Height="20" Width="200" IsIndeterminate="True"/>
+                    </StackPanel>
+                    <Button Grid.Column="2" x:Name="_cancelLoadingButton" Content="Cancel" Margin="10,0,10,0" Padding="10,2" VerticalAlignment="Center" Click="CancelLoading_Click" Visibility="{Binding NewListLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
             </Border>
 
             <ListView x:Name="DCBSList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
-                     Grid.Row="2" Grid.ColumnSpan="3"
+                     Grid.Row="2" Grid.ColumnSpan="4"
                      HorizontalContentAlignment="Stretch" SelectionMode="Single" 
                      SelectionChanged="DCBSList_SelectionChanged"
                      VirtualizingPanel.ScrollUnit="Pixel" 
